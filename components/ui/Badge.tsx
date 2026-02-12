@@ -5,9 +5,9 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { Category, categoryConfig } from '@/lib/constants/categories';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 type BadgeSize = 'sm' | 'md';
 
@@ -17,27 +17,29 @@ interface BadgeProps {
 }
 
 export const Badge: React.FC<BadgeProps> = ({ category, size = 'md' }) => {
+  const t = useThemeColors();
   const config = categoryConfig[category];
+  const categoryColor = t.category[category];
   const isSmall = size === 'sm';
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: `${config.color}20` }, // 20% opacity
+        { backgroundColor: `${categoryColor}20` }, // 20% opacity
         isSmall && styles.containerSmall,
       ]}
     >
       <Ionicons
         name={config.icon}
         size={isSmall ? 12 : 16}
-        color={config.color}
+        color={categoryColor}
         style={styles.icon}
       />
       <Text
         style={[
           styles.text,
-          { color: config.color },
+          { color: categoryColor },
           isSmall && styles.textSmall,
         ]}
       >

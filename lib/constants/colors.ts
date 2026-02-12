@@ -50,12 +50,24 @@ export const colors = {
     light: '#FF3B30',
   },
 
-  // Category colors (Dark mode optimized)
+  // Category colors (Theme-aware)
   category: {
-    Yol: '#5E5CE6',
-    Yemek: '#FF375F',
-    Market: '#64D2FF',
-    Diğer: '#98989D',
+    Yol: {
+      dark: '#5E5CE6',
+      light: '#4B48CC',
+    },
+    Yemek: {
+      dark: '#FF375F',
+      light: '#E0294F',
+    },
+    Market: {
+      dark: '#64D2FF',
+      light: '#0A84FF',
+    },
+    Diğer: {
+      dark: '#98989D',
+      light: '#6E6E73',
+    },
   },
 } as const;
 
@@ -73,7 +85,12 @@ export const getThemedColors = (scheme: ColorScheme) => ({
   success: colors.success[scheme],
   warning: colors.warning[scheme],
   danger: colors.danger[scheme],
-  category: colors.category,
+  category: {
+    Yol: colors.category.Yol[scheme],
+    Yemek: colors.category.Yemek[scheme],
+    Market: colors.category.Market[scheme],
+    Diğer: colors.category.Diğer[scheme],
+  },
 });
 
 export type ThemedColors = ReturnType<typeof getThemedColors>;
