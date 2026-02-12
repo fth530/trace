@@ -1,25 +1,33 @@
 // Category Definitions
-// Based on ROADMAP §2 Database Design
+// Based on ROADMAP §4 Component Inventory
+
+import type { ComponentProps } from 'react';
+import type { Ionicons } from '@expo/vector-icons';
+
+type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
 export type Category = 'Yol' | 'Yemek' | 'Market' | 'Diğer';
 
 export const CATEGORIES: Category[] = ['Yol', 'Yemek', 'Market', 'Diğer'];
 
-export const categoryConfig = {
+export const categoryConfig: Record<
+  Category,
+  { label: string; icon: IoniconsName }
+> = {
   Yol: {
-    label: 'Yol',
-    icon: 'car' as const,
+    label: 'Ulaşım',
+    icon: 'car-outline',
   },
   Yemek: {
     label: 'Yemek',
-    icon: 'restaurant' as const,
+    icon: 'restaurant-outline',
   },
   Market: {
     label: 'Market',
-    icon: 'cart' as const,
+    icon: 'cart-outline',
   },
   Diğer: {
     label: 'Diğer',
-    icon: 'ellipsis-horizontal' as const,
+    icon: 'ellipsis-horizontal-outline',
   },
-} as const;
+};
