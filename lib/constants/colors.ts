@@ -60,4 +60,20 @@ export const colors = {
 } as const;
 
 export type ColorScheme = 'light' | 'dark';
-export type Category = keyof typeof colors.category;
+
+// Themed color accessor — use directly or via useThemeColors() hook
+export const getThemedColors = (scheme: ColorScheme) => ({
+  background: colors.background[scheme],
+  surface: colors.surface[scheme],
+  surfaceGlass: colors.surfaceGlass[scheme],
+  textPrimary: colors.text.primary[scheme],
+  textSecondary: colors.text.secondary[scheme],
+  textTertiary: colors.text.tertiary[scheme],
+  accent: colors.accent[scheme],
+  success: colors.success[scheme],
+  warning: colors.warning[scheme],
+  danger: colors.danger[scheme],
+  category: colors.category,
+});
+
+export type ThemedColors = ReturnType<typeof getThemedColors>;

@@ -11,8 +11,8 @@ import {
   KeyboardTypeOptions,
 } from 'react-native';
 import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface InputProps {
   label: string;
@@ -35,6 +35,7 @@ export const Input: React.FC<InputProps> = ({
   maxLength,
   error,
 }) => {
+  const t = useThemeColors();
   const [isFocused, setIsFocused] = useState(false);
   const [labelAnimation] = useState(new Animated.Value(value ? 1 : 0));
 
@@ -79,19 +80,19 @@ export const Input: React.FC<InputProps> = ({
     }),
   };
 
+  const labelColor = error
+    ? t.danger
+    : isFocused
+      ? t.accent
+      : t.textSecondary;
+
   return (
     <View style={styles.container}>
       <Animated.Text
         style={[
           styles.label,
           labelStyle,
-          {
-            color: error
-              ? colors.danger.dark
-              : isFocused
-              ? colors.accent.dark
-              : colors.text.secondary.dark,
-          },
+          { color: labelColor, backgroundColor: t.surface },
         ]}
       >
         {label}
@@ -102,20 +103,25 @@ export const Input: React.FC<InputProps> = ({
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={placeholder}
-        placeholderTextColor={colors.text.tertiary.dark}
+        placeholderTextColor={t.textTertiary}
         keyboardType={keyboardType}
         multiline={multiline}
         maxLength={maxLength}
         style={[
           styles.input,
+          {
+            backgroundColor: t.surface,
+            borderColor: t.textTertiary,
+            color: t.textPrimary,
+          },
           multiline && styles.multiline,
-          isFocused && styles.inputFocused,
-          error && styles.inputError,
+          isFocused && { borderColor: t.accent, borderWidth: 2 },
+          error && { borderColor: t.danger },
         ]}
         accessibilityLabel={label}
         accessibilityHint={placeholder}
       />
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={[styles.errorText, { color: t.danger }]}>{error}</Text>}
     </View>
   );
 };
@@ -131,34 +137,22 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     fontWeight: typography.body.fontWeight,
     zIndex: 1,
-    backgroundColor: colors.surface.dark,
     paddingHorizontal: spacing.xs,
   },
   input: {
-    backgroundColor: colors.surface.dark,
     borderWidth: 1,
-    borderColor: colors.text.tertiary.dark,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.sm,
     paddingTop: spacing.md,
     paddingBottom: spacing.sm,
     fontSize: typography.body.fontSize,
-    color: colors.text.primary.dark,
-    minHeight: 56, // 8px grid: 7 * 8
+    minHeight: 56,
   },
   multiline: {
-    minHeight: 96, // 8px grid: 12 * 8
+    minHeight: 96,
     textAlignVertical: 'top',
   },
-  inputFocused: {
-    borderColor: colors.accent.dark,
-    borderWidth: 2,
-  },
-  inputError: {
-    borderColor: colors.danger.dark,
-  },
   errorText: {
-    color: colors.danger.dark,
     fontSize: typography.caption.fontSize,
     marginTop: spacing.xs,
     marginLeft: spacing.sm,

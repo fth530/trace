@@ -16,15 +16,16 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '@/lib/store';
 import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { CATEGORIES, Category } from '@/lib/constants/categories';
 import { validateDecimal, parseCurrency } from '@/lib/utils/currency';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 export default function AddExpenseModal() {
   const { addExpense } = useStore();
+  const t = useThemeColors();
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category | null>(null);
@@ -32,13 +33,9 @@ export default function AddExpenseModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAmountChange = (text: string) => {
-    // Remove non-numeric characters except dot and comma
     const cleaned = text.replace(/[^\d.,]/g, '');
-    
-    // Replace comma with dot
     const normalized = cleaned.replace(',', '.');
-    
-    // Validate decimal places (max 2)
+
     if (normalized === '' || validateDecimal(normalized)) {
       setAmount(normalized);
     }
@@ -55,19 +52,16 @@ export default function AddExpenseModal() {
   };
 
   const validateForm = (): string | null => {
-    // Validate amount
     const parsedAmount = parseCurrency(amount);
-    
+
     if (parsedAmount === 0) {
       return 'Geçerli bir tutar girin';
     }
 
-    // Edge case: Amount > 1,000,000
     if (parsedAmount > 1_000_000) {
       return 'confirm_large_amount';
     }
 
-    // Validate description
     if (description.trim() === '') {
       return 'Açıklama gereklidir';
     }
@@ -83,14 +77,8 @@ export default function AddExpenseModal() {
         'Emin misiniz?',
         'Çok büyük bir tutar girdiniz. Devam etmek istiyor musunuz?',
         [
-          {
-            text: 'İptal',
-            style: 'cancel',
-          },
-          {
-            text: 'Devam Et',
-            onPress: () => submitExpense(),
-          },
+          { text: 'İptal', style: 'cancel' },
+          { text: 'Devam Et', onPress: () => submitExpense() },
         ]
       );
       return;
@@ -114,7 +102,7 @@ export default function AddExpenseModal() {
         amount: parsedAmount,
         category,
         description: description.trim(),
-        date: '', // Will be set by store
+        date: '',
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -131,25 +119,24 @@ export default function AddExpenseModal() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: t.background }]}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Harcama Ekle</Text>
+        <Text style={[styles.title, { color: t.textPrimary }]}>Harcama Ekle</Text>
         <Pressable
           onPress={handleClose}
           style={({ pressed }) => [
             styles.closeButton,
-            pressed && styles.closeButtonPressed,
+            pressed && { backgroundColor: t.surface },
           ]}
           accessibilityRole="button"
           accessibilityLabel="Kapat"
         >
-          <Ionicons name="close" size={24} color={colors.text.primary.dark} />
+          <Ionicons name="close" size={24} color={t.textPrimary} />
         </Pressable>
       </View>
 
       <View style={styles.content}>
-        {/* Amount Input */}
         <View style={styles.section}>
           <Input
             label="Tutar (₺)"
@@ -160,9 +147,10 @@ export default function AddExpenseModal() {
           />
         </View>
 
-        {/* Category Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Kategori (Opsiyonel)</Text>
+          <Text style={[styles.sectionLabel, { color: t.textPrimary }]}>
+            Kategori (Opsiyonel)
+          </Text>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map((cat) => (
               <Pressable
@@ -170,7 +158,14 @@ export default function AddExpenseModal() {
                 onPress={() => handleCategorySelect(cat)}
                 style={({ pressed }) => [
                   styles.categoryChip,
-                  category === cat && styles.categoryChipSelected,
+                  {
+                    backgroundColor: t.surface,
+                    borderColor: t.textTertiary,
+                  },
+                  category === cat && {
+                    backgroundColor: t.accent,
+                    borderColor: t.accent,
+                  },
                   pressed && styles.categoryChipPressed,
                 ]}
                 accessibilityRole="button"
@@ -180,6 +175,7 @@ export default function AddExpenseModal() {
                 <Text
                   style={[
                     styles.categoryChipText,
+                    { color: t.textPrimary },
                     category === cat && styles.categoryChipTextSelected,
                   ]}
                 >
@@ -190,7 +186,6 @@ export default function AddExpenseModal() {
           </View>
         </View>
 
-        {/* Description Input */}
         <View style={styles.section}>
           <Input
             label="Açıklama"
@@ -201,7 +196,6 @@ export default function AddExpenseModal() {
           />
         </View>
 
-        {/* Save Button */}
         <Button
           label={isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
           onPress={handleSave}
@@ -216,7 +210,6 @@ export default function AddExpenseModal() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.dark,
   },
   header: {
     flexDirection: 'row',
@@ -229,14 +222,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.title.fontSize,
     fontWeight: typography.title.fontWeight,
-    color: colors.text.primary.dark,
   },
   closeButton: {
     padding: spacing.xs,
     borderRadius: borderRadius.sm,
-  },
-  closeButtonPressed: {
-    backgroundColor: colors.surface.dark,
   },
   content: {
     flex: 1,
@@ -248,7 +237,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: typography.body.fontSize,
     fontWeight: typography.headline.fontWeight,
-    color: colors.text.primary.dark,
     marginBottom: spacing.sm,
   },
   categoryGrid: {
@@ -260,20 +248,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.surface.dark,
     borderWidth: 1,
-    borderColor: colors.text.tertiary.dark,
-  },
-  categoryChipSelected: {
-    backgroundColor: colors.accent.dark,
-    borderColor: colors.accent.dark,
   },
   categoryChipPressed: {
     opacity: 0.7,
   },
   categoryChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.text.primary.dark,
   },
   categoryChipTextSelected: {
     fontWeight: typography.headline.fontWeight,

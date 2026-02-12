@@ -4,9 +4,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { ExpenseItem } from './ExpenseItem';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import type { Expense } from '@/lib/store/types';
 
 interface ExpenseListProps {
@@ -20,10 +20,12 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
   onDelete,
   emptyMessage = 'Henüz harcama eklemedin',
 }) => {
+  const t = useThemeColors();
+
   if (expenses.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>{emptyMessage}</Text>
+        <Text style={[styles.emptyText, { color: t.textTertiary }]}>{emptyMessage}</Text>
       </View>
     );
   }
@@ -49,7 +51,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
 const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xxxl, // Space for FAB
+    paddingBottom: spacing.xxxl,
   },
   emptyContainer: {
     flex: 1,
@@ -59,7 +61,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: typography.body.fontSize,
-    color: colors.text.tertiary.dark,
     textAlign: 'center',
   },
 });

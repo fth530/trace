@@ -4,9 +4,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { formatCurrency } from '@/lib/utils/currency';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface DailyTotalProps {
   amount: number;
@@ -19,18 +19,17 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
   limit,
   isToday,
 }) => {
+  const t = useThemeColors();
   const animatedValue = useRef(new Animated.Value(amount)).current;
   const [displayAmount, setDisplayAmount] = useState(amount);
 
   useEffect(() => {
-    // Animate number counting with native driver
     Animated.timing(animatedValue, {
       toValue: amount,
       duration: 800,
       useNativeDriver: true,
     }).start();
 
-    // Update display value during animation
     const listenerId = animatedValue.addListener(({ value }) => {
       setDisplayAmount(value);
     });
@@ -40,25 +39,29 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
     };
   }, [amount, animatedValue]);
 
+  const safeMax = Math.max(amount, 1);
   const animatedStyle = {
     opacity: animatedValue.interpolate({
-      inputRange: [0, amount],
+      inputRange: [0, safeMax],
       outputRange: [0.5, 1],
     }),
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>
+    <View
+      style={styles.container}
+      accessibilityLabel={`Bugünkü toplam ${Math.round(amount)} lira`}
+    >
+      <Text style={[styles.label, { color: t.textSecondary }]}>
         {isToday ? 'Bugün' : 'Toplam'}
       </Text>
-      
-      <Animated.Text style={[styles.amount, animatedStyle]}>
+
+      <Animated.Text style={[styles.amount, { color: t.textPrimary }, animatedStyle]}>
         {formatCurrency(displayAmount)}
       </Animated.Text>
 
       {limit > 0 && (
-        <Text style={styles.limit}>
+        <Text style={[styles.limit, { color: t.textTertiary }]}>
           / {formatCurrency(limit)} limit
         </Text>
       )}
@@ -74,18 +77,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: typography.headline.fontSize,
     fontWeight: typography.headline.fontWeight,
-    color: colors.text.secondary.dark,
     marginBottom: spacing.sm,
   },
   amount: {
     fontSize: typography.hero.fontSize,
     fontWeight: typography.hero.fontWeight,
     lineHeight: typography.hero.lineHeight,
-    color: colors.text.primary.dark,
   },
   limit: {
     fontSize: typography.body.fontSize,
-    color: colors.text.tertiary.dark,
     marginTop: spacing.xs,
   },
 });

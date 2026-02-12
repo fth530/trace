@@ -3,19 +3,32 @@
 
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'nativewind';
 import { useStore } from '@/lib/store';
-import { colors } from '@/lib/constants/colors';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import '../global.css';
+
+// Prevent splash screen from auto-hiding until data loads
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { setColorScheme } = useColorScheme();
   const settings = useStore((state) => state.settings);
+  const isLoading = useStore((state) => state.isLoading);
+  const t = useThemeColors();
+
+  // Hide splash screen when loading is complete
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoading]);
 
   // Apply theme from settings
   useEffect(() => {
     if (settings.theme === 'auto') {
-      // Let system handle it
       setColorScheme('system');
     } else {
       setColorScheme(settings.theme);
@@ -23,27 +36,29 @@ export default function RootLayout() {
   }, [settings.theme, setColorScheme]);
 
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.background.dark,
-        },
-        headerTintColor: colors.text.primary.dark,
-        headerShadowVisible: false,
-        contentStyle: {
-          backgroundColor: colors.background.dark,
-        },
-      }}
-    >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="modal/add-expense"
-        options={{
-          presentation: 'modal',
-          title: '',
-          headerShown: false,
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: t.background,
+          },
+          headerTintColor: t.textPrimary,
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: t.background,
+          },
         }}
-      />
-    </Stack>
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal/add-expense"
+          options={{
+            presentation: 'modal',
+            title: '',
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }

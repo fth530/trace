@@ -2,8 +2,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { formatCurrency } from '@/lib/utils/currency';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface PeriodSummaryProps {
   weeklyTotal: number;
@@ -11,18 +11,28 @@ interface PeriodSummaryProps {
 }
 
 export function PeriodSummary({ weeklyTotal, monthlyTotal }: PeriodSummaryProps) {
+  const t = useThemeColors();
+
   return (
     <View style={styles.container}>
-      <BlurView intensity={80} tint="dark" style={styles.blurView}>
+      <BlurView
+        intensity={80}
+        tint={t.scheme}
+        style={[styles.blurView, { borderTopColor: t.surface }]}
+      >
         <View style={styles.content}>
           <View style={styles.section}>
-            <Text style={styles.label}>Son 7 Gün</Text>
-            <Text style={styles.amount}>{formatCurrency(weeklyTotal)}</Text>
+            <Text style={[styles.label, { color: t.textSecondary }]}>Son 7 Gün</Text>
+            <Text style={[styles.amount, { color: t.textPrimary }]}>
+              {formatCurrency(weeklyTotal)}
+            </Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: t.surface }]} />
           <View style={styles.section}>
-            <Text style={styles.label}>Bu Ay</Text>
-            <Text style={styles.amount}>{formatCurrency(monthlyTotal)}</Text>
+            <Text style={[styles.label, { color: t.textSecondary }]}>Bu Ay</Text>
+            <Text style={[styles.amount, { color: t.textPrimary }]}>
+              {formatCurrency(monthlyTotal)}
+            </Text>
           </View>
         </View>
       </BlurView>
@@ -41,7 +51,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.surface.dark,
   },
   content: {
     flexDirection: 'row',
@@ -52,16 +61,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: typography.caption.fontSize,
-    color: colors.text.secondary.dark,
-    marginBottom: spacing.xs / 2,
+    marginBottom: spacing.xxs,
   },
   amount: {
     fontSize: typography.headline.fontSize,
-    fontWeight: typography.headline.fontWeight as any,
-    color: colors.text.primary.dark,
+    fontWeight: typography.headline.fontWeight,
   },
   divider: {
     width: 1,
-    backgroundColor: colors.surface.dark,
   },
 });

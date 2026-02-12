@@ -6,9 +6,9 @@ import { View, Text, StyleSheet, Animated, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { LimitType, getHapticIntensity } from '@/lib/utils/limits';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface LimitBannerProps {
   percentage: number;
@@ -27,20 +27,20 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
   color,
   onDismiss,
 }) => {
+  const t = useThemeColors();
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Trigger haptic based on severity
     const level =
       percentage >= 100
         ? 'danger-100'
         : percentage >= 80
-        ? 'warning-80'
-        : 'warning-50';
-    
+          ? 'warning-80'
+          : 'warning-50';
+
     const intensity = getHapticIntensity(level);
-    
+
     switch (intensity) {
       case 'light':
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -53,7 +53,6 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
         break;
     }
 
-    // Slide in animation
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
@@ -67,7 +66,6 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
       }),
     ]).start();
 
-    // Auto-dismiss after 3 seconds
     const timer = setTimeout(() => {
       handleDismiss();
     }, 3000);
@@ -97,7 +95,7 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: color + '20', // 20% opacity
+          backgroundColor: color + '20',
           borderLeftColor: color,
           transform: [{ translateY: slideAnim }],
           opacity: opacityAnim,
@@ -111,27 +109,19 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
         accessibilityLabel="Uyarıyı kapat"
       >
         <View style={styles.iconContainer}>
-          <Ionicons
-            name="warning"
-            size={24}
-            color={color}
-          />
+          <Ionicons name="warning" size={24} color={color} />
         </View>
 
         <View style={styles.textContainer}>
           <Text style={[styles.message, { color }]}>
             {message}
           </Text>
-          <Text style={styles.hint}>
+          <Text style={[styles.hint, { color: t.textTertiary }]}>
             Dokunarak kapat
           </Text>
         </View>
 
-        <Ionicons
-          name="close"
-          size={20}
-          color={colors.text.tertiary.dark}
-        />
+        <Ionicons name="close" size={20} color={t.textTertiary} />
       </Pressable>
     </Animated.View>
   );
@@ -166,6 +156,5 @@ const styles = StyleSheet.create({
   },
   hint: {
     fontSize: typography.caption.fontSize,
-    color: colors.text.tertiary.dark,
   },
 });

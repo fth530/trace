@@ -9,35 +9,34 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 export default function SettingsScreen() {
   const store = useStore();
   const { settings, updateSetting, clearAllData } = store;
-  
+  const t = useThemeColors();
+
   const [dailyLimit, setDailyLimit] = useState(settings.daily_limit.toString());
   const [monthlyLimit, setMonthlyLimit] = useState(settings.monthly_limit.toString());
   const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(settings.theme);
-  
-  const dailyTimeoutRef = useRef<NodeJS.Timeout>();
-  const monthlyTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Update local state when store changes
+  const dailyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const monthlyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
   useEffect(() => {
     setDailyLimit(settings.daily_limit.toString());
     setMonthlyLimit(settings.monthly_limit.toString());
     setTheme(settings.theme);
   }, [settings.daily_limit, settings.monthly_limit, settings.theme]);
 
-  // Debounced save for daily limit (500ms)
   const handleDailyLimitChange = (value: string) => {
     setDailyLimit(value);
-    
+
     if (dailyTimeoutRef.current) {
       clearTimeout(dailyTimeoutRef.current);
     }
-    
+
     dailyTimeoutRef.current = setTimeout(() => {
       const numValue = parseFloat(value) || 0;
       if (numValue >= 0) {
@@ -47,14 +46,13 @@ export default function SettingsScreen() {
     }, 500);
   };
 
-  // Debounced save for monthly limit (500ms)
   const handleMonthlyLimitChange = (value: string) => {
     setMonthlyLimit(value);
-    
+
     if (monthlyTimeoutRef.current) {
       clearTimeout(monthlyTimeoutRef.current);
     }
-    
+
     monthlyTimeoutRef.current = setTimeout(() => {
       const numValue = parseFloat(value) || 0;
       if (numValue >= 0) {
@@ -64,14 +62,12 @@ export default function SettingsScreen() {
     }, 500);
   };
 
-  // Immediate save for theme
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
     setTheme(newTheme);
     updateSetting('theme', newTheme);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
-  // Clear all data with confirmation
   const handleClearData = () => {
     Alert.alert(
       'Tüm Verileri Sil',
@@ -100,7 +96,6 @@ export default function SettingsScreen() {
     );
   };
 
-  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (dailyTimeoutRef.current) clearTimeout(dailyTimeoutRef.current);
@@ -109,10 +104,13 @@ export default function SettingsScreen() {
   }, []);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: t.background }]}
+      contentContainerStyle={styles.content}
+    >
       {/* Limits Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Limitler</Text>
+        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Limitler</Text>
         <Card>
           <View style={styles.cardContent}>
             <Input
@@ -132,14 +130,14 @@ export default function SettingsScreen() {
             />
           </View>
         </Card>
-        <Text style={styles.hint}>
+        <Text style={[styles.hint, { color: t.textTertiary }]}>
           Limit 0 olarak ayarlanırsa limit kontrolü devre dışı kalır
         </Text>
       </View>
 
       {/* Theme Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tema</Text>
+        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Tema</Text>
         <Card>
           <View style={styles.cardContent}>
             <View style={styles.themeButtons}>
@@ -163,14 +161,14 @@ export default function SettingsScreen() {
             </View>
           </View>
         </Card>
-        <Text style={styles.hint}>
+        <Text style={[styles.hint, { color: t.textTertiary }]}>
           Otomatik mod sistem temasını takip eder
         </Text>
       </View>
 
       {/* Danger Zone */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tehlikeli Bölge</Text>
+        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Tehlikeli Bölge</Text>
         <Button
           label="Tüm Verileri Sil"
           onPress={handleClearData}
@@ -180,8 +178,8 @@ export default function SettingsScreen() {
 
       {/* Version */}
       <View style={styles.versionContainer}>
-        <Text style={styles.versionText}>Trace v1.0.0</Text>
-        <Text style={styles.versionSubtext}>
+        <Text style={[styles.versionText, { color: t.textSecondary }]}>Trace v1.0.0</Text>
+        <Text style={[styles.versionSubtext, { color: t.textTertiary }]}>
           "Ben muhasebeci değilim, sadece bugün ne kadar gitti onu bilmek istiyorum."
         </Text>
       </View>
@@ -192,7 +190,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.dark,
   },
   content: {
     padding: spacing.md,
@@ -204,7 +201,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: typography.headline.fontSize,
     fontWeight: typography.headline.fontWeight,
-    color: colors.text.primary.dark,
     marginBottom: spacing.sm,
   },
   cardContent: {
@@ -215,7 +211,6 @@ const styles = StyleSheet.create({
   },
   hint: {
     fontSize: typography.caption.fontSize,
-    color: colors.text.tertiary.dark,
     marginTop: spacing.xs,
     marginLeft: spacing.xs,
   },
@@ -234,12 +229,10 @@ const styles = StyleSheet.create({
   versionText: {
     fontSize: typography.body.fontSize,
     fontWeight: typography.headline.fontWeight,
-    color: colors.text.secondary.dark,
-    marginBottom: spacing.xs / 2,
+    marginBottom: spacing.xxs,
   },
   versionSubtext: {
     fontSize: typography.caption.fontSize,
-    color: colors.text.tertiary.dark,
     textAlign: 'center',
     fontStyle: 'italic',
     paddingHorizontal: spacing.lg,

@@ -5,8 +5,8 @@ import React from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger';
 
@@ -23,9 +23,10 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   disabled = false,
 }) => {
+  const t = useThemeColors();
+
   const handlePress = () => {
     if (!disabled) {
-      // Haptic feedback on press
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       onPress();
     }
@@ -35,32 +36,22 @@ export const Button: React.FC<ButtonProps> = ({
     switch (variant) {
       case 'primary':
         return {
-          container: {
-            backgroundColor: colors.accent.dark,
-          },
-          text: {
-            color: colors.text.primary.dark,
-          },
+          container: { backgroundColor: t.accent },
+          text: { color: t.textPrimary },
         };
       case 'secondary':
         return {
           container: {
-            backgroundColor: colors.surface.dark,
+            backgroundColor: t.surface,
             borderWidth: 1,
-            borderColor: colors.text.tertiary.dark,
+            borderColor: t.textTertiary,
           },
-          text: {
-            color: colors.text.primary.dark,
-          },
+          text: { color: t.textPrimary },
         };
       case 'danger':
         return {
-          container: {
-            backgroundColor: colors.danger.dark,
-          },
-          text: {
-            color: colors.text.primary.dark,
-          },
+          container: { backgroundColor: t.danger },
+          text: { color: t.textPrimary },
         };
     }
   };
@@ -95,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48, // Accessibility: minimum touch target
+    minHeight: 48,
   },
   text: {
     fontSize: typography.body.fontSize,

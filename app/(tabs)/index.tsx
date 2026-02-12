@@ -8,12 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '@/lib/store';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { DailyTotal } from '@/components/expense/DailyTotal';
 import { ExpenseList } from '@/components/expense/ExpenseList';
 import { LimitProgress } from '@/components/limit/LimitProgress';
 import { LimitBanner } from '@/components/limit/LimitBanner';
 import { getLimitStatus } from '@/lib/utils/limits';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -31,6 +31,7 @@ export default function HomeScreen() {
     deleteExpense,
   } = useStore();
 
+  const t = useThemeColors();
   const [refreshing, setRefreshing] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerData, setBannerData] = useState<{
@@ -51,11 +52,11 @@ export default function HomeScreen() {
   }, [todayTotal, monthTotal, settings.daily_limit, settings.monthly_limit]);
 
   const checkLimits = () => {
-    // Check daily limit first (priority)
     const dailyStatus = getLimitStatus(
       todayTotal,
       settings.daily_limit,
-      'daily'
+      'daily',
+      t.scheme
     );
 
     if (dailyStatus.shouldShowBanner) {
@@ -70,11 +71,11 @@ export default function HomeScreen() {
       return;
     }
 
-    // If daily < 50%, check monthly
     const monthlyStatus = getLimitStatus(
       monthTotal,
       settings.monthly_limit,
-      'monthly'
+      'monthly',
+      t.scheme
     );
 
     if (monthlyStatus.shouldShowBanner) {
@@ -102,7 +103,6 @@ export default function HomeScreen() {
 
   const handleDelete = async (id: number) => {
     try {
-      // Animate list item removal
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       await deleteExpense(id);
     } catch (error) {
@@ -117,15 +117,14 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.accent.dark} />
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: t.background }]}>
+        <ActivityIndicator size="large" color={t.accent} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {/* Limit Warning Banner */}
+    <View style={[styles.container, { backgroundColor: t.background }]}>
       {showBanner && bannerData && (
         <LimitBanner
           percentage={bannerData.percentage}
@@ -145,7 +144,7 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.accent.dark}
+            tintColor={t.accent}
           />
         }
       >
@@ -155,7 +154,6 @@ export default function HomeScreen() {
           isToday={true}
         />
 
-        {/* Limit Progress Bars */}
         <View style={styles.limitsContainer}>
           <LimitProgress
             current={todayTotal}
@@ -176,17 +174,17 @@ export default function HomeScreen() {
         />
       </ScrollView>
 
-      {/* FAB (Floating Action Button) */}
       <Pressable
         onPress={handleAddExpense}
         style={({ pressed }) => [
           styles.fab,
+          { backgroundColor: t.accent },
           pressed && styles.fabPressed,
         ]}
         accessibilityRole="button"
         accessibilityLabel="Harcama ekle"
       >
-        <Ionicons name="add" size={32} color={colors.text.primary.dark} />
+        <Ionicons name="add" size={32} color={t.textPrimary} />
       </Pressable>
     </View>
   );
@@ -195,7 +193,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.dark,
   },
   scrollView: {
     flex: 1,
@@ -207,10 +204,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: spacing.md,
     bottom: spacing.md,
-    width: 64, // 8px grid: 8 * 8
+    width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.accent.dark,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

@@ -3,22 +3,24 @@
 
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/lib/constants/colors';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 export default function TabLayout() {
+  const t = useThemeColors();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.accent.dark,
-        tabBarInactiveTintColor: colors.text.tertiary.dark,
+        tabBarActiveTintColor: t.accent,
+        tabBarInactiveTintColor: t.textTertiary,
         tabBarStyle: {
-          backgroundColor: colors.surface.dark,
-          borderTopColor: colors.text.tertiary.dark + '30',
+          backgroundColor: t.surface,
+          borderTopColor: t.textTertiary + '30',
         },
         headerStyle: {
-          backgroundColor: colors.background.dark,
+          backgroundColor: t.background,
         },
-        headerTintColor: colors.text.primary.dark,
+        headerTintColor: t.textPrimary,
         headerShadowVisible: false,
       }}
     >

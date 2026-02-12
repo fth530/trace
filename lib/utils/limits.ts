@@ -1,7 +1,7 @@
 // Limit Calculation Utilities
 // Based on ROADMAP §7 Limit & Warning System
 
-import { colors } from '../constants/colors';
+import { getThemedColors, type ColorScheme } from '../constants/colors';
 
 export type LimitLevel = 'safe' | 'warning-50' | 'warning-80' | 'danger-100';
 export type LimitType = 'daily' | 'monthly';
@@ -24,15 +24,18 @@ export const calculateLimitPercentage = (current: number, limit: number): number
 export const getLimitStatus = (
   current: number,
   limit: number,
-  type: LimitType
+  type: LimitType,
+  scheme: ColorScheme = 'dark'
 ): LimitStatus => {
+  const themed = getThemedColors(scheme);
+
   // Edge case: Limit = 0 (no limit set)
   if (limit === 0) {
     return {
       percentage: 0,
       level: 'safe',
       message: null,
-      color: colors.success.dark,
+      color: themed.success,
       shouldShowBanner: false,
     };
   }
@@ -48,7 +51,7 @@ export const getLimitStatus = (
         type === 'daily'
           ? `Günlük limitini aştın! (${current.toFixed(0)}₺ / ${limit}₺)`
           : 'Aylık limitini aştın!',
-      color: colors.danger.dark,
+      color: themed.danger,
       shouldShowBanner: true,
     };
   }
@@ -61,7 +64,7 @@ export const getLimitStatus = (
         type === 'daily'
           ? "Günlük limitinin %80'ine ulaştın"
           : "Aylık limitinin %80'ine ulaştın",
-      color: colors.warning.dark,
+      color: themed.warning,
       shouldShowBanner: true,
     };
   }
@@ -71,7 +74,7 @@ export const getLimitStatus = (
       percentage,
       level: 'warning-50',
       message: type === 'daily' ? 'Günlük limitinin yarısını geçtin' : null,
-      color: colors.warning.dark,
+      color: themed.warning,
       shouldShowBanner: type === 'daily', // Only show for daily at 50%
     };
   }
@@ -80,17 +83,18 @@ export const getLimitStatus = (
     percentage,
     level: 'safe',
     message: null,
-    color: colors.success.dark,
+    color: themed.success,
     shouldShowBanner: false,
   };
 };
 
 // Get progress bar color based on percentage
-export const getProgressColor = (percentage: number): string => {
-  if (percentage >= 100) return colors.danger.dark;
-  if (percentage >= 80) return colors.warning.dark;
-  if (percentage >= 50) return colors.warning.dark;
-  return colors.success.dark;
+export const getProgressColor = (percentage: number, scheme: ColorScheme = 'dark'): string => {
+  const themed = getThemedColors(scheme);
+  if (percentage >= 100) return themed.danger;
+  if (percentage >= 80) return themed.warning;
+  if (percentage >= 50) return themed.warning;
+  return themed.success;
 };
 
 // Check if should trigger haptic feedback

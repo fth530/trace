@@ -8,14 +8,15 @@ import { ExpenseList } from '@/components/expense/ExpenseList';
 import { formatCurrency } from '@/lib/utils/currency';
 import { formatDateRelative } from '@/lib/utils/date';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import type { Expense } from '@/lib/store/types';
 
 export default function DayDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { loadDayExpenses } = useStore();
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const t = useThemeColors();
 
   useEffect(() => {
     if (date) {
@@ -37,8 +38,8 @@ export default function DayDetailScreen() {
   const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: t.background }]}>
+      <View style={[styles.header, { borderBottomColor: t.surface }]}>
         <View style={styles.headerTop}>
           <Pressable
             onPress={handleBack}
@@ -53,14 +54,14 @@ export default function DayDetailScreen() {
             <Ionicons
               name="chevron-back"
               size={28}
-              color={colors.accent.dark}
+              color={t.accent}
             />
           </Pressable>
-          <Text style={styles.dateText}>
+          <Text style={[styles.dateText, { color: t.textPrimary }]}>
             {date && formatDateRelative(date)}
           </Text>
         </View>
-        <Text style={styles.totalText}>
+        <Text style={[styles.totalText, { color: t.textPrimary }]}>
           {formatCurrency(total)}
         </Text>
       </View>
@@ -77,14 +78,12 @@ export default function DayDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.dark,
   },
   header: {
     paddingTop: spacing.xl + spacing.md,
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.surface.dark,
   },
   headerTop: {
     flexDirection: 'row',
@@ -99,13 +98,11 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: typography.title.fontSize,
-    fontWeight: typography.title.fontWeight as any,
-    color: colors.text.primary.dark,
+    fontWeight: typography.title.fontWeight,
   },
   totalText: {
     fontSize: typography.hero.fontSize,
-    fontWeight: typography.hero.fontWeight as any,
-    color: colors.text.primary.dark,
+    fontWeight: typography.hero.fontWeight,
   },
   scrollContent: {
     padding: spacing.md,

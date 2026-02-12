@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.xs / 2, // 4px
-    paddingHorizontal: spacing.sm / 2, // 8px
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.xs,
     borderRadius: borderRadius.sm,
     alignSelf: 'flex-start',
   },
   containerSmall: {
     paddingVertical: 2,
-    paddingHorizontal: spacing.xs / 2, // 4px
+    paddingHorizontal: spacing.xxs,
   },
   icon: {
     marginRight: 4,

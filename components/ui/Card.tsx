@@ -5,7 +5,7 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { spacing, borderRadius, shadows } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface CardProps {
   children: React.ReactNode;
@@ -13,17 +13,19 @@ interface CardProps {
   blur?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  children, 
+export const Card: React.FC<CardProps> = ({
+  children,
   style,
-  blur = true 
+  blur = true,
 }) => {
+  const t = useThemeColors();
+
   if (blur) {
     return (
       <BlurView
         intensity={60}
-        tint="dark"
-        style={[styles.container, styles.blur, style]}
+        tint={t.scheme}
+        style={[styles.container, { backgroundColor: t.surfaceGlass }, style]}
       >
         {children}
       </BlurView>
@@ -31,7 +33,7 @@ export const Card: React.FC<CardProps> = ({
   }
 
   return (
-    <View style={[styles.container, styles.solid, style]}>
+    <View style={[styles.container, { backgroundColor: t.surface }, style]}>
       {children}
     </View>
   );
@@ -42,17 +44,10 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     overflow: 'hidden',
-    // Shadow for depth
     shadowColor: '#000',
     shadowOffset: shadows.md.offset,
     shadowOpacity: shadows.md.opacity,
     shadowRadius: shadows.md.radius,
     elevation: shadows.md.elevation,
-  },
-  blur: {
-    backgroundColor: colors.surfaceGlass.dark,
-  },
-  solid: {
-    backgroundColor: colors.surface.dark,
   },
 });

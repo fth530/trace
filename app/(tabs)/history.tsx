@@ -2,18 +2,19 @@ import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { spacing } from '@/lib/constants/spacing';
-import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
 import { DaySummaryCard } from '@/components/history/DaySummaryCard';
 import { PeriodSummary } from '@/components/history/PeriodSummary';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 export default function HistoryScreen() {
   const { history, weekTotal, monthTotal, loadHistory } = useStore();
   const [refreshing, setRefreshing] = useState(false);
+  const t = useThemeColors();
 
   useEffect(() => {
     loadHistory();
-  }, []);
+  }, [loadHistory]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -22,7 +23,7 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: t.background }]}>
       <FlatList
         data={history}
         keyExtractor={(item) => item.date}
@@ -36,7 +37,7 @@ export default function HistoryScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
+            <Text style={[styles.emptyText, { color: t.textSecondary }]}>
               Son 30 günde harcama yok
             </Text>
           </View>
@@ -45,7 +46,7 @@ export default function HistoryScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.accent.dark}
+            tintColor={t.accent}
           />
         }
       />
@@ -57,7 +58,6 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.dark,
   },
   listContent: {
     padding: spacing.md,
@@ -69,6 +69,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: typography.body.fontSize,
-    color: colors.text.secondary.dark,
   },
 });
