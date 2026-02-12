@@ -1,11 +1,11 @@
-import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { spacing } from '@/lib/constants/spacing';
 import { colors } from '@/lib/constants/colors';
 import { typography } from '@/lib/constants/typography';
-import { DaySummaryCard } from '../../components/history/DaySummaryCard';
-import { PeriodSummary } from '../../components/history/PeriodSummary';
+import { DaySummaryCard } from '@/components/history/DaySummaryCard';
+import { PeriodSummary } from '@/components/history/PeriodSummary';
 
 export default function HistoryScreen() {
   const { history, weekTotal, monthTotal, loadHistory } = useStore();
@@ -22,7 +22,7 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background.dark }}>
+    <View style={styles.container}>
       <FlatList
         data={history}
         keyExtractor={(item) => item.date}
@@ -33,18 +33,10 @@ export default function HistoryScreen() {
             count={item.count}
           />
         )}
-        contentContainerStyle={{
-          padding: spacing.md,
-          paddingBottom: spacing.xxxl + spacing.lg,
-        }}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          <View style={{ alignItems: 'center', marginTop: spacing.xxxl }}>
-            <Text
-              style={{
-                fontSize: typography.body.fontSize,
-                color: colors.text.secondary.dark,
-              }}
-            >
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
               Son 30 günde harcama yok
             </Text>
           </View>
@@ -61,3 +53,22 @@ export default function HistoryScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.dark,
+  },
+  listContent: {
+    padding: spacing.md,
+    paddingBottom: spacing.xxxl + spacing.lg,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: spacing.xxxl,
+  },
+  emptyText: {
+    fontSize: typography.body.fontSize,
+    color: colors.text.secondary.dark,
+  },
+});
