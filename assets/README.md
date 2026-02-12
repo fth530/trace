@@ -2,7 +2,14 @@
 
 Bu klasör uygulama görselleri için ayrılmıştır.
 
-## Gerekli Dosyalar
+## ⚠️ ÖNEMLİ: Görseller Geçici Olarak Kaldırıldı
+
+`app.json` dosyasından icon ve splash referansları kaldırıldı. Bu sayede:
+- ✅ Development mode (`npx expo start`) sorunsuz çalışır
+- ✅ Expo Go'da test edebilirsin
+- ⚠️ Production build (`eas build`) için görseller gerekli
+
+## Gerekli Dosyalar (Production İçin)
 
 ### 1. icon.png
 - Boyut: 1024x1024 px
@@ -28,12 +35,32 @@ Bu klasör uygulama görselleri için ayrılmıştır.
 - Dark mode için optimize edilmiş
 - Accent color (#8B5CF6 - mor) kullanılabilir
 
-## Geçici Çözüm
+## Production Build İçin
 
-Build almak için geçici olarak düz renkli placeholder'lar kullanabilirsiniz:
-```bash
-# ImageMagick ile placeholder oluşturma (opsiyonel)
-convert -size 1024x1024 xc:#8B5CF6 icon.png
-convert -size 1284x2778 xc:#0A0A0A splash.png
-convert -size 1024x1024 xc:#8B5CF6 adaptive-icon.png
+Görselleri hazırladıktan sonra `app.json` dosyasına şu satırları geri ekle:
+
+```json
+"icon": "./assets/icon.png",
+"splash": {
+  "image": "./assets/splash.png",
+  "resizeMode": "contain",
+  "backgroundColor": "#0A0A0A"
+},
+"ios": {
+  "icon": "./assets/icon.png"
+},
+"android": {
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/adaptive-icon.png",
+    "backgroundColor": "#0A0A0A"
+  }
+}
 ```
+
+## Hızlı Placeholder Oluşturma (Opsiyonel)
+
+Online araçlar:
+- [Figma](https://figma.com) - Ücretsiz tasarım aracı
+- [Canva](https://canva.com) - Hızlı logo oluşturma
+- [Icon Kitchen](https://icon.kitchen) - Android adaptive icon generator
+
