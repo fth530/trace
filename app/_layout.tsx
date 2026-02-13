@@ -5,19 +5,26 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'nativewind';
 import { useStore } from '@/lib/store';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { logger } from '@/lib/utils/logger';
 import '../global.css';
 
 // Prevent splash screen from auto-hiding until data loads
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { setColorScheme } = useColorScheme();
   const settings = useStore((state) => state.settings);
   const isLoading = useStore((state) => state.isLoading);
+  const initStore = useStore((state) => state.init);
   const t = useThemeColors();
+
+  // Initialize store on mount
+  useEffect(() => {
+    initStore().catch((error) => {
+      logger.error('Failed to initialize store:', error);
+    });
+  }, []);
 
   // Hide splash screen when loading is complete
   useEffect(() => {
@@ -25,15 +32,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [isLoading]);
-
-  // Apply theme from settings
-  useEffect(() => {
-    if (settings.theme === 'auto') {
-      setColorScheme('system');
-    } else {
-      setColorScheme(settings.theme);
-    }
-  }, [settings.theme, setColorScheme]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

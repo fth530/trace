@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { CATEGORIES, Category } from '@/lib/constants/categories';
 import { validateDecimal, parseCurrency } from '@/lib/utils/currency';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { logger } from '@/lib/utils/logger';
 
 export default function AddExpenseModal() {
   const { addExpense } = useStore();
@@ -58,12 +59,12 @@ export default function AddExpenseModal() {
       return 'Geçerli bir tutar girin';
     }
 
-    if (parsedAmount > 1_000_000) {
-      return 'confirm_large_amount';
-    }
-
     if (description.trim() === '') {
       return 'Açıklama gereklidir';
+    }
+
+    if (parsedAmount > 1_000_000) {
+      return 'confirm_large_amount';
     }
 
     return null;
@@ -108,7 +109,7 @@ export default function AddExpenseModal() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch (error) {
-      console.error('Add expense failed:', error);
+      logger.error('Add expense failed:', error);
       Alert.alert('Hata', 'Harcama eklenirken bir hata oluştu');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -159,12 +160,9 @@ export default function AddExpenseModal() {
                 style={({ pressed }) => [
                   styles.categoryChip,
                   {
-                    backgroundColor: t.surface,
-                    borderColor: t.textTertiary,
-                  },
-                  category === cat && {
-                    backgroundColor: t.accent,
-                    borderColor: t.accent,
+                    backgroundColor: category === cat ? t.accent : t.surface,
+                    borderColor: category === cat ? t.accent : t.textTertiary,
+                    borderWidth: 2,
                   },
                   pressed && styles.categoryChipPressed,
                 ]}
@@ -175,7 +173,7 @@ export default function AddExpenseModal() {
                 <Text
                   style={[
                     styles.categoryChipText,
-                    { color: t.textPrimary },
+                    { color: category === cat ? '#FFFFFF' : t.textPrimary },
                     category === cat && styles.categoryChipTextSelected,
                   ]}
                 >
@@ -248,7 +246,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.md,
-    borderWidth: 1,
   },
   categoryChipPressed: {
     opacity: 0.7,

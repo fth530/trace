@@ -7,9 +7,7 @@
       "@/*": [
         "./*"
       ]
-    },
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true
+    }
   },
   "include": [
     "**/*.ts",

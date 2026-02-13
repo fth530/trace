@@ -3,6 +3,7 @@
 
 import * as SQLite from 'expo-sqlite';
 import { createTablesSQL, seedDataSQL } from './schema';
+import { logger } from '../utils/logger';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
@@ -22,11 +23,11 @@ export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
     await db.execAsync(seedDataSQL);
 
     dbInstance = db;
-    console.log('✅ Database initialized successfully');
+    logger.log('✅ Database initialized successfully');
 
     return db;
   } catch (error) {
-    console.error('❌ Database initialization failed:', error);
+    logger.error('❌ Database initialization failed:', error);
     throw error;
   }
 };
@@ -42,6 +43,6 @@ export const closeDatabase = async (): Promise<void> => {
   if (dbInstance) {
     await dbInstance.closeAsync();
     dbInstance = null;
-    console.log('✅ Database closed');
+    logger.log('✅ Database closed');
   }
 };

@@ -21,8 +21,8 @@ export default function SettingsScreen() {
   const [monthlyLimit, setMonthlyLimit] = useState(settings.monthly_limit.toString());
   const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(settings.theme);
 
-  const dailyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const monthlyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const dailyTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const monthlyTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     setDailyLimit(settings.daily_limit.toString());
@@ -179,9 +179,6 @@ export default function SettingsScreen() {
       {/* Version */}
       <View style={styles.versionContainer}>
         <Text style={[styles.versionText, { color: t.textSecondary }]}>Trace v1.0.0</Text>
-        <Text style={[styles.versionSubtext, { color: t.textTertiary }]}>
-          "Ben muhasebeci değilim, sadece bugün ne kadar gitti onu bilmek istiyorum."
-        </Text>
       </View>
     </ScrollView>
   );

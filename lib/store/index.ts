@@ -6,6 +6,7 @@ import type { AppStore, Expense } from './types';
 import { initDatabase, getDatabase } from '../db';
 import * as queries from '../db/queries';
 import { getTodayISO, getMonthRange } from '../utils/date';
+import { logger } from '../utils/logger';
 
 export const useStore = create<AppStore>((set, get) => ({
   // Initial State
@@ -55,10 +56,10 @@ export const useStore = create<AppStore>((set, get) => ({
         error: null,
       });
 
-      console.log('✅ Store initialized');
+      logger.log('✅ Store initialized');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Store initialization failed';
-      console.error('❌ Store initialization failed:', error);
+      logger.error('❌ Store initialization failed:', error);
       set({ isLoading: false, error: errorMessage });
       throw error;
     }
@@ -91,10 +92,10 @@ export const useStore = create<AppStore>((set, get) => ({
       // Recalculate totals
       await get().calculateTotals();
 
-      console.log('✅ Expense added:', id);
+      logger.log('✅ Expense added:', id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Add expense failed';
-      console.error('❌ Add expense failed:', error);
+      logger.error('❌ Add expense failed:', error);
       set({ error: errorMessage });
       throw error;
     }
@@ -104,7 +105,15 @@ export const useStore = create<AppStore>((set, get) => ({
   deleteExpense: async (id) => {
     try {
       set({ error: null });
-      const db = getDatabase();
+      
+      // Get database instance
+      let db;
+      try {
+        db = getDatabase();
+      } catch (dbError) {
+        logger.error('Database not initialized, reinitializing...');
+        db = await initDatabase();
+      }
 
       // Delete from database
       await queries.deleteExpense(db, id);
@@ -117,10 +126,10 @@ export const useStore = create<AppStore>((set, get) => ({
       // Recalculate totals
       await get().calculateTotals();
 
-      console.log('✅ Expense deleted:', id);
+      logger.log('✅ Expense deleted:', id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Delete expense failed';
-      console.error('❌ Delete expense failed:', error);
+      logger.error('❌ Delete expense failed:', error);
       set({ error: errorMessage });
       throw error;
     }
@@ -129,7 +138,14 @@ export const useStore = create<AppStore>((set, get) => ({
   // Load history
   loadHistory: async () => {
     try {
-      const db = getDatabase();
+      // Get database instance
+      let db;
+      try {
+        db = getDatabase();
+      } catch (dbError) {
+        logger.error('Database not initialized, reinitializing...');
+        db = await initDatabase();
+      }
 
       // Load last 30 days summary
       const history = await queries.getHistorySummary(db, 30);
@@ -138,9 +154,9 @@ export const useStore = create<AppStore>((set, get) => ({
 
       set({ history, weekTotal, monthTotal });
 
-      console.log('✅ History loaded');
+      logger.log('✅ History loaded');
     } catch (error) {
-      console.error('❌ Load history failed:', error);
+      logger.error('❌ Load history failed:', error);
       throw error;
     }
   },
@@ -148,13 +164,21 @@ export const useStore = create<AppStore>((set, get) => ({
   // Load day expenses
   loadDayExpenses: async (date) => {
     try {
-      const db = getDatabase();
+      // Get database instance
+      let db;
+      try {
+        db = getDatabase();
+      } catch (dbError) {
+        logger.error('Database not initialized, reinitializing...');
+        db = await initDatabase();
+      }
+      
       const expenses = await queries.getDayExpenses(db, date);
       
-      console.log(`✅ Day expenses loaded: ${date}`);
+      logger.log(`✅ Day expenses loaded: ${date}`);
       return expenses;
     } catch (error) {
-      console.error('❌ Load day expenses failed:', error);
+      logger.error('❌ Load day expenses failed:', error);
       throw error;
     }
   },
@@ -176,9 +200,9 @@ export const useStore = create<AppStore>((set, get) => ({
         },
       }));
 
-      console.log(`✅ Setting updated: ${key} = ${value}`);
+      logger.log(`✅ Setting updated: ${key} = ${value}`);
     } catch (error) {
-      console.error('❌ Update setting failed:', error);
+      logger.error('❌ Update setting failed:', error);
       throw error;
     }
   },
@@ -200,9 +224,9 @@ export const useStore = create<AppStore>((set, get) => ({
         weekTotal: 0,
       });
 
-      console.log('✅ All data cleared');
+      logger.log('✅ All data cleared');
     } catch (error) {
-      console.error('❌ Clear data failed:', error);
+      logger.error('❌ Clear data failed:', error);
       throw error;
     }
   },
@@ -210,7 +234,15 @@ export const useStore = create<AppStore>((set, get) => ({
   // Calculate totals
   calculateTotals: async () => {
     try {
-      const db = getDatabase();
+      // Get database instance
+      let db;
+      try {
+        db = getDatabase();
+      } catch (dbError) {
+        logger.error('Database not initialized, reinitializing...');
+        db = await initDatabase();
+      }
+      
       const today = getTodayISO();
 
       // Calculate today total
@@ -226,7 +258,7 @@ export const useStore = create<AppStore>((set, get) => ({
 
       set({ todayTotal, monthTotal });
     } catch (error) {
-      console.error('❌ Calculate totals failed:', error);
+      logger.error('❌ Calculate totals failed:', error);
       throw error;
     }
   },

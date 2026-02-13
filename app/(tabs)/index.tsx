@@ -2,7 +2,7 @@
 // Based on ROADMAP §6.1 Home Screen Specification
 
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, RefreshControl, ActivityIndicator, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl, ActivityIndicator, LayoutAnimation, Platform, UIManager, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -14,6 +14,7 @@ import { LimitProgress } from '@/components/limit/LimitProgress';
 import { LimitBanner } from '@/components/limit/LimitBanner';
 import { getLimitStatus } from '@/lib/utils/limits';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { logger } from '@/lib/utils/logger';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -95,7 +96,8 @@ export default function HomeScreen() {
     try {
       await init();
     } catch (error) {
-      console.error('Refresh failed:', error);
+      logger.error('Refresh failed:', error);
+      Alert.alert('Hata', 'Yenileme sırasında bir hata oluştu');
     } finally {
       setRefreshing(false);
     }
@@ -105,8 +107,11 @@ export default function HomeScreen() {
     try {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       await deleteExpense(id);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
-      console.error('Delete failed:', error);
+      logger.error('Delete failed:', error);
+      Alert.alert('Hata', 'Silme işlemi başarısız oldu');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   };
 
@@ -204,9 +209,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: spacing.md,
     bottom: spacing.md,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
