@@ -1,14 +1,11 @@
 // Limit Warning Banner Component
-// Based on ROADMAP §7 Limit & Warning System
+// Based on ROADMAP §7 Limit & Warning System & Antigravity Protocol
 
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { LimitType, getHapticIntensity } from '@/lib/utils/limits';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { LimitType, getHapticIntensity } from "@/lib/utils/limits";
 
 interface LimitBannerProps {
   percentage: number;
@@ -27,28 +24,27 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
   color,
   onDismiss,
 }) => {
-  const t = useThemeColors();
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const level =
       percentage >= 100
-        ? 'danger-100'
+        ? "danger-100"
         : percentage >= 80
-          ? 'warning-80'
-          : 'warning-50';
+          ? "warning-80"
+          : "warning-50";
 
     const intensity = getHapticIntensity(level);
 
     switch (intensity) {
-      case 'light':
+      case "light":
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         break;
-      case 'medium':
+      case "medium":
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         break;
-      case 'heavy':
+      case "heavy":
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         break;
     }
@@ -92,10 +88,10 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
 
   return (
     <Animated.View
+      className="absolute top-0 left-4 right-4 rounded-xl border-l-[4px] overflow-hidden z-50 backdrop-blur-md"
       style={[
-        styles.container,
         {
-          backgroundColor: color + '20',
+          backgroundColor: color + "20",
           borderLeftColor: color,
           transform: [{ translateY: slideAnim }],
           opacity: opacityAnim,
@@ -104,57 +100,23 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
     >
       <Pressable
         onPress={handleDismiss}
-        style={styles.content}
+        className="flex-row items-center p-3"
         accessibilityRole="button"
         accessibilityLabel="Uyarıyı kapat"
       >
-        <View style={styles.iconContainer}>
+        <View className="mr-3">
           <Ionicons name="warning" size={24} color={color} />
         </View>
 
-        <View style={styles.textContainer}>
-          <Text style={[styles.message, { color }]}>
+        <View className="flex-1">
+          <Text className="text-sm font-bold mb-0.5" style={{ color }}>
             {message}
           </Text>
-          <Text style={[styles.hint, { color: t.textTertiary }]}>
-            Dokunarak kapat
-          </Text>
+          <Text className="text-xs text-slate-400">Dokunarak kapat</Text>
         </View>
 
-        <Ionicons name="close" size={20} color={t.textTertiary} />
+        <Ionicons name="close" size={20} color="#94a3b8" />
       </Pressable>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: spacing.md,
-    right: spacing.md,
-    borderRadius: borderRadius.md,
-    borderLeftWidth: 4,
-    overflow: 'hidden',
-    zIndex: 1000,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.sm,
-  },
-  iconContainer: {
-    marginRight: spacing.sm,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  message: {
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.headline.fontWeight,
-    marginBottom: 2,
-  },
-  hint: {
-    fontSize: typography.caption.fontSize,
-  },
-});

@@ -1,25 +1,19 @@
 // Settings Screen (Ayarlar)
-// Based on ROADMAP §6.5 Settings Screen Specification
+// Based on ROADMAP §6.5 Settings Screen Specification & Antigravity Protocol
 
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { useStore } from '@/lib/store';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { spacing } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, ScrollView, Alert, TextInput, Pressable } from "react-native";
+import * as Haptics from "expo-haptics";
+import { useStore } from "@/lib/store";
+import { LinearGradient } from "expo-linear-gradient";
+import { i18n } from "@/lib/translations/i18n";
 
 export default function SettingsScreen() {
   const store = useStore();
   const { settings, updateSetting, clearAllData } = store;
-  const t = useThemeColors();
 
   const [dailyLimit, setDailyLimit] = useState(settings.daily_limit.toString());
   const [monthlyLimit, setMonthlyLimit] = useState(settings.monthly_limit.toString());
-  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(settings.theme);
 
   const dailyTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const monthlyTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -27,20 +21,17 @@ export default function SettingsScreen() {
   useEffect(() => {
     setDailyLimit(settings.daily_limit.toString());
     setMonthlyLimit(settings.monthly_limit.toString());
-    setTheme(settings.theme);
   }, [settings.daily_limit, settings.monthly_limit, settings.theme]);
 
   const handleDailyLimitChange = (value: string) => {
     setDailyLimit(value);
 
-    if (dailyTimeoutRef.current) {
-      clearTimeout(dailyTimeoutRef.current);
-    }
+    if (dailyTimeoutRef.current) clearTimeout(dailyTimeoutRef.current);
 
     dailyTimeoutRef.current = setTimeout(() => {
       const numValue = parseFloat(value) || 0;
       if (numValue >= 0) {
-        updateSetting('daily_limit', numValue.toString());
+        updateSetting("daily_limit", numValue.toString());
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     }, 500);
@@ -49,51 +40,39 @@ export default function SettingsScreen() {
   const handleMonthlyLimitChange = (value: string) => {
     setMonthlyLimit(value);
 
-    if (monthlyTimeoutRef.current) {
-      clearTimeout(monthlyTimeoutRef.current);
-    }
+    if (monthlyTimeoutRef.current) clearTimeout(monthlyTimeoutRef.current);
 
     monthlyTimeoutRef.current = setTimeout(() => {
       const numValue = parseFloat(value) || 0;
       if (numValue >= 0) {
-        updateSetting('monthly_limit', numValue.toString());
+        updateSetting("monthly_limit", numValue.toString());
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     }, 500);
   };
 
-  const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
-    setTheme(newTheme);
-    updateSetting('theme', newTheme);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  };
-
   const handleClearData = () => {
-    Alert.alert(
-      'Tüm Verileri Sil',
-      'Emin misiniz? Bu işlem geri alınamaz.',
-      [
-        {
-          text: 'İptal',
-          style: 'cancel',
-          onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+    Alert.alert(i18n.t('settings.reset_confirm_title'), i18n.t('settings.reset_confirm_message'), [
+      {
+        text: i18n.t('settings.reset_cancel'),
+        style: "cancel",
+        onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+      },
+      {
+        text: i18n.t('settings.reset_action'),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await clearAllData();
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Alert.alert(i18n.t('settings.reset_success_title'), i18n.t('settings.reset_success_message'));
+          } catch (error) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Alert.alert(i18n.t('common.error'), i18n.t('settings.reset_error'));
+          }
         },
-        {
-          text: 'Sil',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await clearAllData();
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert('Başarılı', 'Tüm veriler silindi');
-            } catch (error) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-              Alert.alert('Hata', 'Veriler silinirken bir hata oluştu');
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -104,134 +83,88 @@ export default function SettingsScreen() {
   }, []);
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: t.background }]}
-      contentContainerStyle={styles.content}
-    >
-      {/* Limits Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Limitler</Text>
-        <Card>
-          <View style={styles.cardContent}>
-            <Input
-              label="Günlük Limit (₺)"
-              value={dailyLimit}
-              onChangeText={handleDailyLimitChange}
-              keyboardType="numeric"
-              placeholder="500"
-            />
-            <View style={styles.inputSpacer} />
-            <Input
-              label="Aylık Limit (₺)"
-              value={monthlyLimit}
-              onChangeText={handleMonthlyLimitChange}
-              keyboardType="numeric"
-              placeholder="10000"
-            />
-          </View>
-        </Card>
-        <Text style={[styles.hint, { color: t.textTertiary }]}>
-          Limit 0 olarak ayarlanırsa limit kontrolü devre dışı kalır
-        </Text>
-      </View>
-
-      {/* Theme Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Tema</Text>
-        <Card>
-          <View style={styles.cardContent}>
-            <View style={styles.themeButtons}>
-              <Button
-                label="Açık"
-                onPress={() => handleThemeChange('light')}
-                variant={theme === 'light' ? 'primary' : 'secondary'}
-              />
-              <View style={styles.buttonSpacer} />
-              <Button
-                label="Koyu"
-                onPress={() => handleThemeChange('dark')}
-                variant={theme === 'dark' ? 'primary' : 'secondary'}
-              />
-              <View style={styles.buttonSpacer} />
-              <Button
-                label="Otomatik"
-                onPress={() => handleThemeChange('auto')}
-                variant={theme === 'auto' ? 'primary' : 'secondary'}
-              />
-            </View>
-          </View>
-        </Card>
-        <Text style={[styles.hint, { color: t.textTertiary }]}>
-          Otomatik mod sistem temasını takip eder
-        </Text>
-      </View>
-
-      {/* Danger Zone */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: t.textPrimary }]}>Tehlikeli Bölge</Text>
-        <Button
-          label="Tüm Verileri Sil"
-          onPress={handleClearData}
-          variant="danger"
+    <View className="flex-1 bg-zinc-950">
+      {/* Dynamic Glow */}
+      <View className="absolute top-0 w-full h-[60vh] opacity-20 pointer-events-none">
+        <LinearGradient
+          colors={['#ae00ff', '#000000']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
         />
       </View>
 
-      {/* Version */}
-      <View style={styles.versionContainer}>
-        <Text style={[styles.versionText, { color: t.textSecondary }]}>Trace v1.0.0</Text>
-      </View>
-    </ScrollView>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, paddingBottom: 150 }}
+      >
+        {/* Limits Section */}
+        <View className="mb-10">
+          <Text className="text-white text-xl font-bold mb-4 tracking-wide ml-1">{i18n.t('settings.title')}</Text>
+
+          <View className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 mb-2">
+
+            <View className="mb-6">
+              <Text className="text-slate-400 font-medium text-sm mb-2 ml-1 tracking-widest uppercase">
+                {i18n.t('settings.daily_max')}
+              </Text>
+              <TextInput
+                className="text-white text-3xl font-black p-4 bg-black/40 border border-white/5 rounded-2xl"
+                keyboardType="numeric"
+                value={dailyLimit}
+                onChangeText={handleDailyLimitChange}
+                placeholder="500"
+                placeholderTextColor="#475569"
+              />
+            </View>
+
+            <View>
+              <Text className="text-slate-400 font-medium text-sm mb-2 ml-1 tracking-widest uppercase">
+                {i18n.t('settings.monthly_max')}
+              </Text>
+              <TextInput
+                className="text-white text-3xl font-black p-4 bg-black/40 border border-white/5 rounded-2xl"
+                keyboardType="numeric"
+                value={monthlyLimit}
+                onChangeText={handleMonthlyLimitChange}
+                placeholder="10000"
+                placeholderTextColor="#475569"
+              />
+            </View>
+
+          </View>
+          <Text className="text-slate-500 text-xs ml-3">{i18n.t('settings.limit_hint')}</Text>
+        </View>
+
+        {/* Danger Zone */}
+        <View className="mb-12 mt-4">
+          <Text className="text-rose-500/80 text-xl font-bold mb-4 tracking-wide ml-1">{i18n.t('settings.danger_zone')}</Text>
+          <Pressable
+            onPress={handleClearData}
+            className="rounded-2xl overflow-hidden active:scale-95 transition-all outline-none"
+            style={{
+              shadowColor: '#e11d48',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.5,
+              shadowRadius: 15,
+              elevation: 5,
+            }}
+          >
+            <LinearGradient
+              colors={['#be123c', '#9f1239']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="p-5 items-center justify-center opacity-90"
+            >
+              <Text className="text-white text-lg font-black tracking-widest uppercase">{i18n.t('settings.reset_button')}</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
+
+        <View className="items-center mt-5">
+          <Text className="text-slate-600 font-bold tracking-[0.2em] uppercase">{i18n.t('settings.version')}</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.md,
-    paddingBottom: spacing.xxxl,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: typography.headline.fontSize,
-    fontWeight: typography.headline.fontWeight,
-    marginBottom: spacing.sm,
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  inputSpacer: {
-    height: spacing.md,
-  },
-  hint: {
-    fontSize: typography.caption.fontSize,
-    marginTop: spacing.xs,
-    marginLeft: spacing.xs,
-  },
-  themeButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  buttonSpacer: {
-    width: spacing.xs,
-  },
-  versionContainer: {
-    alignItems: 'center',
-    marginTop: spacing.xl,
-    paddingVertical: spacing.lg,
-  },
-  versionText: {
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.headline.fontWeight,
-    marginBottom: spacing.xxs,
-  },
-  versionSubtext: {
-    fontSize: typography.caption.fontSize,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingHorizontal: spacing.lg,
-  },
-});

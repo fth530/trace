@@ -1,31 +1,30 @@
 // Single Expense List Item (Swipeable)
-// Based on ROADMAP §4 Component Inventory
+// Based on ROADMAP §4 Component Inventory & Antigravity Final Protocol
 
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import { spacing, borderRadius } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { Badge } from '@/components/ui/Badge';
-import { formatCurrency } from '@/lib/utils/currency';
-import { formatDateRelative } from '@/lib/utils/date';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
-import type { Expense } from '@/lib/store/types';
+import React from "react";
+import { View, Text, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { Badge } from "@/components/ui/Badge";
+import { formatCurrency } from "@/lib/utils/currency";
+import { formatDateRelative } from "@/lib/utils/date";
+import type { Expense } from "@/lib/store/types";
+import Animated, { FadeInRight, FadeOutLeft, CurvedTransition } from "react-native-reanimated";
+import { i18n } from "@/lib/translations/i18n";
 
 interface ExpenseItemProps {
   expense: Expense;
   onDelete?: (id: number) => void;
   showDate?: boolean;
+  index?: number;
 }
 
 export const ExpenseItem: React.FC<ExpenseItemProps> = ({
   expense,
   onDelete,
   showDate = false,
+  index = 0,
 }) => {
-  const t = useThemeColors();
-
   const handleDelete = () => {
     if (onDelete) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -34,91 +33,51 @@ export const ExpenseItem: React.FC<ExpenseItemProps> = ({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: t.surface }]}>
-      <View style={styles.content}>
-        <View style={styles.leftSection}>
-          {expense.category && (
-            <Badge category={expense.category} size="sm" />
-          )}
-          <View style={styles.details}>
-            <Text style={[styles.description, { color: t.textPrimary }]} numberOfLines={1}>
+    <Animated.View
+      entering={FadeInRight.delay(index * 50).springify().damping(14)}
+      exiting={FadeOutLeft.duration(300)}
+      layout={CurvedTransition.delay(100)}
+      className="mb-2 overflow-hidden rounded-2xl border border-white/5 bg-slate-900/50 backdrop-blur-md"
+    >
+      <View className="flex-row items-center justify-between p-4">
+        <View className="flex-1 flex-row items-center gap-3">
+          {expense.category && <Badge category={expense.category} size="md" />}
+          <View className="flex-1">
+            <Text
+              className="text-white text-base font-medium mb-1"
+              numberOfLines={1}
+            >
               {expense.description}
             </Text>
             {showDate && (
-              <Text style={[styles.date, { color: t.textTertiary }]}>
+              <Text className="text-slate-400 text-xs font-medium">
                 {formatDateRelative(expense.date)}
               </Text>
             )}
           </View>
         </View>
 
-        <View style={styles.rightSection}>
-          <Text style={[styles.amount, { color: t.textPrimary }]}>
+        <View className="flex-row items-center gap-3">
+          <Text className="text-white text-lg font-bold tracking-tight">
             {formatCurrency(expense.amount)}
           </Text>
 
           {onDelete && (
             <Pressable
               onPress={handleDelete}
-              style={({ pressed }) => [
-                styles.deleteButton,
-                pressed && { backgroundColor: t.danger + '20' },
-              ]}
+              className="p-2 rounded-xl active:bg-red-500/20 active:scale-95 transition-all"
               accessibilityRole="button"
-              accessibilityLabel="Harcamayı sil"
+              accessibilityLabel={i18n.t('common.delete_label')}
             >
               <Ionicons
                 name="trash-outline"
                 size={20}
-                color={t.danger}
+                color="#F43F5E"
               />
             </Pressable>
           )}
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-    overflow: 'hidden',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.sm,
-  },
-  leftSection: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  details: {
-    flex: 1,
-  },
-  description: {
-    fontSize: typography.body.fontSize,
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: typography.caption.fontSize,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  amount: {
-    fontSize: typography.headline.fontSize,
-    fontWeight: typography.headline.fontWeight,
-  },
-  deleteButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-});

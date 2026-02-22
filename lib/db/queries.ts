@@ -39,6 +39,18 @@ export const getMonthTotal = async (
   return result?.total ?? 0;
 };
 
+export const getMonthExpensesByCategory = async (
+  db: SQLiteDatabase,
+  startDate: string,
+  endDate: string
+): Promise<{ category: string | null; total: number; count: number }[]> => {
+  const result = await db.getAllAsync<{ category: string | null; total: number; count: number }>(
+    'SELECT category, COALESCE(SUM(amount), 0) as total, COUNT(*) as count FROM expenses WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total DESC',
+    [startDate, endDate]
+  );
+  return result;
+};
+
 // Add Expense
 export const addExpense = async (
   db: SQLiteDatabase,

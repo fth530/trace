@@ -1,28 +1,25 @@
 // Root Layout
 // Based on ROADMAP §3 Navigation Tree
 
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as SplashScreen from 'expo-splash-screen';
-import { useStore } from '@/lib/store';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
-import { logger } from '@/lib/utils/logger';
-import '../global.css';
+import { useEffect } from "react";
+import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as SplashScreen from "expo-splash-screen";
+import { useStore } from "@/lib/store";
+import { logger } from "@/lib/utils/logger";
+import "../global.css";
 
 // Prevent splash screen from auto-hiding until data loads
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const settings = useStore((state) => state.settings);
   const isLoading = useStore((state) => state.isLoading);
   const initStore = useStore((state) => state.init);
-  const t = useThemeColors();
 
   // Initialize store on mount
   useEffect(() => {
     initStore().catch((error) => {
-      logger.error('Failed to initialize store:', error);
+      logger.error("Failed to initialize store:", error);
     });
   }, []);
 
@@ -38,12 +35,12 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: t.background,
+            backgroundColor: '#09090b', // Antigravity zinc-950
           },
-          headerTintColor: t.textPrimary,
+          headerTintColor: '#ffffff',
           headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: t.background,
+            backgroundColor: '#09090b',
           },
         }}
       >
@@ -51,8 +48,8 @@ export default function RootLayout() {
         <Stack.Screen
           name="modal/add-expense"
           options={{
-            presentation: 'modal',
-            title: '',
+            presentation: "modal",
+            title: "",
             headerShown: false,
           }}
         />
@@ -60,3 +57,4 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+

@@ -18,6 +18,12 @@ export interface DaySummary {
   total: number;
 }
 
+export interface CategorySummary {
+  category: string | null;
+  count: number;
+  total: number;
+}
+
 export interface Settings {
   daily_limit: number;
   monthly_limit: number;
@@ -41,6 +47,7 @@ export interface AppStore {
   deleteExpense: (id: number) => Promise<void>;
   loadHistory: () => Promise<void>;
   loadDayExpenses: (date: string) => Promise<Expense[]>;
+  loadMonthCategoryData: () => Promise<CategorySummary[]>;
   updateSetting: (key: keyof Settings, value: string | number) => Promise<void>;
   clearAllData: () => Promise<void>;
   calculateTotals: () => Promise<void>;

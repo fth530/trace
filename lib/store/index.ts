@@ -8,6 +8,15 @@ import * as queries from '../db/queries';
 import { getTodayISO, getMonthRange } from '../utils/date';
 import { logger } from '../utils/logger';
 
+const getSafeDb = async () => {
+  try {
+    return getDatabase();
+  } catch (error) {
+    logger.log('Database not mapped or initialized, reinitializing...');
+    return await initDatabase();
+  }
+};
+
 export const useStore = create<AppStore>((set, get) => ({
   // Initial State
   todayExpenses: [],
@@ -18,7 +27,7 @@ export const useStore = create<AppStore>((set, get) => ({
   settings: {
     daily_limit: 500,
     monthly_limit: 10000,
-    theme: 'dark',
+    theme: 'dark', // Locked to dark for Antigravity Protocol
   },
   isLoading: true,
   error: null,
@@ -28,18 +37,13 @@ export const useStore = create<AppStore>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      // Initialize database
-      const db = await initDatabase();
-
-      // Load settings
+      const db = await getSafeDb();
       const settings = await queries.getAllSettings(db);
 
-      // Load today's data
       const today = getTodayISO();
       const todayExpenses = await queries.getTodayExpenses(db, today);
       const todayTotal = await queries.getTodayTotal(db, today);
 
-      // Load month total
       const monthRange = getMonthRange();
       const monthTotal = await queries.getMonthTotal(
         db,
@@ -69,29 +73,23 @@ export const useStore = create<AppStore>((set, get) => ({
   addExpense: async (expense) => {
     try {
       set({ error: null });
-      const db = getDatabase();
+      const db = await getSafeDb();
       const today = getTodayISO();
 
-      // Create expense with timestamp
       const newExpense: Omit<Expense, 'id'> = {
         ...expense,
         date: today,
         created_at: Date.now(),
       };
 
-      // Insert to database
       const id = await queries.addExpense(db, newExpense);
-
-      // Update state
       const expenseWithId: Expense = { ...newExpense, id };
-      
+
       set((state) => ({
         todayExpenses: [expenseWithId, ...state.todayExpenses],
       }));
 
-      // Recalculate totals
       await get().calculateTotals();
-
       logger.log('✅ Expense added:', id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Add expense failed';
@@ -105,27 +103,15 @@ export const useStore = create<AppStore>((set, get) => ({
   deleteExpense: async (id) => {
     try {
       set({ error: null });
-      
-      // Get database instance
-      let db;
-      try {
-        db = getDatabase();
-      } catch (dbError) {
-        logger.error('Database not initialized, reinitializing...');
-        db = await initDatabase();
-      }
+      const db = await getSafeDb();
 
-      // Delete from database
       await queries.deleteExpense(db, id);
 
-      // Update state
       set((state) => ({
         todayExpenses: state.todayExpenses.filter((e) => e.id !== id),
       }));
 
-      // Recalculate totals
       await get().calculateTotals();
-
       logger.log('✅ Expense deleted:', id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Delete expense failed';
@@ -138,22 +124,12 @@ export const useStore = create<AppStore>((set, get) => ({
   // Load history
   loadHistory: async () => {
     try {
-      // Get database instance
-      let db;
-      try {
-        db = getDatabase();
-      } catch (dbError) {
-        logger.error('Database not initialized, reinitializing...');
-        db = await initDatabase();
-      }
-
-      // Load last 30 days summary
+      const db = await getSafeDb();
       const history = await queries.getHistorySummary(db, 30);
       const weekTotal = await queries.getWeekTotal(db);
       const monthTotal = await queries.getCurrentMonthTotal(db);
 
       set({ history, weekTotal, monthTotal });
-
       logger.log('✅ History loaded');
     } catch (error) {
       logger.error('❌ Load history failed:', error);
@@ -164,17 +140,9 @@ export const useStore = create<AppStore>((set, get) => ({
   // Load day expenses
   loadDayExpenses: async (date) => {
     try {
-      // Get database instance
-      let db;
-      try {
-        db = getDatabase();
-      } catch (dbError) {
-        logger.error('Database not initialized, reinitializing...');
-        db = await initDatabase();
-      }
-      
+      const db = await getSafeDb();
       const expenses = await queries.getDayExpenses(db, date);
-      
+
       logger.log(`✅ Day expenses loaded: ${date}`);
       return expenses;
     } catch (error) {
@@ -183,16 +151,33 @@ export const useStore = create<AppStore>((set, get) => ({
     }
   },
 
+  // Load monthly analytics (category summaries)
+  loadMonthCategoryData: async () => {
+    try {
+      const db = await getSafeDb();
+      const monthRange = getMonthRange();
+      const summaries = await queries.getMonthExpensesByCategory(
+        db,
+        monthRange.start,
+        monthRange.end
+      );
+
+      logger.log('✅ Month analytics loaded');
+      return summaries;
+    } catch (error) {
+      logger.error('❌ Load month analytics failed:', error);
+      throw error;
+    }
+  },
+
   // Update setting
   updateSetting: async (key, value) => {
     try {
-      const db = getDatabase();
+      const db = await getSafeDb();
       const valueStr = String(value);
 
-      // Update database
       await queries.updateSetting(db, key, valueStr);
 
-      // Update state
       set((state) => ({
         settings: {
           ...state.settings,
@@ -210,12 +195,9 @@ export const useStore = create<AppStore>((set, get) => ({
   // Clear all data
   clearAllData: async () => {
     try {
-      const db = getDatabase();
-
-      // Delete all expenses
+      const db = await getSafeDb();
       await queries.clearAllExpenses(db);
 
-      // Reset state
       set({
         todayExpenses: [],
         todayTotal: 0,
@@ -234,21 +216,10 @@ export const useStore = create<AppStore>((set, get) => ({
   // Calculate totals
   calculateTotals: async () => {
     try {
-      // Get database instance
-      let db;
-      try {
-        db = getDatabase();
-      } catch (dbError) {
-        logger.error('Database not initialized, reinitializing...');
-        db = await initDatabase();
-      }
-      
+      const db = await getSafeDb();
       const today = getTodayISO();
 
-      // Calculate today total
       const todayTotal = await queries.getTodayTotal(db, today);
-
-      // Calculate month total
       const monthRange = getMonthRange();
       const monthTotal = await queries.getMonthTotal(
         db,

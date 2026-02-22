@@ -1,5 +1,5 @@
-// Design Tokens: Color Palette
-// Based on ROADMAP §5 Design System
+// Design Tokens: Semantic Color Palette
+// Category colors are managed in lib/constants/categories.ts
 
 export const colors = {
   // Base colors
@@ -49,31 +49,11 @@ export const colors = {
     dark: '#FF453A',
     light: '#FF3B30',
   },
-
-  // Category colors (Theme-aware)
-  category: {
-    Yol: {
-      dark: '#5E5CE6',
-      light: '#4B48CC',
-    },
-    Yemek: {
-      dark: '#FF375F',
-      light: '#E0294F',
-    },
-    Market: {
-      dark: '#64D2FF',
-      light: '#0A84FF',
-    },
-    Diğer: {
-      dark: '#98989D',
-      light: '#6E6E73',
-    },
-  },
 } as const;
 
 export type ColorScheme = 'light' | 'dark';
 
-// Themed color accessor — use directly or via useThemeColors() hook
+// Themed semantic color accessor (used by limits.ts)
 export const getThemedColors = (scheme: ColorScheme) => ({
   background: colors.background[scheme],
   surface: colors.surface[scheme],
@@ -85,12 +65,7 @@ export const getThemedColors = (scheme: ColorScheme) => ({
   success: colors.success[scheme],
   warning: colors.warning[scheme],
   danger: colors.danger[scheme],
-  category: {
-    Yol: colors.category.Yol[scheme],
-    Yemek: colors.category.Yemek[scheme],
-    Market: colors.category.Market[scheme],
-    Diğer: colors.category.Diğer[scheme],
-  },
 });
 
 export type ThemedColors = ReturnType<typeof getThemedColors>;
+

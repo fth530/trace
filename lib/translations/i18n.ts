@@ -1,0 +1,169 @@
+import { I18n } from 'i18n-js';
+import * as Localization from 'expo-localization';
+
+// Turkish
+const tr = {
+    home: {
+        title: 'Bugün',
+        total: 'GÜNLÜK TOPLAM',
+        empty: 'Herhangi bir harcama bulunamadı',
+        refresh_error: 'Yenileme sırasında bir hata oluştu',
+        delete_error: 'Silme işlemi başarısız oldu',
+    },
+    modal: {
+        add_title: 'Harcama Ekle',
+        save_button: 'KAYDET',
+        saving_button: 'KAYDEDILIYOR...',
+        amount_label: 'TUTAR (₺)',
+        amount_placeholder: '0.00',
+        category_label: 'KATEGORİ (Opsiyonel)',
+        desc_label: 'AÇIKLAMA',
+        desc_placeholder: 'Neye harcadın?',
+        error_amount: 'Lütfen geçerli bir tutar girin.',
+        error_desc: 'Lütfen bir açıklama yazın.',
+        confirm_large: 'Çok büyük bir tutar girdiniz. Devam etmek istiyor musunuz?',
+        confirm_title: 'Emin misiniz?',
+        error_title: 'Eksik Bilgi',
+        error_save: 'Harcama eklenirken bir problem oluştu.',
+        cancel: 'İptal',
+        continue: 'Devam Et',
+    },
+    settings: {
+        title: 'Limitler',
+        daily_max: 'GÜNLÜK MAX (₺)',
+        monthly_max: 'AYLIK MAX (₺)',
+        limit_hint: 'Limit 0 olursa uyarılar inaktif olur.',
+        danger_zone: 'Kırmızı Çizgi',
+        reset_button: 'TÜMÜNÜ SIFIRLA',
+        reset_confirm_title: 'Tüm Verileri Sil',
+        reset_confirm_message: 'Emin misiniz? Geri dönüşü olmayan bir adımdasınız.',
+        reset_cancel: 'Kalsın',
+        reset_action: 'Sıfırla',
+        reset_success_title: 'Tertemiz',
+        reset_success_message: 'Bütün hesaplamalar sıfırlandı.',
+        reset_error: 'Patladık, silinemedi.',
+        version: 'Mimar Antigravity v1.0.0',
+    },
+    history: {
+        title: 'Geçmiş',
+        this_week: 'BU HAFTA',
+        this_month: 'BU AY',
+        empty: 'Son 30 günde harcama bulunmuyor',
+    },
+    analytics: {
+        title: 'Analiz',
+        month_total: 'Aylık Toplam Harcama',
+        category_title: 'Kategori Dağılımı',
+        empty: 'Bu ay henüz harcama yok.',
+        transaction_count: 'İşlem',
+    },
+    limits: {
+        daily: 'Günlük Limit',
+        monthly: 'Aylık Limit',
+        unlimited: '∞ Unlimited',
+        daily_exceeded: 'Günlük limitini aştın!',
+        monthly_exceeded: 'Aylık limitini aştın!',
+        daily_80: "Günlük limitinin %80'ine ulaştın",
+        monthly_80: "Aylık limitinin %80'ine ulaştın",
+        daily_50: 'Günlük limitinin yarısını geçtin',
+    },
+    empty: {
+        title: 'TERTEMİZ',
+        no_expenses: 'Henüz harcama yok.',
+        no_history: 'Geçmişte kayıt görünmüyor.',
+    },
+    common: {
+        error: 'Hata',
+        close: 'Kapat',
+        delete_label: 'Harcamayı sil',
+        add_label: 'Harcama ekle',
+    },
+};
+
+// English
+const en = {
+    home: {
+        title: 'Today',
+        total: 'DAILY TOTAL',
+        empty: 'No expenses found',
+        refresh_error: 'An error occurred during refresh',
+        delete_error: 'Delete operation failed',
+    },
+    modal: {
+        add_title: 'Add Expense',
+        save_button: 'SAVE',
+        saving_button: 'SAVING...',
+        amount_label: 'AMOUNT (₺)',
+        amount_placeholder: '0.00',
+        category_label: 'CATEGORY (Optional)',
+        desc_label: 'DESCRIPTION',
+        desc_placeholder: 'What did you spend on?',
+        error_amount: 'Please enter a valid amount.',
+        error_desc: 'Please enter a description.',
+        confirm_large: 'You entered a very large amount. Do you want to continue?',
+        confirm_title: 'Are you sure?',
+        error_title: 'Missing Info',
+        error_save: 'A problem occurred while adding the expense.',
+        cancel: 'Cancel',
+        continue: 'Continue',
+    },
+    settings: {
+        title: 'Limits',
+        daily_max: 'DAILY MAX (₺)',
+        monthly_max: 'MONTHLY MAX (₺)',
+        limit_hint: 'Warnings are disabled when limit is 0.',
+        danger_zone: 'Danger Zone',
+        reset_button: 'RESET ALL',
+        reset_confirm_title: 'Delete All Data',
+        reset_confirm_message: 'Are you sure? This action cannot be undone.',
+        reset_cancel: 'Keep',
+        reset_action: 'Reset',
+        reset_success_title: 'All Clean',
+        reset_success_message: 'All records have been reset.',
+        reset_error: 'Something went wrong, could not delete.',
+        version: 'Architect Antigravity v1.0.0',
+    },
+    history: {
+        title: 'History',
+        this_week: 'THIS WEEK',
+        this_month: 'THIS MONTH',
+        empty: 'No expenses in the last 30 days',
+    },
+    analytics: {
+        title: 'Analytics',
+        month_total: 'Monthly Total Spending',
+        category_title: 'Category Breakdown',
+        empty: 'No expenses this month.',
+        transaction_count: 'Transactions',
+    },
+    limits: {
+        daily: 'Daily Limit',
+        monthly: 'Monthly Limit',
+        unlimited: '∞ Unlimited',
+        daily_exceeded: 'You exceeded your daily limit!',
+        monthly_exceeded: 'You exceeded your monthly limit!',
+        daily_80: 'You reached 80% of your daily limit',
+        monthly_80: 'You reached 80% of your monthly limit',
+        daily_50: 'You passed half of your daily limit',
+    },
+    empty: {
+        title: 'ALL CLEAN',
+        no_expenses: 'No expenses yet.',
+        no_history: 'No records in history.',
+    },
+    common: {
+        error: 'Error',
+        close: 'Close',
+        delete_label: 'Delete expense',
+        add_label: 'Add expense',
+    },
+};
+
+export const i18n = new I18n({
+    tr,
+    en,
+});
+
+i18n.locale = Localization.getLocales()[0]?.languageCode ?? 'tr';
+i18n.enableFallback = true;
+i18n.defaultLocale = 'tr';

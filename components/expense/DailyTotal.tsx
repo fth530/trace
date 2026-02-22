@@ -1,12 +1,9 @@
 // Daily Total Hero Display
-// Based on ROADMAP §4 Component Inventory
+// Based on ROADMAP §4 Component Inventory & Antigravity Protocol
 
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
-import { spacing } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { formatCurrency } from '@/lib/utils/currency';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import React from "react";
+import { View, Text } from "react-native";
+import { formatCurrency } from "@/lib/utils/currency";
 
 interface DailyTotalProps {
   amount: number;
@@ -19,73 +16,33 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
   limit,
   isToday,
 }) => {
-  const t = useThemeColors();
-  const animatedValue = useRef(new Animated.Value(amount)).current;
-  const [displayAmount, setDisplayAmount] = useState(amount);
-
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: amount,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
-
-    const listenerId = animatedValue.addListener(({ value }) => {
-      setDisplayAmount(value);
-    });
-
-    return () => {
-      animatedValue.removeListener(listenerId);
-    };
-  }, [amount, animatedValue]);
-
-  const safeMax = Math.max(amount, 1);
-  const animatedStyle = {
-    opacity: animatedValue.interpolate({
-      inputRange: [0, safeMax],
-      outputRange: [0.5, 1],
-    }),
-  };
-
   return (
     <View
-      style={styles.container}
+      className="items-center py-10"
       accessibilityLabel={`Bugünkü toplam ${Math.round(amount)} lira`}
     >
-      <Text style={[styles.label, { color: t.textSecondary }]}>
-        {isToday ? 'Bugün' : 'Toplam'}
+      <Text className="text-slate-400 text-lg font-medium mb-2 tracking-widest uppercase">
+        {isToday ? "Daily Total" : "Total"}
       </Text>
 
-      <Animated.Text style={[styles.amount, { color: t.textPrimary }, animatedStyle]}>
-        {formatCurrency(displayAmount)}
-      </Animated.Text>
+      <Text
+        className="text-white text-6xl font-black tracking-tighter"
+        style={{
+          textShadowColor: "rgba(255, 255, 255, 0.4)",
+          textShadowOffset: { width: 0, height: 4 },
+          textShadowRadius: 20,
+        }}
+      >
+        {formatCurrency(amount)}
+      </Text>
 
       {limit > 0 && (
-        <Text style={[styles.limit, { color: t.textTertiary }]}>
-          / {formatCurrency(limit)} limit
-        </Text>
+        <View className="mt-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10">
+          <Text className="text-slate-400 text-sm font-medium">
+            / {formatCurrency(limit)} Limit
+          </Text>
+        </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  label: {
-    fontSize: typography.headline.fontSize,
-    fontWeight: typography.headline.fontWeight,
-    marginBottom: spacing.sm,
-  },
-  amount: {
-    fontSize: typography.hero.fontSize,
-    fontWeight: typography.hero.fontWeight,
-    lineHeight: typography.hero.lineHeight,
-  },
-  limit: {
-    fontSize: typography.body.fontSize,
-    marginTop: spacing.xs,
-  },
-});

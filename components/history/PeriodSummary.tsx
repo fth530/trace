@@ -1,73 +1,43 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { formatCurrency } from '@/lib/utils/currency';
-import { spacing } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { View, Text } from "react-native";
+import { formatCurrency } from "@/lib/utils/currency";
 
 interface PeriodSummaryProps {
   weeklyTotal: number;
   monthlyTotal: number;
 }
 
-export function PeriodSummary({ weeklyTotal, monthlyTotal }: PeriodSummaryProps) {
-  const t = useThemeColors();
-
+export function PeriodSummary({
+  weeklyTotal,
+  monthlyTotal,
+}: PeriodSummaryProps) {
   return (
-    <View style={styles.container}>
-      <BlurView
-        intensity={80}
-        tint={t.scheme}
-        style={[styles.blurView, { borderTopColor: t.surface }]}
-      >
-        <View style={styles.content}>
-          <View style={styles.section}>
-            <Text style={[styles.label, { color: t.textSecondary }]}>Son 7 Gün</Text>
-            <Text style={[styles.amount, { color: t.textPrimary }]}>
+    <View className="absolute bottom-0 left-0 right-0">
+      {/* Glassmorphic Panel */}
+      <View className="bg-black/60 backdrop-blur-2xl border-t border-white/10 px-4 py-8 pointer-events-none">
+        <View className="flex-row justify-around items-center">
+
+          <View className="items-center">
+            <Text className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">
+              Son 7 Gün
+            </Text>
+            <Text className="text-white text-2xl font-black">
               {formatCurrency(weeklyTotal)}
             </Text>
           </View>
-          <View style={[styles.divider, { backgroundColor: t.surface }]} />
-          <View style={styles.section}>
-            <Text style={[styles.label, { color: t.textSecondary }]}>Bu Ay</Text>
-            <Text style={[styles.amount, { color: t.textPrimary }]}>
+
+          <View className="w-px h-10 bg-white/10" />
+
+          <View className="items-center">
+            <Text className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">
+              Bu Ay
+            </Text>
+            <Text className="text-white text-2xl font-black">
               {formatCurrency(monthlyTotal)}
             </Text>
           </View>
+
         </View>
-      </BlurView>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  blurView: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    borderTopWidth: 1,
-  },
-  content: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  section: {
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: typography.caption.fontSize,
-    marginBottom: spacing.xxs,
-  },
-  amount: {
-    fontSize: typography.headline.fontSize,
-    fontWeight: typography.headline.fontWeight,
-  },
-  divider: {
-    width: 1,
-  },
-});

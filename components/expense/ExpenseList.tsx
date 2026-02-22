@@ -1,66 +1,51 @@
 // Animated Expense List
-// Based on ROADMAP §4 Component Inventory
+// Based on ROADMAP §4 Component Inventory & Antigravity Final Protocol
 
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { spacing } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { ExpenseItem } from './ExpenseItem';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
-import type { Expense } from '@/lib/store/types';
+import React from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ExpenseItem } from "./ExpenseItem";
+import type { Expense } from "@/lib/store/types";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 interface ExpenseListProps {
   expenses: Expense[];
   onDelete?: (id: number) => void;
   emptyMessage?: string;
+  ListHeaderComponent?: React.ReactElement;
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({
   expenses,
   onDelete,
-  emptyMessage = 'Henüz harcama eklemedin',
+  emptyMessage = "Henüz harcama yok.",
+  ListHeaderComponent,
 }) => {
-  const t = useThemeColors();
-
-  if (expenses.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={[styles.emptyText, { color: t.textTertiary }]}>{emptyMessage}</Text>
-      </View>
-    );
-  }
-
   return (
-    <FlatList
+    <Animated.FlatList
       data={expenses}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
+      itemLayoutAnimation={LinearTransition.springify().damping(14)}
+      ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={
+        <EmptyState
+          message="TERTEMİZ"
+          subMessage={emptyMessage}
+          icon="planet-outline"
+        />
+      }
+      renderItem={({ item, index }) => (
         <ExpenseItem
           expense={item}
           onDelete={onDelete}
           showDate={false}
+          index={index}
         />
       )}
-      contentContainerStyle={styles.listContent}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+        paddingBottom: 120, // Leave space for FAB
+      }}
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xxxl,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxxl,
-  },
-  emptyText: {
-    fontSize: typography.body.fontSize,
-    textAlign: 'center',
-  },
-});

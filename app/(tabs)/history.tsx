@@ -1,16 +1,14 @@
-import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
-import { useEffect, useState } from 'react';
-import { useStore } from '@/lib/store';
-import { spacing } from '@/lib/constants/spacing';
-import { typography } from '@/lib/constants/typography';
-import { DaySummaryCard } from '@/components/history/DaySummaryCard';
-import { PeriodSummary } from '@/components/history/PeriodSummary';
-import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { View, Text, FlatList, RefreshControl } from "react-native";
+import { useEffect, useState } from "react";
+import { useStore } from "@/lib/store";
+import { DaySummaryCard } from "@/components/history/DaySummaryCard";
+import { PeriodSummary } from "@/components/history/PeriodSummary";
+import { LinearGradient } from "expo-linear-gradient";
+import { i18n } from "@/lib/translations/i18n";
 
 export default function HistoryScreen() {
   const { history, weekTotal, monthTotal, loadHistory } = useStore();
   const [refreshing, setRefreshing] = useState(false);
-  const t = useThemeColors();
 
   useEffect(() => {
     loadHistory();
@@ -23,7 +21,17 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: t.background }]}>
+    <View className="flex-1 bg-zinc-950">
+      {/* Background Subtle Gradient */}
+      <View className="absolute top-0 w-full h-[60vh] opacity-30">
+        <LinearGradient
+          colors={["#000000", "#1e1b4b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        />
+      </View>
+
       <FlatList
         data={history}
         keyExtractor={(item) => item.date}
@@ -34,11 +42,14 @@ export default function HistoryScreen() {
             count={item.count}
           />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 200, // Leave enough space for bottom floating elements
+        }}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: t.textSecondary }]}>
-              Son 30 günde harcama yok
+          <View className="items-center mt-20">
+            <Text className="text-slate-400 font-medium text-lg">
+              {i18n.t('history.empty')}
             </Text>
           </View>
         }
@@ -46,7 +57,7 @@ export default function HistoryScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={t.accent}
+            tintColor="#0ea5e9"
           />
         }
       />
@@ -54,20 +65,3 @@ export default function HistoryScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContent: {
-    padding: spacing.md,
-    paddingBottom: spacing.xxxl + spacing.lg,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    marginTop: spacing.xxxl,
-  },
-  emptyText: {
-    fontSize: typography.body.fontSize,
-  },
-});
