@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { neonColors, neonShadow } from "@/lib/constants/design-tokens";
+import { i18n } from "@/lib/translations/i18n";
 
 interface EmptyStateProps {
     message?: string;
@@ -10,8 +12,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-    message = "Bulunamadı",
-    subMessage = "Burada henüz bir hareket yok.",
+    message = i18n.t('empty.title'),
+    subMessage = i18n.t('empty.no_expenses'),
     icon = "wallet-outline",
 }: EmptyStateProps) {
     return (
@@ -21,15 +23,9 @@ export function EmptyState({
         >
             <View
                 className="w-24 h-24 rounded-full items-center justify-center mb-6 border border-white/5 bg-slate-900/50 backdrop-blur-md"
-                style={{
-                    shadowColor: "#0ea5e9", // Neon Sky
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 20,
-                    elevation: 5,
-                }}
+                style={neonShadow(neonColors.cyan, 'sm')}
             >
-                <Ionicons name={icon} size={48} color="#38bdf8" />
+                <Ionicons name={icon} size={48} color={neonColors.sky} />
             </View>
 
             <Text className="text-white text-xl font-bold tracking-widest mb-2 text-center">

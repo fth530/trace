@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/utils/currency";
 import { formatDateRelative } from "@/lib/utils/date";
 import type { Expense } from "@/lib/store/types";
 import { LinearGradient } from "expo-linear-gradient";
+import { gradients, gradientLocations, neonColors } from "@/lib/constants/design-tokens";
 
 export default function DayDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -23,7 +24,8 @@ export default function DayDetailScreen() {
 
   const loadData = async () => {
     if (!date) return;
-    const data = await loadDayExpenses(date);
+    const dateStr = Array.isArray(date) ? date[0] : date;
+    const data = await loadDayExpenses(dateStr);
     setExpenses(data);
   };
 
@@ -36,12 +38,13 @@ export default function DayDetailScreen() {
 
   return (
     <View className="flex-1 bg-zinc-950">
-      {/* Subtle Dynamic Background Gradient */}
-      <View className="absolute top-0 w-full h-[60vh] opacity-30">
+      {/* Universal Antigravity Background Glow */}
+      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
         <LinearGradient
-          colors={["#000000", "#0f172a"]}
+          colors={gradients.main}
+          locations={gradientLocations.main}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 1 }}
           style={{ flex: 1 }}
         />
       </View>
@@ -63,10 +66,10 @@ export default function DayDetailScreen() {
                 accessibilityLabel="Geri"
                 accessibilityHint="Geçmiş ekranına dön"
               >
-                <Ionicons name="chevron-back" size={28} color="#0ea5e9" />
+                <Ionicons name="chevron-back" size={28} color={neonColors.cyan} />
               </Pressable>
               <Text className="text-white text-3xl font-bold tracking-tight">
-                {date && formatDateRelative(date)}
+                {date && formatDateRelative(Array.isArray(date) ? date[0] : date)}
               </Text>
             </View>
             <Text className="text-sky-400 text-5xl font-black drop-shadow-lg">

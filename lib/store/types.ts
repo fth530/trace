@@ -43,7 +43,7 @@ export interface AppStore {
 
   // Actions
   init: () => Promise<void>;
-  addExpense: (expense: Omit<Expense, 'id' | 'created_at'>) => Promise<void>;
+  addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'date'>) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
   loadHistory: () => Promise<void>;
   loadDayExpenses: (date: string) => Promise<Expense[]>;

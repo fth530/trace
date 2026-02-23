@@ -5,6 +5,7 @@ import { DaySummaryCard } from "@/components/history/DaySummaryCard";
 import { PeriodSummary } from "@/components/history/PeriodSummary";
 import { LinearGradient } from "expo-linear-gradient";
 import { i18n } from "@/lib/translations/i18n";
+import { gradients, gradientLocations, neonColors } from "@/lib/constants/design-tokens";
 
 export default function HistoryScreen() {
   const { history, weekTotal, monthTotal, loadHistory } = useStore();
@@ -22,12 +23,13 @@ export default function HistoryScreen() {
 
   return (
     <View className="flex-1 bg-zinc-950">
-      {/* Background Subtle Gradient */}
-      <View className="absolute top-0 w-full h-[60vh] opacity-30">
+      {/* Universal Antigravity Background Glow */}
+      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
         <LinearGradient
-          colors={["#000000", "#1e1b4b"]}
+          colors={gradients.main}
+          locations={gradientLocations.main}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 1 }}
           style={{ flex: 1 }}
         />
       </View>
@@ -44,7 +46,7 @@ export default function HistoryScreen() {
         )}
         contentContainerStyle={{
           padding: 16,
-          paddingBottom: 200, // Leave enough space for bottom floating elements
+          paddingBottom: 240, // Extended space for safe area and tab bar on Android
         }}
         ListEmptyComponent={
           <View className="items-center mt-20">
@@ -57,7 +59,7 @@ export default function HistoryScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#0ea5e9"
+            tintColor={neonColors.cyan}
           />
         }
       />

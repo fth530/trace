@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ExpenseItem } from "./ExpenseItem";
 import type { Expense } from "@/lib/store/types";
 import Animated, { LinearTransition } from "react-native-reanimated";
+import { i18n } from "@/lib/translations/i18n";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -17,7 +18,7 @@ interface ExpenseListProps {
 export const ExpenseList: React.FC<ExpenseListProps> = ({
   expenses,
   onDelete,
-  emptyMessage = "Henüz harcama yok.",
+  emptyMessage = i18n.t('empty.no_expenses'),
   ListHeaderComponent,
 }) => {
   return (
@@ -28,7 +29,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
       ListHeaderComponent={ListHeaderComponent}
       ListEmptyComponent={
         <EmptyState
-          message="TERTEMİZ"
+          message={i18n.t('empty.title')}
           subMessage={emptyMessage}
           icon="planet-outline"
         />

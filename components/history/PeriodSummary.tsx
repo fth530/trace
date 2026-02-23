@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import { formatCurrency } from "@/lib/utils/currency";
+import { i18n } from "@/lib/translations/i18n";
 
 interface PeriodSummaryProps {
   weeklyTotal: number;
@@ -18,7 +19,7 @@ export function PeriodSummary({
 
           <View className="items-center">
             <Text className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">
-              Son 7 Gün
+              {i18n.t('history.week_label')}
             </Text>
             <Text className="text-white text-2xl font-black">
               {formatCurrency(weeklyTotal)}
@@ -29,7 +30,7 @@ export function PeriodSummary({
 
           <View className="items-center">
             <Text className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">
-              Bu Ay
+              {i18n.t('history.month_label')}
             </Text>
             <Text className="text-white text-2xl font-black">
               {formatCurrency(monthlyTotal)}

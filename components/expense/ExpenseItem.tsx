@@ -11,6 +11,7 @@ import { formatDateRelative } from "@/lib/utils/date";
 import type { Expense } from "@/lib/store/types";
 import Animated, { FadeInRight, FadeOutLeft, CurvedTransition } from "react-native-reanimated";
 import { i18n } from "@/lib/translations/i18n";
+import { neonColors } from "@/lib/constants/design-tokens";
 
 interface ExpenseItemProps {
   expense: Expense;
@@ -72,7 +73,7 @@ export const ExpenseItem: React.FC<ExpenseItemProps> = ({
               <Ionicons
                 name="trash-outline"
                 size={20}
-                color="#F43F5E"
+                color={neonColors.danger}
               />
             </Pressable>
           )}

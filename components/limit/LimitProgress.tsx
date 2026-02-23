@@ -6,6 +6,7 @@ import { View, Text, Animated } from "react-native";
 import { getLimitStatus, LimitType } from "@/lib/utils/limits";
 import { formatCurrency } from "@/lib/utils/currency";
 import { i18n } from "@/lib/translations/i18n";
+import { neonColors } from "@/lib/constants/design-tokens";
 
 interface LimitProgressProps {
   current: number;
@@ -37,8 +38,8 @@ export const LimitProgress: React.FC<LimitProgressProps> = ({
     );
   }
 
-  // Fallback to neon cyan and pink if logic fails
-  const neonColor = status.color || (type === "daily" ? "#0ea5e9" : "#d946ef");
+  // Fallback to neon cyan and fuchsia if logic fails
+  const neonColor = status.color || (type === "daily" ? neonColors.cyan : neonColors.fuchsia);
 
   return (
     <View className="mb-5">

@@ -25,6 +25,7 @@ import { getLimitStatus } from "@/lib/utils/limits";
 import { logger } from "@/lib/utils/logger";
 import { LinearGradient } from "expo-linear-gradient";
 import { i18n } from "@/lib/translations/i18n";
+import { gradients, gradientLocations, neonColors, neonShadow } from "@/lib/constants/design-tokens";
 
 // Enable LayoutAnimation on Android
 if (
@@ -135,19 +136,20 @@ export default function HomeScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-zinc-950">
-        <ActivityIndicator size="large" color="#0ea5e9" />
+        <ActivityIndicator size="large" color={neonColors.cyan} />
       </View>
     );
   }
 
   return (
     <View className="flex-1 bg-zinc-950">
-      {/* Background Glow */}
-      <View className="absolute top-0 w-full h-80 opacity-40">
+      {/* Universal Antigravity Background Glow */}
+      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
         <LinearGradient
-          colors={["#5925f480", "transparent"]}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
+          colors={gradients.main}
+          locations={gradientLocations.main}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
           style={{ flex: 1 }}
         />
       </View>
@@ -194,20 +196,14 @@ export default function HomeScreen() {
 
       <Pressable
         onPress={handleAddExpense}
-        className="absolute bottom-6 right-6 w-16 h-16 rounded-full items-center justify-center border border-white/20 shadow-2xl active:scale-95 transition-all outline-none"
-        style={{
-          shadowColor: "#f4258c", // Neon pink glow
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.8,
-          shadowRadius: 20,
-          elevation: 15,
-        }}
+        className="absolute bottom-24 right-6 w-16 h-16 rounded-full items-center justify-center border border-white/20 shadow-2xl active:scale-95 transition-all outline-none"
+        style={neonShadow(neonColors.pink, 'lg')}
         accessibilityRole="button"
         accessibilityLabel={i18n.t('common.add_label')}
       >
         {/* FAB Glass Gradient */}
         <LinearGradient
-          colors={["#FCA5A5", "#f4258c"]}
+          colors={gradients.fab}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{

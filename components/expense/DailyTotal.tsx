@@ -4,6 +4,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { formatCurrency } from "@/lib/utils/currency";
+import { i18n } from "@/lib/translations/i18n";
 
 interface DailyTotalProps {
   amount: number;
@@ -19,10 +20,10 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
   return (
     <View
       className="items-center py-10"
-      accessibilityLabel={`Bugünkü toplam ${Math.round(amount)} lira`}
+      accessibilityLabel={`${i18n.t('home.total')} ${Math.round(amount)} lira`}
     >
       <Text className="text-slate-400 text-lg font-medium mb-2 tracking-widest uppercase">
-        {isToday ? "Daily Total" : "Total"}
+        {isToday ? i18n.t('home.total') : i18n.t('home.total_label')}
       </Text>
 
       <Text

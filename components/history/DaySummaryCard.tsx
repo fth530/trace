@@ -3,6 +3,8 @@ import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { formatCurrency } from "@/lib/utils/currency";
 import { formatDateRelative } from "@/lib/utils/date";
+import { neonColors, neonShadow } from "@/lib/constants/design-tokens";
+import { i18n } from "@/lib/translations/i18n";
 
 interface DaySummaryCardProps {
   date: string;
@@ -20,13 +22,7 @@ export function DaySummaryCard({ date, total, count }: DaySummaryCardProps) {
     <Pressable
       onPress={handlePress}
       className="mb-4 rounded-3xl overflow-hidden border border-white/5 active:scale-95 transition-all outline-none"
-      style={{
-        shadowColor: '#0ea5e9', // Cyber/Neon blue subtle shadow
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,
-      }}
+      style={neonShadow(neonColors.cyan, 'sm')}
       accessibilityRole="button"
       accessibilityLabel={`${formatDateRelative(date)} günü, ${count} harcama, toplam ${formatCurrency(total)}`}
       accessibilityHint="Günün detaylarını görmek için dokunun"
@@ -37,7 +33,7 @@ export function DaySummaryCard({ date, total, count }: DaySummaryCardProps) {
             {formatDateRelative(date)}
           </Text>
           <Text className="text-slate-400 text-sm font-medium">
-            {count} Harcama
+            {count} {i18n.t('history.expense_count')}
           </Text>
         </View>
         <Text className="text-sky-400 text-xl font-black drop-shadow-md">

@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { i18n } from '@/lib/translations/i18n';
+import { gradients, gradientLocations, neonColors, neonShadow } from '@/lib/constants/design-tokens';
 
 const { width } = Dimensions.get('window');
 
@@ -38,37 +39,32 @@ export default function AnalyticsScreen() {
 
     return (
         <View className="flex-1 bg-zinc-950">
-            {/* Background Deep Space Glow */}
-            <View className="absolute top-0 w-full h-[60vh] opacity-30">
+            {/* Universal Antigravity Background Glow */}
+            <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
                 <LinearGradient
-                    colors={['#310065', '#000000']}
+                    colors={gradients.main}
+                    locations={gradientLocations.main}
                     start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
+                    end={{ x: 0, y: 1 }}
                     style={{ flex: 1 }}
                 />
             </View>
 
             <ScrollView
-                contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+                contentContainerStyle={{ padding: 20, paddingBottom: 160 }}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#f472b6" />
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={neonColors.fuchsia} />
                 }
             >
                 {/* Total Spending Glass Card */}
                 <View
                     className="items-center justify-center p-8 mb-8 rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl"
-                    style={{
-                        shadowColor: '#a855f7',
-                        shadowOffset: { width: 0, height: 10 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 20,
-                        elevation: 10,
-                    }}
+                    style={neonShadow(neonColors.purple, 'md')}
                 >
                     <Text className="text-slate-400 font-medium tracking-widest uppercase mb-2">
                         {i18n.t('analytics.month_total')}
                     </Text>
-                    <Text className="text-white text-5xl font-black tracking-tight" style={{ textShadowColor: '#a855f7', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 }}>
+                    <Text className="text-white text-5xl font-black tracking-tight" style={{ textShadowColor: neonColors.purple, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 }}>
                         {formatCurrency(monthTotal)}
                     </Text>
                 </View>
@@ -84,7 +80,7 @@ export default function AnalyticsScreen() {
                     ) : (
                         categories.map((item, index) => {
                             const catName = item.category as Category || 'Diğer' as Category;
-                            const config = categoryConfig[catName] || { icon: 'cube-outline', label: catName, color: '#94a3b8' };
+                            const config = categoryConfig[catName] || { icon: 'cube-outline', label: catName, color: neonColors.slate };
                             const percentage = (item.total / monthTotal) * 100;
                             const barWidth = (item.total / maxTotal) * 100;
 

@@ -6,6 +6,8 @@ import { View, Text, Animated, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LimitType, getHapticIntensity } from "@/lib/utils/limits";
+import { neonColors } from "@/lib/constants/design-tokens";
+import { i18n } from "@/lib/translations/i18n";
 
 interface LimitBannerProps {
   percentage: number;
@@ -112,10 +114,10 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
           <Text className="text-sm font-bold mb-0.5" style={{ color }}>
             {message}
           </Text>
-          <Text className="text-xs text-slate-400">Dokunarak kapat</Text>
+          <Text className="text-xs text-slate-400">{i18n.t('limits.dismiss_hint')}</Text>
         </View>
 
-        <Ionicons name="close" size={20} color="#94a3b8" />
+        <Ionicons name="close" size={20} color={neonColors.slate} />
       </Pressable>
     </Animated.View>
   );

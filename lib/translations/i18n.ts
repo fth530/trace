@@ -6,6 +6,7 @@ const tr = {
     home: {
         title: 'Bugün',
         total: 'GÜNLÜK TOPLAM',
+        total_label: 'Toplam',
         empty: 'Herhangi bir harcama bulunamadı',
         refresh_error: 'Yenileme sırasında bir hata oluştu',
         delete_error: 'Silme işlemi başarısız oldu',
@@ -42,13 +43,16 @@ const tr = {
         reset_success_title: 'Tertemiz',
         reset_success_message: 'Bütün hesaplamalar sıfırlandı.',
         reset_error: 'Patladık, silinemedi.',
-        version: 'Mimar Antigravity v1.0.0',
+        version: 'Trace v1.0.0',
     },
     history: {
         title: 'Geçmiş',
         this_week: 'BU HAFTA',
         this_month: 'BU AY',
         empty: 'Son 30 günde harcama bulunmuyor',
+        expense_count: 'Harcama',
+        week_label: 'Son 7 Gün',
+        month_label: 'Bu Ay',
     },
     analytics: {
         title: 'Analiz',
@@ -60,12 +64,13 @@ const tr = {
     limits: {
         daily: 'Günlük Limit',
         monthly: 'Aylık Limit',
-        unlimited: '∞ Unlimited',
+        unlimited: '∞ Limitsiz',
         daily_exceeded: 'Günlük limitini aştın!',
         monthly_exceeded: 'Aylık limitini aştın!',
         daily_80: "Günlük limitinin %80'ine ulaştın",
         monthly_80: "Aylık limitinin %80'ine ulaştın",
         daily_50: 'Günlük limitinin yarısını geçtin',
+        dismiss_hint: 'Dokunarak kapat',
     },
     empty: {
         title: 'TERTEMİZ',
@@ -85,6 +90,7 @@ const en = {
     home: {
         title: 'Today',
         total: 'DAILY TOTAL',
+        total_label: 'Total',
         empty: 'No expenses found',
         refresh_error: 'An error occurred during refresh',
         delete_error: 'Delete operation failed',
@@ -121,13 +127,16 @@ const en = {
         reset_success_title: 'All Clean',
         reset_success_message: 'All records have been reset.',
         reset_error: 'Something went wrong, could not delete.',
-        version: 'Architect Antigravity v1.0.0',
+        version: 'Trace v1.0.0',
     },
     history: {
         title: 'History',
         this_week: 'THIS WEEK',
         this_month: 'THIS MONTH',
         empty: 'No expenses in the last 30 days',
+        expense_count: 'Expense',
+        week_label: 'Last 7 Days',
+        month_label: 'This Month',
     },
     analytics: {
         title: 'Analytics',
@@ -145,6 +154,7 @@ const en = {
         daily_80: 'You reached 80% of your daily limit',
         monthly_80: 'You reached 80% of your monthly limit',
         daily_50: 'You passed half of your daily limit',
+        dismiss_hint: 'Tap to dismiss',
     },
     empty: {
         title: 'ALL CLEAN',

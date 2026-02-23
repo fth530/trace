@@ -21,6 +21,7 @@ import { validateDecimal, parseCurrency } from "@/lib/utils/currency";
 import { logger } from "@/lib/utils/logger";
 import { LinearGradient } from "expo-linear-gradient";
 import { i18n } from "@/lib/translations/i18n";
+import { gradients, neonColors, placeholderColor, neonShadow } from "@/lib/constants/design-tokens";
 
 export default function AddExpenseModal() {
   const { addExpense } = useStore();
@@ -100,7 +101,6 @@ export default function AddExpenseModal() {
         amount: parsedAmount,
         category,
         description: description.trim(),
-        date: "",
       });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -122,7 +122,7 @@ export default function AddExpenseModal() {
       {/* Background Deep Purple/Blue Glow */}
       <View className="absolute top-0 w-full h-full opacity-30 pointer-events-none">
         <LinearGradient
-          colors={["#1e1b4b", "#000000"]}
+          colors={gradients.modal}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ flex: 1 }}
@@ -157,7 +157,7 @@ export default function AddExpenseModal() {
             value={amount}
             onChangeText={handleAmountChange}
             placeholder={i18n.t('modal.amount_placeholder')}
-            placeholderTextColor="#475569"
+            placeholderTextColor={placeholderColor}
             keyboardType="decimal-pad"
             autoFocus={true}
             className="w-full text-white text-4xl font-black p-4 bg-slate-900/40 border border-white/10 rounded-2xl backdrop-blur-lg"
@@ -185,7 +185,7 @@ export default function AddExpenseModal() {
                 >
                   <Text
                     className={`text-sm font-medium tracking-wide`}
-                    style={isSelected ? { color: catColor } : { color: '#cbd5e1' }}
+                    style={isSelected ? { color: catColor } : { color: neonColors.slateLight }}
                   >
                     {cat}
                   </Text>
@@ -204,7 +204,7 @@ export default function AddExpenseModal() {
             value={description}
             onChangeText={setDescription}
             placeholder={i18n.t('modal.desc_placeholder')}
-            placeholderTextColor="#475569"
+            placeholderTextColor={placeholderColor}
             maxLength={100}
             className="w-full text-white text-lg font-medium p-4 bg-slate-900/40 border border-white/10 rounded-2xl backdrop-blur-lg"
           />
@@ -217,16 +217,10 @@ export default function AddExpenseModal() {
           onPress={handleSave}
           disabled={isSubmitting}
           className="w-full mt-4 overflow-hidden rounded-2xl active:scale-95 transition-all outline-none"
-          style={{
-            shadowColor: "#f4258c",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.6,
-            shadowRadius: 20,
-            elevation: 10,
-          }}
+          style={neonShadow(neonColors.pink, 'md')}
         >
           <LinearGradient
-            colors={["#f4258c", "#e11d48"]}
+            colors={gradients.fab}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             className="p-5 items-center justify-center opacity-90"

@@ -1,7 +1,7 @@
 // Limit Calculation Utilities
 // Based on ROADMAP §7 Limit & Warning System
 
-import { getThemedColors, type ColorScheme } from '../constants/colors';
+import { i18n } from '../translations/i18n';
 
 export type LimitLevel = 'safe' | 'warning-50' | 'warning-80' | 'danger-100';
 export type LimitType = 'daily' | 'monthly';
@@ -14,6 +14,13 @@ export interface LimitStatus {
   shouldShowBanner: boolean;
 }
 
+// Semantic color mapping from design tokens
+const semanticColors = {
+  success: '#30D158',
+  warning: '#FF9F0A',
+  danger: '#FF453A',
+} as const;
+
 // Calculate limit percentage
 export const calculateLimitPercentage = (current: number, limit: number): number => {
   if (limit === 0) return 0;
@@ -25,17 +32,15 @@ export const getLimitStatus = (
   current: number,
   limit: number,
   type: LimitType,
-  scheme: ColorScheme = 'dark'
+  _scheme: 'dark' | 'light' = 'dark'
 ): LimitStatus => {
-  const themed = getThemedColors(scheme);
-
   // Edge case: Limit = 0 (no limit set)
   if (limit === 0) {
     return {
       percentage: 0,
       level: 'safe',
       message: null,
-      color: themed.success,
+      color: semanticColors.success,
       shouldShowBanner: false,
     };
   }
@@ -49,9 +54,9 @@ export const getLimitStatus = (
       level: 'danger-100',
       message:
         type === 'daily'
-          ? `Günlük limitini aştın! (${current.toFixed(0)}₺ / ${limit}₺)`
-          : 'Aylık limitini aştın!',
-      color: themed.danger,
+          ? i18n.t('limits.daily_exceeded')
+          : i18n.t('limits.monthly_exceeded'),
+      color: semanticColors.danger,
       shouldShowBanner: true,
     };
   }
@@ -62,9 +67,9 @@ export const getLimitStatus = (
       level: 'warning-80',
       message:
         type === 'daily'
-          ? "Günlük limitinin %80'ine ulaştın"
-          : "Aylık limitinin %80'ine ulaştın",
-      color: themed.warning,
+          ? i18n.t('limits.daily_80')
+          : i18n.t('limits.monthly_80'),
+      color: semanticColors.warning,
       shouldShowBanner: true,
     };
   }
@@ -73,8 +78,8 @@ export const getLimitStatus = (
     return {
       percentage,
       level: 'warning-50',
-      message: type === 'daily' ? 'Günlük limitinin yarısını geçtin' : null,
-      color: themed.warning,
+      message: type === 'daily' ? i18n.t('limits.daily_50') : null,
+      color: semanticColors.warning,
       shouldShowBanner: type === 'daily', // Only show for daily at 50%
     };
   }
@@ -83,18 +88,17 @@ export const getLimitStatus = (
     percentage,
     level: 'safe',
     message: null,
-    color: themed.success,
+    color: semanticColors.success,
     shouldShowBanner: false,
   };
 };
 
 // Get progress bar color based on percentage
-export const getProgressColor = (percentage: number, scheme: ColorScheme = 'dark'): string => {
-  const themed = getThemedColors(scheme);
-  if (percentage >= 100) return themed.danger;
-  if (percentage >= 80) return themed.warning;
-  if (percentage >= 50) return themed.warning;
-  return themed.success;
+export const getProgressColor = (percentage: number): string => {
+  if (percentage >= 100) return semanticColors.danger;
+  if (percentage >= 80) return semanticColors.warning;
+  if (percentage >= 50) return semanticColors.warning;
+  return semanticColors.success;
 };
 
 // Check if should trigger haptic feedback

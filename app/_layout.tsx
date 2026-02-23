@@ -7,7 +7,18 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { useStore } from "@/lib/store";
 import { logger } from "@/lib/utils/logger";
+import { neonColors } from "@/lib/constants/design-tokens";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 import "../global.css";
+
+// Suppress NativeWind's harmless Reanimated strict mode warnings
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 // Prevent splash screen from auto-hiding until data loads
 SplashScreen.preventAutoHideAsync();
@@ -35,12 +46,12 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#09090b', // Antigravity zinc-950
+            backgroundColor: neonColors.zinc950,
           },
           headerTintColor: '#ffffff',
           headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: '#09090b',
+            backgroundColor: neonColors.zinc950,
           },
         }}
       >

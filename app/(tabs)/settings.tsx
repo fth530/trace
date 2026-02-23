@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { useStore } from "@/lib/store";
 import { LinearGradient } from "expo-linear-gradient";
 import { i18n } from "@/lib/translations/i18n";
+import { gradients, gradientLocations, placeholderColor, neonColors, neonShadow } from "@/lib/constants/design-tokens";
 
 export default function SettingsScreen() {
   const store = useStore();
@@ -84,19 +85,20 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 bg-zinc-950">
-      {/* Dynamic Glow */}
-      <View className="absolute top-0 w-full h-[60vh] opacity-20 pointer-events-none">
+      {/* Universal Antigravity Background Glow */}
+      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
         <LinearGradient
-          colors={['#ae00ff', '#000000']}
+          colors={gradients.main}
+          locations={gradientLocations.main}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 1 }}
           style={{ flex: 1 }}
         />
       </View>
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ padding: 20, paddingBottom: 150 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 160 }}
       >
         {/* Limits Section */}
         <View className="mb-10">
@@ -114,7 +116,7 @@ export default function SettingsScreen() {
                 value={dailyLimit}
                 onChangeText={handleDailyLimitChange}
                 placeholder="500"
-                placeholderTextColor="#475569"
+                placeholderTextColor={placeholderColor}
               />
             </View>
 
@@ -128,7 +130,7 @@ export default function SettingsScreen() {
                 value={monthlyLimit}
                 onChangeText={handleMonthlyLimitChange}
                 placeholder="10000"
-                placeholderTextColor="#475569"
+                placeholderTextColor={placeholderColor}
               />
             </View>
 
@@ -142,16 +144,10 @@ export default function SettingsScreen() {
           <Pressable
             onPress={handleClearData}
             className="rounded-2xl overflow-hidden active:scale-95 transition-all outline-none"
-            style={{
-              shadowColor: '#e11d48',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.5,
-              shadowRadius: 15,
-              elevation: 5,
-            }}
+            style={neonShadow(neonColors.rose, 'md')}
           >
             <LinearGradient
-              colors={['#be123c', '#9f1239']}
+              colors={gradients.danger}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               className="p-5 items-center justify-center opacity-90"
@@ -161,9 +157,7 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
 
-        <View className="items-center mt-5">
-          <Text className="text-slate-600 font-bold tracking-[0.2em] uppercase">{i18n.t('settings.version')}</Text>
-        </View>
+        {/* Versiyon bilgisi kullanıcı isteği üzerine kaldırıldı */}
       </ScrollView>
     </View>
   );

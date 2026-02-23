@@ -5,21 +5,22 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Platform, StyleSheet, View } from "react-native";
+import { neonColors } from "@/lib/constants/design-tokens";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#38bdf8", // Sky-400 (Neon Accent)
+        tabBarActiveTintColor: neonColors.sky,
         tabBarInactiveTintColor: "#64748b", // Slate-500
         tabBarStyle: {
-          position: 'absolute', // Ensures bottom blur works
+          position: 'absolute',
           borderTopWidth: 0,
-          elevation: 0, // Remove shadow on Android
-          height: Platform.OS === "ios" ? 85 : 70,
-          paddingBottom: Platform.OS === "ios" ? 25 : 12,
+          elevation: 0,
+          height: Platform.OS === "ios" ? 90 : 80,
+          paddingBottom: Platform.OS === "ios" ? 30 : 20,
           paddingTop: 12,
-          backgroundColor: Platform.OS === "ios" ? "transparent" : "#09090b", // zinc-950 solid for Android fallback, Blur for iOS
+          backgroundColor: Platform.OS === "ios" ? "transparent" : neonColors.zinc950,
         },
         tabBarBackground: () =>
           Platform.OS === "ios" ? (
@@ -32,8 +33,8 @@ export default function TabLayout() {
             <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(9, 9, 11, 0.95)' }]} />
           ),
         headerStyle: {
-          backgroundColor: "#09090b", // Zinc-950
-          borderBottomWidth: 0, // Clean look
+          backgroundColor: neonColors.zinc950,
+          borderBottomWidth: 0,
         },
         headerShadowVisible: false,
         headerTintColor: "#ffffff",
