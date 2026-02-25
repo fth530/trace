@@ -10,6 +10,7 @@ import { formatDateRelative } from "@/lib/utils/date";
 import type { Expense } from "@/lib/store/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { gradients, gradientLocations, neonColors } from "@/lib/constants/design-tokens";
+import { i18n } from "@/lib/translations/i18n";
 
 export default function DayDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -55,7 +56,7 @@ export default function DayDetailScreen() {
           await deleteExpense(id);
           loadData(); // Reload data after deletion 
         }}
-        emptyMessage="Bu günde harcama yok"
+        emptyMessage={i18n.t('history.day_empty')}
         ListHeaderComponent={
           <View className="pt-16 px-4 pb-6 border-b border-white/5 mb-4">
             <View className="flex-row items-center mb-4">
@@ -63,8 +64,8 @@ export default function DayDetailScreen() {
                 onPress={handleBack}
                 className="p-2 -ml-2 rounded-full active:bg-white/10"
                 accessibilityRole="button"
-                accessibilityLabel="Geri"
-                accessibilityHint="Geçmiş ekranına dön"
+                accessibilityLabel={i18n.t('common.back')}
+                accessibilityHint={i18n.t('common.back_hint')}
               >
                 <Ionicons name="chevron-back" size={28} color={neonColors.cyan} />
               </Pressable>

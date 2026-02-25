@@ -50,6 +50,7 @@ const tr = {
         this_week: 'BU HAFTA',
         this_month: 'BU AY',
         empty: 'Son 30 günde harcama bulunmuyor',
+        day_empty: 'Bu günde harcama yok',
         expense_count: 'Harcama',
         week_label: 'Son 7 Gün',
         month_label: 'Bu Ay',
@@ -80,6 +81,8 @@ const tr = {
     common: {
         error: 'Hata',
         close: 'Kapat',
+        back: 'Geri',
+        back_hint: 'Önceki ekrana dön',
         delete_label: 'Harcamayı sil',
         add_label: 'Harcama ekle',
     },
@@ -134,6 +137,7 @@ const en = {
         this_week: 'THIS WEEK',
         this_month: 'THIS MONTH',
         empty: 'No expenses in the last 30 days',
+        day_empty: 'No expenses on this day',
         expense_count: 'Expense',
         week_label: 'Last 7 Days',
         month_label: 'This Month',
@@ -164,6 +168,8 @@ const en = {
     common: {
         error: 'Error',
         close: 'Close',
+        back: 'Back',
+        back_hint: 'Go to previous screen',
         delete_label: 'Delete expense',
         add_label: 'Add expense',
     },
