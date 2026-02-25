@@ -31,3 +31,12 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# IDE & Agent tooling (not part of the project)
+.agent/
+.kiro/
+.vscode/
+
+# Internal docs (not for public repo)
+OPTIMIZATION_REPORT.md
+ROADMAP.md
