@@ -45,6 +45,7 @@ export default function HomeScreen() {
     todayExpenses,
     todayTotal,
     monthTotal,
+    currentStreak,
     settings,
     isLoading,
     init,
@@ -180,6 +181,7 @@ export default function HomeScreen() {
               amount={todayTotal}
               limit={settings.daily_limit}
               isToday={true}
+              streak={currentStreak}
             />
 
             <View className="mb-6 px-4">

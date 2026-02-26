@@ -38,6 +38,7 @@ export interface AppStore {
   monthTotal: number;
   history: DaySummary[];
   weekTotal: number;
+  currentStreak: number;
   settings: Settings;
   isLoading: boolean;
   error: string | null;

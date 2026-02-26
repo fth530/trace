@@ -79,6 +79,10 @@ const tr = {
     no_expenses: 'Henüz harcama yok.',
     no_history: 'Geçmişte kayıt görünmüyor.',
   },
+  notifications: {
+    reminder_title: 'Bugün harcama yaptın mı? 🔥',
+    reminder_body: 'Günün harcamasını unuttun mu? Hemen gir ve serini bozma!',
+  },
   common: {
     error: 'Hata',
     close: 'Kapat',
@@ -166,6 +170,10 @@ const en = {
     title: 'ALL CLEAN',
     no_expenses: 'No expenses yet.',
     no_history: 'No records in history.',
+  },
+  notifications: {
+    reminder_title: 'Did you spend today? 🔥',
+    reminder_body: 'Did you forget to log your expense? Log now and keep your streak!',
   },
   common: {
     error: 'Error',

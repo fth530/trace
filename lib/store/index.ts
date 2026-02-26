@@ -5,7 +5,8 @@ import { create } from 'zustand';
 import type { AppStore, Expense } from './types';
 import { initDatabase, getDatabase } from '../db';
 import * as queries from '../db/queries';
-import { getTodayISO, getMonthRange } from '../utils/date';
+import { getTodayISO, getMonthRange, calculateStreak } from '../utils/date';
+import { updateNotificationSchedule } from '../utils/notifications';
 import { logger } from '../utils/logger';
 
 const getSafeDb = async () => {
@@ -24,6 +25,7 @@ export const useStore = create<AppStore>((set, get) => ({
   monthTotal: 0,
   history: [],
   weekTotal: 0,
+  currentStreak: 0,
   settings: {
     daily_limit: 500,
     monthly_limit: 10000,
@@ -52,14 +54,21 @@ export const useStore = create<AppStore>((set, get) => ({
         monthRange.end,
       );
 
+      const expenseDates = await queries.getExpenseDates(db);
+      const currentStreak = calculateStreak(expenseDates);
+
       set({
         settings,
         todayExpenses,
         todayTotal,
         monthTotal,
+        currentStreak,
         isLoading: false,
         error: null,
       });
+
+      // Update push notification schedule
+      updateNotificationSchedule(todayExpenses.length > 0);
 
       logger.log('✅ Store initialized');
     } catch (error) {
@@ -92,6 +101,10 @@ export const useStore = create<AppStore>((set, get) => ({
       }));
 
       await get().calculateTotals();
+
+      // Expense added today, update notification schedule
+      updateNotificationSchedule(true);
+
       logger.log('✅ Expense added:', id);
     } catch (error) {
       const errorMessage =
@@ -115,6 +128,11 @@ export const useStore = create<AppStore>((set, get) => ({
       }));
 
       await get().calculateTotals();
+
+      // Check if any expenses left today and update notifications
+      const hasExpensesNow = get().todayExpenses.length > 0;
+      updateNotificationSchedule(hasExpensesNow);
+
       logger.log('✅ Expense deleted:', id);
     } catch (error) {
       const errorMessage =
@@ -213,7 +231,11 @@ export const useStore = create<AppStore>((set, get) => ({
         monthTotal: 0,
         history: [],
         weekTotal: 0,
+        currentStreak: 0,
       });
+
+      // Update schedule since no expenses left
+      updateNotificationSchedule(false);
 
       logger.log('✅ All data cleared');
     } catch (error) {
@@ -236,7 +258,10 @@ export const useStore = create<AppStore>((set, get) => ({
         monthRange.end,
       );
 
-      set({ todayTotal, monthTotal });
+      const expenseDates = await queries.getExpenseDates(db);
+      const currentStreak = calculateStreak(expenseDates);
+
+      set({ todayTotal, monthTotal, currentStreak });
     } catch (error) {
       logger.error('❌ Calculate totals failed:', error);
       throw error;

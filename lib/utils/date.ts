@@ -61,3 +61,31 @@ export const getCurrentTimestamp = (): number => {
 export const parseISODate = (isoString: string): Date => {
   return new Date(isoString);
 };
+
+// Calculate current streak from an array of date strings (descending)
+export const calculateStreak = (dates: string[]): number => {
+  if (!dates || dates.length === 0) return 0;
+
+  const today = new Date();
+  const todayISO = formatDateISO(today);
+  const yesterdayISO = formatDateISO(subDays(today, 1));
+
+  if (!dates.includes(todayISO) && !dates.includes(yesterdayISO)) {
+    return 0;
+  }
+
+  let streak = 0;
+  let targetDate = dates.includes(todayISO) ? today : subDays(today, 1);
+
+  while (true) {
+    const targetISO = formatDateISO(targetDate);
+    if (dates.includes(targetISO)) {
+      streak++;
+      targetDate = subDays(targetDate, 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+};
