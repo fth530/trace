@@ -17,7 +17,21 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trace.gunluk",
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          }
+        ],
+        "NSPrivacyTracking": false
+      },
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,8 +43,21 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-localization"
+      "expo-localization",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "YOUR_SENTRY_PROJECT_ID",
+          "organization": "YOUR_SENTRY_ORG"
+        }
+      ]
     ],
-    "scheme": "gunluk"
+    "scheme": "gunluk",
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    }
   }
 }

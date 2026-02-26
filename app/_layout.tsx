@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Stack, router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Sentry from '@sentry/react-native';
 import { useStore } from '@/lib/store';
 import { logger } from '@/lib/utils/logger';
 import { neonColors } from '@/lib/constants/design-tokens';
@@ -21,9 +22,18 @@ configureReanimatedLogger({
 });
 
 // Prevent splash screen from auto-hiding until data loads
+// Prevent splash screen from auto-hiding until data loads
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+// Initialize Sentry Crash Reporting
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
+  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+  // We recommend adjusting this value in production.
+  tracesSampleRate: 1.0,
+});
+
+function RootLayout() {
   const isLoading = useStore((state) => state.isLoading);
   const initStore = useStore((state) => state.init);
 
@@ -39,7 +49,8 @@ export default function RootLayout() {
     if (!isLoading) {
       SplashScreen.hideAsync();
 
-      const hasSeenOnboarding = useStore.getState().settings.has_seen_onboarding;
+      const hasSeenOnboarding =
+        useStore.getState().settings.has_seen_onboarding;
       if (!hasSeenOnboarding) {
         router.replace('/onboarding');
       }
@@ -60,7 +71,10 @@ export default function RootLayout() {
           },
         }}
       >
-        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="onboarding/index"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="modal/add-expense"
@@ -74,3 +88,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);
