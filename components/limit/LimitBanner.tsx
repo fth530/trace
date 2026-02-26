@@ -1,13 +1,13 @@
 // Limit Warning Banner Component
 // Based on ROADMAP §7 Limit & Warning System & Antigravity Protocol
 
-import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { LimitType, getHapticIntensity } from "@/lib/utils/limits";
-import { neonColors } from "@/lib/constants/design-tokens";
-import { i18n } from "@/lib/translations/i18n";
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Animated, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { LimitType, getHapticIntensity } from '@/lib/utils/limits';
+import { neonColors } from '@/lib/constants/design-tokens';
+import { i18n } from '@/lib/translations/i18n';
 
 interface LimitBannerProps {
   percentage: number;
@@ -32,21 +32,21 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
   useEffect(() => {
     const level =
       percentage >= 100
-        ? "danger-100"
+        ? 'danger-100'
         : percentage >= 80
-          ? "warning-80"
-          : "warning-50";
+          ? 'warning-80'
+          : 'warning-50';
 
     const intensity = getHapticIntensity(level);
 
     switch (intensity) {
-      case "light":
+      case 'light':
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         break;
-      case "medium":
+      case 'medium':
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         break;
-      case "heavy":
+      case 'heavy':
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         break;
     }
@@ -93,7 +93,7 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
       className="absolute top-0 left-4 right-4 rounded-xl border-l-[4px] overflow-hidden z-50 backdrop-blur-md"
       style={[
         {
-          backgroundColor: color + "20",
+          backgroundColor: color + '20',
           borderLeftColor: color,
           transform: [{ translateY: slideAnim }],
           opacity: opacityAnim,
@@ -114,7 +114,9 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
           <Text className="text-sm font-bold mb-0.5" style={{ color }}>
             {message}
           </Text>
-          <Text className="text-xs text-slate-400">{i18n.t('limits.dismiss_hint')}</Text>
+          <Text className="text-xs text-slate-400">
+            {i18n.t('limits.dismiss_hint')}
+          </Text>
         </View>
 
         <Ionicons name="close" size={20} color={neonColors.slate} />

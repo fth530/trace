@@ -22,7 +22,10 @@ const semanticColors = {
 } as const;
 
 // Calculate limit percentage
-export const calculateLimitPercentage = (current: number, limit: number): number => {
+export const calculateLimitPercentage = (
+  current: number,
+  limit: number,
+): number => {
   if (limit === 0) return 0;
   return (current / limit) * 100;
 };
@@ -32,7 +35,7 @@ export const getLimitStatus = (
   current: number,
   limit: number,
   type: LimitType,
-  _scheme: 'dark' | 'light' = 'dark'
+  _scheme: 'dark' | 'light' = 'dark',
 ): LimitStatus => {
   // Edge case: Limit = 0 (no limit set)
   if (limit === 0) {
@@ -108,7 +111,7 @@ export const shouldTriggerHaptic = (level: LimitLevel): boolean => {
 
 // Get haptic intensity based on level
 export const getHapticIntensity = (
-  level: LimitLevel
+  level: LimitLevel,
 ): 'light' | 'medium' | 'heavy' => {
   switch (level) {
     case 'warning-50':

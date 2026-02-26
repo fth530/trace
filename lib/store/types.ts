@@ -28,6 +28,7 @@ export interface Settings {
   daily_limit: number;
   monthly_limit: number;
   theme: 'light' | 'dark' | 'auto';
+  has_seen_onboarding: boolean;
 }
 
 export interface AppStore {
@@ -43,7 +44,9 @@ export interface AppStore {
 
   // Actions
   init: () => Promise<void>;
-  addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'date'>) => Promise<void>;
+  addExpense: (
+    expense: Omit<Expense, 'id' | 'created_at' | 'date'>,
+  ) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
   loadHistory: () => Promise<void>;
   loadDayExpenses: (date: string) => Promise<Expense[]>;

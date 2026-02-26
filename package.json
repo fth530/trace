@@ -6,7 +6,11 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write \"app/**/*.tsx\" \"components/**/*.tsx\" \"lib/**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -42,8 +46,20 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/preset-typescript": "^7.28.5",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.1.10",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^55.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "jest": "^30.2.0",
+    "jest-expo": "^55.0.9",
     "lightningcss-win32-x64-msvc": "^1.27.0",
+    "prettier": "^3.8.1",
+    "react-native-mock-render": "^0.1.9",
+    "react-test-renderer": "^19.1.0",
     "typescript": "^5.3.3"
   },
   "private": true

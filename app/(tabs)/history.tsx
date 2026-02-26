@@ -1,11 +1,15 @@
-import { View, Text, FlatList, RefreshControl } from "react-native";
-import { useEffect, useState } from "react";
-import { useStore } from "@/lib/store";
-import { DaySummaryCard } from "@/components/history/DaySummaryCard";
-import { PeriodSummary } from "@/components/history/PeriodSummary";
-import { LinearGradient } from "expo-linear-gradient";
-import { i18n } from "@/lib/translations/i18n";
-import { gradients, gradientLocations, neonColors } from "@/lib/constants/design-tokens";
+import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { useEffect, useState } from 'react';
+import { useStore } from '@/lib/store';
+import { DaySummaryCard } from '@/components/history/DaySummaryCard';
+import { PeriodSummary } from '@/components/history/PeriodSummary';
+import { LinearGradient } from 'expo-linear-gradient';
+import { i18n } from '@/lib/translations/i18n';
+import {
+  gradients,
+  gradientLocations,
+  neonColors,
+} from '@/lib/constants/design-tokens';
 
 export default function HistoryScreen() {
   const { history, weekTotal, monthTotal, loadHistory } = useStore();

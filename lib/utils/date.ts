@@ -43,7 +43,9 @@ export const getTodayISO = (): string => {
 };
 
 // Get month range (start and end dates in ISO format)
-export const getMonthRange = (date: Date = new Date()): { start: string; end: string } => {
+export const getMonthRange = (
+  date: Date = new Date(),
+): { start: string; end: string } => {
   return {
     start: formatDateISO(startOfMonth(date)),
     end: formatDateISO(endOfMonth(date)),

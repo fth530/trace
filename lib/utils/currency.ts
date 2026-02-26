@@ -29,12 +29,12 @@ export const formatCurrencyInput = (amount: number): string => {
 export const parseCurrency = (value: string): number => {
   // Remove non-numeric characters except dot and comma
   const cleaned = value.replace(/[^\d.,]/g, '');
-  
+
   // Replace comma with dot for decimal
   const normalized = cleaned.replace(',', '.');
-  
+
   const parsed = parseFloat(normalized);
-  
+
   return isNaN(parsed) ? 0 : parsed;
 };
 
@@ -49,10 +49,10 @@ export const formatCurrencyCompact = (amount: number): string => {
   if (amount >= 1_000_000) {
     return `${(amount / 1_000_000).toFixed(1)}M₺`;
   }
-  
+
   if (amount >= 1_000) {
     return `${(amount / 1_000).toFixed(1)}K₺`;
   }
-  
+
   return `${amount.toFixed(0)}₺`;
 };

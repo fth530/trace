@@ -7,22 +7,22 @@ import type { Expense, DaySummary, Settings } from '../store/types';
 // Home Screen Queries
 export const getTodayExpenses = async (
   db: SQLiteDatabase,
-  date: string
+  date: string,
 ): Promise<Expense[]> => {
   const result = await db.getAllAsync<Expense>(
     'SELECT * FROM expenses WHERE date = ? ORDER BY created_at DESC',
-    [date]
+    [date],
   );
   return result;
 };
 
 export const getTodayTotal = async (
   db: SQLiteDatabase,
-  date: string
+  date: string,
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
     'SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date = ?',
-    [date]
+    [date],
   );
   return result?.total ?? 0;
 };
@@ -30,11 +30,11 @@ export const getTodayTotal = async (
 export const getMonthTotal = async (
   db: SQLiteDatabase,
   startDate: string,
-  endDate: string
+  endDate: string,
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
     'SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND date <= ?',
-    [startDate, endDate]
+    [startDate, endDate],
   );
   return result?.total ?? 0;
 };
@@ -42,11 +42,15 @@ export const getMonthTotal = async (
 export const getMonthExpensesByCategory = async (
   db: SQLiteDatabase,
   startDate: string,
-  endDate: string
+  endDate: string,
 ): Promise<{ category: string | null; total: number; count: number }[]> => {
-  const result = await db.getAllAsync<{ category: string | null; total: number; count: number }>(
+  const result = await db.getAllAsync<{
+    category: string | null;
+    total: number;
+    count: number;
+  }>(
     'SELECT category, COALESCE(SUM(amount), 0) as total, COUNT(*) as count FROM expenses WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total DESC',
-    [startDate, endDate]
+    [startDate, endDate],
   );
   return result;
 };
@@ -54,7 +58,7 @@ export const getMonthExpensesByCategory = async (
 // Add Expense
 export const addExpense = async (
   db: SQLiteDatabase,
-  expense: Omit<Expense, 'id'>
+  expense: Omit<Expense, 'id'>,
 ): Promise<number> => {
   const result = await db.runAsync(
     'INSERT INTO expenses (amount, category, description, date, created_at) VALUES (?, ?, ?, ?, ?)',
@@ -64,7 +68,7 @@ export const addExpense = async (
       expense.description,
       expense.date,
       expense.created_at,
-    ]
+    ],
   );
   return result.lastInsertRowId;
 };
@@ -72,7 +76,7 @@ export const addExpense = async (
 // History Screen Queries
 export const getHistorySummary = async (
   db: SQLiteDatabase,
-  daysAgo: number = 30
+  daysAgo: number = 30,
 ): Promise<DaySummary[]> => {
   const result = await db.getAllAsync<DaySummary>(
     `SELECT date, COUNT(*) as count, SUM(amount) as total
@@ -80,23 +84,23 @@ export const getHistorySummary = async (
      WHERE date >= date('now', ?)
      GROUP BY date 
      ORDER BY date DESC`,
-    [`-${daysAgo} days`]
+    [`-${daysAgo} days`],
   );
   return result;
 };
 
 export const getWeekTotal = async (db: SQLiteDatabase): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', '-7 days')"
+    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', '-7 days')",
   );
   return result?.total ?? 0;
 };
 
 export const getCurrentMonthTotal = async (
-  db: SQLiteDatabase
+  db: SQLiteDatabase,
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', 'start of month')"
+    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', 'start of month')",
   );
   return result?.total ?? 0;
 };
@@ -104,21 +108,19 @@ export const getCurrentMonthTotal = async (
 // Day Detail
 export const getDayExpenses = async (
   db: SQLiteDatabase,
-  date: string
+  date: string,
 ): Promise<Expense[]> => {
   const result = await db.getAllAsync<Expense>(
     'SELECT * FROM expenses WHERE date = ? ORDER BY created_at DESC',
-    [date]
+    [date],
   );
   return result;
 };
 
 // Settings Queries
-export const getAllSettings = async (
-  db: SQLiteDatabase
-): Promise<Settings> => {
+export const getAllSettings = async (db: SQLiteDatabase): Promise<Settings> => {
   const rows = await db.getAllAsync<{ key: string; value: string }>(
-    'SELECT * FROM settings'
+    'SELECT * FROM settings',
   );
 
   const settings: Record<string, string> = {};
@@ -130,13 +132,14 @@ export const getAllSettings = async (
     daily_limit: Number(settings.daily_limit) || 500,
     monthly_limit: Number(settings.monthly_limit) || 10000,
     theme: (settings.theme as 'light' | 'dark' | 'auto') || 'dark',
+    has_seen_onboarding: Number(settings.has_seen_onboarding) === 1,
   };
 };
 
 export const updateSetting = async (
   db: SQLiteDatabase,
   key: string,
-  value: string
+  value: string,
 ): Promise<void> => {
   await db.runAsync('UPDATE settings SET value = ? WHERE key = ?', [
     value,
@@ -147,7 +150,7 @@ export const updateSetting = async (
 // Delete Operations
 export const deleteExpense = async (
   db: SQLiteDatabase,
-  id: number
+  id: number,
 ): Promise<void> => {
   await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
 };

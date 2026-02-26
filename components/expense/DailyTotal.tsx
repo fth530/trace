@@ -1,10 +1,10 @@
 // Daily Total Hero Display
 // Based on ROADMAP §4 Component Inventory & Antigravity Protocol
 
-import React from "react";
-import { View, Text } from "react-native";
-import { formatCurrency } from "@/lib/utils/currency";
-import { i18n } from "@/lib/translations/i18n";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { formatCurrency } from '@/lib/utils/currency';
+import { i18n } from '@/lib/translations/i18n';
 
 interface DailyTotalProps {
   amount: number;
@@ -29,7 +29,7 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
       <Text
         className="text-white text-6xl font-black tracking-tighter"
         style={{
-          textShadowColor: "rgba(255, 255, 255, 0.4)",
+          textShadowColor: 'rgba(255, 255, 255, 0.4)',
           textShadowOffset: { width: 0, height: 4 },
           textShadowRadius: 20,
         }}

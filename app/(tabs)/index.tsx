@@ -1,7 +1,7 @@
 // Home Screen (Bugün)
 // Based on ROADMAP §6.1 Home Screen Specification & Antigravity Final Protocol
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Pressable,
@@ -11,25 +11,30 @@ import {
   Platform,
   UIManager,
   Alert,
-} from "react-native";
-import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { useStore } from "@/lib/store";
-import { DailyTotal } from "@/components/expense/DailyTotal";
-import { ExpenseList } from "@/components/expense/ExpenseList";
-import { LimitProgress } from "@/components/limit/LimitProgress";
-import { LimitBanner } from "@/components/limit/LimitBanner";
-import { getLimitStatus } from "@/lib/utils/limits";
+} from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { useStore } from '@/lib/store';
+import { DailyTotal } from '@/components/expense/DailyTotal';
+import { ExpenseList } from '@/components/expense/ExpenseList';
+import { LimitProgress } from '@/components/limit/LimitProgress';
+import { LimitBanner } from '@/components/limit/LimitBanner';
+import { getLimitStatus } from '@/lib/utils/limits';
 
-import { logger } from "@/lib/utils/logger";
-import { LinearGradient } from "expo-linear-gradient";
-import { i18n } from "@/lib/translations/i18n";
-import { gradients, gradientLocations, neonColors, neonShadow } from "@/lib/constants/design-tokens";
+import { logger } from '@/lib/utils/logger';
+import { LinearGradient } from 'expo-linear-gradient';
+import { i18n } from '@/lib/translations/i18n';
+import {
+  gradients,
+  gradientLocations,
+  neonColors,
+  neonShadow,
+} from '@/lib/constants/design-tokens';
 
 // Enable LayoutAnimation on Android
 if (
-  Platform.OS === "android" &&
+  Platform.OS === 'android' &&
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -46,12 +51,11 @@ export default function HomeScreen() {
     deleteExpense,
   } = useStore();
 
-
   const [refreshing, setRefreshing] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [bannerData, setBannerData] = useState<{
     percentage: number;
-    type: "daily" | "monthly";
+    type: 'daily' | 'monthly';
     limit: number;
     message: string;
     color: string;
@@ -69,16 +73,16 @@ export default function HomeScreen() {
     const dailyStatus = getLimitStatus(
       todayTotal,
       settings.daily_limit,
-      "daily",
+      'daily',
       'dark',
     );
 
     if (dailyStatus.shouldShowBanner) {
       setBannerData({
         percentage: dailyStatus.percentage,
-        type: "daily",
+        type: 'daily',
         limit: settings.daily_limit,
-        message: dailyStatus.message || "",
+        message: dailyStatus.message || '',
         color: dailyStatus.color,
       });
       setShowBanner(true);
@@ -88,16 +92,16 @@ export default function HomeScreen() {
     const monthlyStatus = getLimitStatus(
       monthTotal,
       settings.monthly_limit,
-      "monthly",
+      'monthly',
       'dark',
     );
 
     if (monthlyStatus.shouldShowBanner) {
       setBannerData({
         percentage: monthlyStatus.percentage,
-        type: "monthly",
+        type: 'monthly',
         limit: settings.monthly_limit,
-        message: monthlyStatus.message || "",
+        message: monthlyStatus.message || '',
         color: monthlyStatus.color,
       });
       setShowBanner(true);
@@ -109,7 +113,7 @@ export default function HomeScreen() {
     try {
       await init();
     } catch (error) {
-      logger.error("Refresh failed:", error);
+      logger.error('Refresh failed:', error);
       Alert.alert(i18n.t('common.error'), i18n.t('home.refresh_error'));
     } finally {
       setRefreshing(false);
@@ -122,7 +126,7 @@ export default function HomeScreen() {
       await deleteExpense(id);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
-      logger.error("Delete failed:", error);
+      logger.error('Delete failed:', error);
       Alert.alert(i18n.t('common.error'), i18n.t('home.delete_error'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
@@ -130,7 +134,7 @@ export default function HomeScreen() {
 
   const handleAddExpense = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/modal/add-expense");
+    router.push('/modal/add-expense');
   };
 
   if (isLoading) {
@@ -169,7 +173,7 @@ export default function HomeScreen() {
       <ExpenseList
         expenses={todayExpenses}
         onDelete={handleDelete}
-        emptyMessage={i18n.t('home.empty')}
+        emptyMessage={i18n.t('home.empty_encouraging')}
         ListHeaderComponent={
           <View>
             <DailyTotal
@@ -207,9 +211,9 @@ export default function HomeScreen() {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
             borderRadius: 32,
             opacity: 0.9,
           }}

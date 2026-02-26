@@ -1,16 +1,20 @@
-import { View, Text, Pressable } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { useStore } from "@/lib/store";
-import { ExpenseList } from "@/components/expense/ExpenseList";
-import { formatCurrency } from "@/lib/utils/currency";
-import { formatDateRelative } from "@/lib/utils/date";
-import type { Expense } from "@/lib/store/types";
-import { LinearGradient } from "expo-linear-gradient";
-import { gradients, gradientLocations, neonColors } from "@/lib/constants/design-tokens";
-import { i18n } from "@/lib/translations/i18n";
+import { View, Text, Pressable } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { useStore } from '@/lib/store';
+import { ExpenseList } from '@/components/expense/ExpenseList';
+import { formatCurrency } from '@/lib/utils/currency';
+import { formatDateRelative } from '@/lib/utils/date';
+import type { Expense } from '@/lib/store/types';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  gradients,
+  gradientLocations,
+  neonColors,
+} from '@/lib/constants/design-tokens';
+import { i18n } from '@/lib/translations/i18n';
 
 export default function DayDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -54,7 +58,7 @@ export default function DayDetailScreen() {
         expenses={expenses}
         onDelete={async (id) => {
           await deleteExpense(id);
-          loadData(); // Reload data after deletion 
+          loadData(); // Reload data after deletion
         }}
         emptyMessage={i18n.t('history.day_empty')}
         ListHeaderComponent={
@@ -67,10 +71,15 @@ export default function DayDetailScreen() {
                 accessibilityLabel={i18n.t('common.back')}
                 accessibilityHint={i18n.t('common.back_hint')}
               >
-                <Ionicons name="chevron-back" size={28} color={neonColors.cyan} />
+                <Ionicons
+                  name="chevron-back"
+                  size={28}
+                  color={neonColors.cyan}
+                />
               </Pressable>
               <Text className="text-white text-3xl font-bold tracking-tight">
-                {date && formatDateRelative(Array.isArray(date) ? date[0] : date)}
+                {date &&
+                  formatDateRelative(Array.isArray(date) ? date[0] : date)}
               </Text>
             </View>
             <Text className="text-sky-400 text-5xl font-black drop-shadow-lg">

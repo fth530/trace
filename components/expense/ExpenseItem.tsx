@@ -1,17 +1,21 @@
 // Single Expense List Item (Swipeable)
 // Based on ROADMAP §4 Component Inventory & Antigravity Final Protocol
 
-import React from "react";
-import { View, Text, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { Badge } from "@/components/ui/Badge";
-import { formatCurrency } from "@/lib/utils/currency";
-import { formatDateRelative } from "@/lib/utils/date";
-import type { Expense } from "@/lib/store/types";
-import Animated, { FadeInRight, FadeOutLeft, CurvedTransition } from "react-native-reanimated";
-import { i18n } from "@/lib/translations/i18n";
-import { neonColors } from "@/lib/constants/design-tokens";
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { Badge } from '@/components/ui/Badge';
+import { formatCurrency } from '@/lib/utils/currency';
+import { formatDateRelative } from '@/lib/utils/date';
+import type { Expense } from '@/lib/store/types';
+import Animated, {
+  FadeInRight,
+  FadeOutLeft,
+  CurvedTransition,
+} from 'react-native-reanimated';
+import { i18n } from '@/lib/translations/i18n';
+import { neonColors } from '@/lib/constants/design-tokens';
 
 interface ExpenseItemProps {
   expense: Expense;
@@ -35,7 +39,9 @@ export const ExpenseItem: React.FC<ExpenseItemProps> = ({
 
   return (
     <Animated.View
-      entering={FadeInRight.delay(index * 50).springify().damping(14)}
+      entering={FadeInRight.delay(index * 50)
+        .springify()
+        .damping(14)}
       exiting={FadeOutLeft.duration(300)}
       layout={CurvedTransition.delay(100)}
       className="mb-2 overflow-hidden rounded-2xl border border-white/5 bg-slate-900/50 backdrop-blur-md"

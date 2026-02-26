@@ -27,7 +27,7 @@ export const categoryConfig: Record<
   Market: {
     label: 'Market',
     icon: 'cart-outline',
-    color: '#e879f9', // Neon Fuchsia 
+    color: '#e879f9', // Neon Fuchsia
   },
   Diğer: {
     label: 'Diğer',

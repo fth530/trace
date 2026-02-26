@@ -1,12 +1,12 @@
 // Animated Expense List
 // Based on ROADMAP §4 Component Inventory & Antigravity Final Protocol
 
-import React from "react";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ExpenseItem } from "./ExpenseItem";
-import type { Expense } from "@/lib/store/types";
-import Animated, { LinearTransition } from "react-native-reanimated";
-import { i18n } from "@/lib/translations/i18n";
+import React from 'react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ExpenseItem } from './ExpenseItem';
+import type { Expense } from '@/lib/store/types';
+import Animated, { LinearTransition } from 'react-native-reanimated';
+import { i18n } from '@/lib/translations/i18n';
 
 interface ExpenseListProps {
   expenses: Expense[];

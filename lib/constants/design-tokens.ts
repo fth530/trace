@@ -34,6 +34,7 @@ export const neonColors = {
   roseDark: '#be123c',
   roseDarker: '#9f1239',
   purple: '#a855f7',
+  violet: '#8b5cf6',
   zinc950: '#09090b',
 } as const;
 
@@ -53,7 +54,7 @@ export const gradientLocations = {
 // Shadow presets with neon glow
 export const neonShadow = (
   color: string,
-  intensity: 'sm' | 'md' | 'lg' = 'md'
+  intensity: 'sm' | 'md' | 'lg' = 'md',
 ) => {
   const config = {
     sm: { offset: 4, opacity: 0.3, radius: 10, elevation: 5 },

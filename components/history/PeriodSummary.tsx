@@ -1,6 +1,6 @@
-import { View, Text } from "react-native";
-import { formatCurrency } from "@/lib/utils/currency";
-import { i18n } from "@/lib/translations/i18n";
+import { View, Text } from 'react-native';
+import { formatCurrency } from '@/lib/utils/currency';
+import { i18n } from '@/lib/translations/i18n';
 
 interface PeriodSummaryProps {
   weeklyTotal: number;
@@ -16,7 +16,6 @@ export function PeriodSummary({
       {/* Glassmorphic Panel */}
       <View className="bg-black/60 backdrop-blur-2xl border-t border-white/10 px-4 py-8 pointer-events-none">
         <View className="flex-row justify-around items-center">
-
           <View className="items-center">
             <Text className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">
               {i18n.t('history.week_label')}
@@ -36,7 +35,6 @@ export function PeriodSummary({
               {formatCurrency(monthlyTotal)}
             </Text>
           </View>
-
         </View>
       </View>
     </View>

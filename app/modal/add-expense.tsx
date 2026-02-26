@@ -1,7 +1,7 @@
 // Add Expense Modal
 // Based on ROADMAP §6.2 Add Expense Modal Specification & Antigravity Final Protocol
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,31 +11,40 @@ import {
   Alert,
   TextInput,
   ScrollView,
-} from "react-native";
-import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { useStore } from "@/lib/store";
-import { CATEGORIES, Category, categoryConfig } from "@/lib/constants/categories";
-import { validateDecimal, parseCurrency } from "@/lib/utils/currency";
-import { logger } from "@/lib/utils/logger";
-import { LinearGradient } from "expo-linear-gradient";
-import { i18n } from "@/lib/translations/i18n";
-import { gradients, neonColors, placeholderColor, neonShadow } from "@/lib/constants/design-tokens";
+} from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { useStore } from '@/lib/store';
+import {
+  CATEGORIES,
+  Category,
+  categoryConfig,
+} from '@/lib/constants/categories';
+import { validateDecimal, parseCurrency } from '@/lib/utils/currency';
+import { logger } from '@/lib/utils/logger';
+import { LinearGradient } from 'expo-linear-gradient';
+import { i18n } from '@/lib/translations/i18n';
+import {
+  gradients,
+  neonColors,
+  placeholderColor,
+  neonShadow,
+} from '@/lib/constants/design-tokens';
 
 export default function AddExpenseModal() {
   const { addExpense } = useStore();
 
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<Category | null>(null);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAmountChange = (text: string) => {
-    const cleaned = text.replace(/[^\d.,]/g, "");
-    const normalized = cleaned.replace(",", ".");
+    const cleaned = text.replace(/[^\d.,]/g, '');
+    const normalized = cleaned.replace(',', '.');
 
-    if (normalized === "" || validateDecimal(normalized)) {
+    if (normalized === '' || validateDecimal(normalized)) {
       setAmount(normalized);
     }
   };
@@ -57,12 +66,12 @@ export default function AddExpenseModal() {
       return i18n.t('modal.error_amount');
     }
 
-    if (description.trim() === "") {
+    if (description.trim() === '') {
       return i18n.t('modal.error_desc');
     }
 
     if (parsedAmount > 1000000) {
-      return "confirm_large_amount";
+      return 'confirm_large_amount';
     }
 
     return null;
@@ -71,12 +80,12 @@ export default function AddExpenseModal() {
   const handleSave = async () => {
     const error = validateForm();
 
-    if (error === "confirm_large_amount") {
+    if (error === 'confirm_large_amount') {
       Alert.alert(
         i18n.t('modal.confirm_title'),
         i18n.t('modal.confirm_large'),
         [
-          { text: i18n.t('modal.cancel'), style: "cancel" },
+          { text: i18n.t('modal.cancel'), style: 'cancel' },
           { text: i18n.t('modal.continue'), onPress: () => submitExpense() },
         ],
       );
@@ -106,7 +115,7 @@ export default function AddExpenseModal() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch (error) {
-      logger.error("Add expense failed:", error);
+      logger.error('Add expense failed:', error);
       Alert.alert(i18n.t('common.error'), i18n.t('modal.error_save'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -116,7 +125,7 @@ export default function AddExpenseModal() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-zinc-950"
     >
       {/* Background Deep Purple/Blue Glow */}
@@ -144,7 +153,12 @@ export default function AddExpenseModal() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 16, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 24,
+          paddingTop: 16,
+          paddingBottom: 40,
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -178,14 +192,28 @@ export default function AddExpenseModal() {
                   key={cat}
                   onPress={() => handleCategorySelect(cat)}
                   className={`px-4 py-2.5 rounded-xl border active:scale-95 transition-all`}
-                  style={isSelected ? { borderColor: catColor, backgroundColor: `${catColor}20` } : { borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(255,255,255,0.05)' }}
+                  style={
+                    isSelected
+                      ? {
+                          borderColor: catColor,
+                          backgroundColor: `${catColor}20`,
+                        }
+                      : {
+                          borderColor: 'rgba(255,255,255,0.05)',
+                          backgroundColor: 'rgba(255,255,255,0.05)',
+                        }
+                  }
                   accessibilityRole="button"
                   accessibilityLabel={`Kategori: ${cat}`}
                   accessibilityState={{ selected: isSelected }}
                 >
                   <Text
                     className={`text-sm font-medium tracking-wide`}
-                    style={isSelected ? { color: catColor } : { color: neonColors.slateLight }}
+                    style={
+                      isSelected
+                        ? { color: catColor }
+                        : { color: neonColors.slateLight }
+                    }
                   >
                     {cat}
                   </Text>
@@ -226,7 +254,9 @@ export default function AddExpenseModal() {
             className="p-5 items-center justify-center opacity-90"
           >
             <Text className="text-white text-lg font-bold tracking-widest uppercase">
-              {isSubmitting ? i18n.t('modal.saving_button') : i18n.t('modal.save_button')}
+              {isSubmitting
+                ? i18n.t('modal.saving_button')
+                : i18n.t('modal.save_button')}
             </Text>
           </LinearGradient>
         </Pressable>

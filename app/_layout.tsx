@@ -1,18 +1,18 @@
 // Root Layout
 // Based on ROADMAP §3 Navigation Tree
 
-import { useEffect } from "react";
-import { Stack } from "expo-router";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import * as SplashScreen from "expo-splash-screen";
-import { useStore } from "@/lib/store";
-import { logger } from "@/lib/utils/logger";
-import { neonColors } from "@/lib/constants/design-tokens";
+import { useEffect } from 'react';
+import { Stack, router } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as SplashScreen from 'expo-splash-screen';
+import { useStore } from '@/lib/store';
+import { logger } from '@/lib/utils/logger';
+import { neonColors } from '@/lib/constants/design-tokens';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
-} from "react-native-reanimated";
-import "../global.css";
+} from 'react-native-reanimated';
+import '../global.css';
 
 // Suppress NativeWind's harmless Reanimated strict mode warnings
 configureReanimatedLogger({
@@ -30,14 +30,19 @@ export default function RootLayout() {
   // Initialize store on mount
   useEffect(() => {
     initStore().catch((error) => {
-      logger.error("Failed to initialize store:", error);
+      logger.error('Failed to initialize store:', error);
     });
   }, []);
 
-  // Hide splash screen when loading is complete
+  // Hide splash screen and handle routing when loading is complete
   useEffect(() => {
     if (!isLoading) {
       SplashScreen.hideAsync();
+
+      const hasSeenOnboarding = useStore.getState().settings.has_seen_onboarding;
+      if (!hasSeenOnboarding) {
+        router.replace('/onboarding');
+      }
     }
   }, [isLoading]);
 
@@ -55,12 +60,13 @@ export default function RootLayout() {
           },
         }}
       >
+        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="modal/add-expense"
           options={{
-            presentation: "modal",
-            title: "",
+            presentation: 'modal',
+            title: '',
             headerShown: false,
           }}
         />
@@ -68,4 +74,3 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-

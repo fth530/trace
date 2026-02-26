@@ -36,40 +36,44 @@ export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         description TEXT NOT NULL,
         date TEXT NOT NULL,
         created_at INTEGER NOT NULL
-      )`
+      )`,
     );
 
     await db.execAsync(
-      `CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date DESC)`
+      `CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date DESC)`,
     );
 
     await db.execAsync(
-      `CREATE INDEX IF NOT EXISTS idx_expenses_created_at ON expenses(created_at DESC)`
+      `CREATE INDEX IF NOT EXISTS idx_expenses_created_at ON expenses(created_at DESC)`,
     );
 
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS settings (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
-      )`
+      )`,
     );
 
     // Seed default settings one by one
     await db.runAsync(
       `INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`,
-      ['daily_limit', '500']
+      ['daily_limit', '500'],
     );
     await db.runAsync(
       `INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`,
-      ['monthly_limit', '10000']
+      ['monthly_limit', '10000'],
     );
     await db.runAsync(
       `INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`,
-      ['theme', 'dark']
+      ['theme', 'dark'],
     );
     await db.runAsync(
       `INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`,
-      ['db_version', '1']
+      ['has_seen_onboarding', '0'],
+    );
+    await db.runAsync(
+      `INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`,
+      ['db_version', '1'],
     );
 
     dbInstance = db;

@@ -1,10 +1,10 @@
-import { View, Text, Pressable } from "react-native";
-import { router } from "expo-router";
-import * as Haptics from "expo-haptics";
-import { formatCurrency } from "@/lib/utils/currency";
-import { formatDateRelative } from "@/lib/utils/date";
-import { neonColors, neonShadow } from "@/lib/constants/design-tokens";
-import { i18n } from "@/lib/translations/i18n";
+import { View, Text, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { formatCurrency } from '@/lib/utils/currency';
+import { formatDateRelative } from '@/lib/utils/date';
+import { neonColors, neonShadow } from '@/lib/constants/design-tokens';
+import { i18n } from '@/lib/translations/i18n';
 
 interface DaySummaryCardProps {
   date: string;

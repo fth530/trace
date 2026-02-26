@@ -28,6 +28,7 @@ export const useStore = create<AppStore>((set, get) => ({
     daily_limit: 500,
     monthly_limit: 10000,
     theme: 'dark', // Locked to dark for Antigravity Protocol
+    has_seen_onboarding: false,
   },
   isLoading: true,
   error: null,
@@ -48,7 +49,7 @@ export const useStore = create<AppStore>((set, get) => ({
       const monthTotal = await queries.getMonthTotal(
         db,
         monthRange.start,
-        monthRange.end
+        monthRange.end,
       );
 
       set({
@@ -62,7 +63,8 @@ export const useStore = create<AppStore>((set, get) => ({
 
       logger.log('✅ Store initialized');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Store initialization failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Store initialization failed';
       logger.error('❌ Store initialization failed:', error);
       set({ isLoading: false, error: errorMessage });
       throw error;
@@ -92,7 +94,8 @@ export const useStore = create<AppStore>((set, get) => ({
       await get().calculateTotals();
       logger.log('✅ Expense added:', id);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Add expense failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Add expense failed';
       logger.error('❌ Add expense failed:', error);
       set({ error: errorMessage });
       throw error;
@@ -114,7 +117,8 @@ export const useStore = create<AppStore>((set, get) => ({
       await get().calculateTotals();
       logger.log('✅ Expense deleted:', id);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Delete expense failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Delete expense failed';
       logger.error('❌ Delete expense failed:', error);
       set({ error: errorMessage });
       throw error;
@@ -159,7 +163,7 @@ export const useStore = create<AppStore>((set, get) => ({
       const summaries = await queries.getMonthExpensesByCategory(
         db,
         monthRange.start,
-        monthRange.end
+        monthRange.end,
       );
 
       logger.log('✅ Month analytics loaded');
@@ -181,7 +185,12 @@ export const useStore = create<AppStore>((set, get) => ({
       set((state) => ({
         settings: {
           ...state.settings,
-          [key]: key === 'theme' ? value : Number(value),
+          [key]:
+            key === 'theme'
+              ? value
+              : key === 'has_seen_onboarding'
+                ? Boolean(Number(value))
+                : Number(value),
         },
       }));
 
@@ -224,7 +233,7 @@ export const useStore = create<AppStore>((set, get) => ({
       const monthTotal = await queries.getMonthTotal(
         db,
         monthRange.start,
-        monthRange.end
+        monthRange.end,
       );
 
       set({ todayTotal, monthTotal });
