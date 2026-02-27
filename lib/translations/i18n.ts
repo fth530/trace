@@ -83,6 +83,17 @@ const tr = {
     reminder_title: 'Bugün harcama yaptın mı? 🔥',
     reminder_body: 'Günün harcamasını unuttun mu? Hemen gir ve serini bozma!',
   },
+  onboarding: {
+    slide1_title: 'Harcamanı Gir',
+    slide1_desc: 'Ne kadar harcadığını anında yaz. Karmaşık menüler ve sıkıcı detaylarla uğraşma.',
+    slide2_title: 'Limitini Koy',
+    slide2_desc: 'Günlük ve aylık bütçeni belirle. TRACE seni limite yaklaştığında uyarsın.',
+    slide3_title: 'Kontrolü Eline Al',
+    slide3_desc: 'Veriler cihazında kalır, analizler her şeyi özetler. Finansal özerkliğini kazan.',
+    skip: 'Atla',
+    start: 'BAŞLA',
+    continue: 'DEVAM ET',
+  },
   common: {
     error: 'Hata',
     close: 'Kapat',
@@ -174,6 +185,17 @@ const en = {
   notifications: {
     reminder_title: 'Did you spend today? 🔥',
     reminder_body: 'Did you forget to log your expense? Log now and keep your streak!',
+  },
+  onboarding: {
+    slide1_title: 'Log Expense',
+    slide1_desc: 'Quickly write down what you spent. No complex menus or boring details.',
+    slide2_title: 'Set Your Limit',
+    slide2_desc: 'Define your daily and monthly budget. TRACE will warn you when you get close.',
+    slide3_title: 'Take Control',
+    slide3_desc: 'Data stays on your device, analytics summarize everything. Gain financial autonomy.',
+    skip: 'Skip',
+    start: 'START',
+    continue: 'CONTINUE',
   },
   common: {
     error: 'Error',
