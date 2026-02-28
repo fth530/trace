@@ -103,12 +103,10 @@ export default function OnboardingScreen() {
           entering={FadeInUp.duration(600).springify().damping(12)}
           exiting={FadeOutLeft.duration(300)}
           className="w-32 h-32 rounded-full items-center justify-center mb-12 border border-white/10 bg-slate-900/50 backdrop-blur-md"
-          // @ts-ignore dynamic strict matching for icon names is acceptable in map
           style={neonShadow(currentSlide.color, 'lg')}
         >
-          {/* @ts-ignore */}
           <Ionicons
-            name={currentSlide.icon}
+            name={currentSlide.icon as any}
             size={64}
             color={currentSlide.color}
           />

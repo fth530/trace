@@ -8,7 +8,6 @@ Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldPlaySound: true,
         shouldSetBadge: false,
-        shouldShowAlert: true,
         shouldShowBanner: true,
         shouldShowList: true,
     }),
@@ -43,7 +42,10 @@ export async function requestNotificationPermissions() {
 export async function updateNotificationSchedule(hasExpenseToday: boolean) {
     try {
         const hasPermission = await requestNotificationPermissions();
-        if (!hasPermission) return;
+        if (!hasPermission) {
+            logger.log('⚠️ Notification permission not granted');
+            return;
+        }
 
         // First clear any existing reminders
         await Notifications.cancelAllScheduledNotificationsAsync();
@@ -80,7 +82,10 @@ export async function updateNotificationSchedule(hasExpenseToday: boolean) {
                 },
             });
         }
+        
+        logger.log('✅ Notification schedule updated');
     } catch (error) {
-        logger.error('Failed to update notification schedule:', error);
+        logger.error('⚠️ Failed to update notification schedule:', error);
+        // Don't throw - notifications are non-critical feature
     }
 }
