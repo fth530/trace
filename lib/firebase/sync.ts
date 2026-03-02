@@ -40,7 +40,7 @@ export const getExpensesFromCloud = async () => {
       .orderBy('date', 'desc')
       .get();
 
-    const expenses = snapshot.docs.map(doc => ({
+    const expenses = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -56,10 +56,13 @@ export const getExpensesFromCloud = async () => {
 export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
   try {
     const userRef = getUserRef();
-    await userRef.collection(COLLECTIONS.EXPENSES).doc(expenseId).update({
-      ...updates,
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-    });
+    await userRef
+      .collection(COLLECTIONS.EXPENSES)
+      .doc(expenseId)
+      .update({
+        ...updates,
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      });
     return { success: true };
   } catch (error: any) {
     console.error('Update Expense Error:', error);
@@ -83,10 +86,16 @@ export const deleteExpenseFromCloud = async (expenseId: string) => {
 export const saveSettingsToCloud = async (settings: any) => {
   try {
     const userRef = getUserRef();
-    await userRef.collection(COLLECTIONS.SETTINGS).doc('preferences').set({
-      ...settings,
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
+    await userRef
+      .collection(COLLECTIONS.SETTINGS)
+      .doc('preferences')
+      .set(
+        {
+          ...settings,
+          updatedAt: firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
     return { success: true };
   } catch (error: any) {
     console.error('Save Settings Error:', error);
@@ -98,9 +107,12 @@ export const saveSettingsToCloud = async (settings: any) => {
 export const getSettingsFromCloud = async () => {
   try {
     const userRef = getUserRef();
-    const doc = await userRef.collection(COLLECTIONS.SETTINGS).doc('preferences').get();
-    
-    if (doc.exists) {
+    const doc = await userRef
+      .collection(COLLECTIONS.SETTINGS)
+      .doc('preferences')
+      .get();
+
+    if (doc.exists()) {
       return { success: true, settings: doc.data() };
     }
     return { success: true, settings: null };
@@ -111,13 +123,16 @@ export const getSettingsFromCloud = async () => {
 };
 
 // Local verileri cloud'a migrate et (ilk giriş)
-export const migrateLocalDataToCloud = async (localExpenses: any[], localSettings: any) => {
+export const migrateLocalDataToCloud = async (
+  localExpenses: any[],
+  localSettings: any,
+) => {
   try {
     const userRef = getUserRef();
     const batch = firestore().batch();
 
     // Harcamaları ekle
-    localExpenses.forEach(expense => {
+    localExpenses.forEach((expense) => {
       const expenseRef = userRef.collection(COLLECTIONS.EXPENSES).doc();
       batch.set(expenseRef, {
         ...expense,
@@ -127,7 +142,9 @@ export const migrateLocalDataToCloud = async (localExpenses: any[], localSetting
     });
 
     // Ayarları ekle
-    const settingsRef = userRef.collection(COLLECTIONS.SETTINGS).doc('preferences');
+    const settingsRef = userRef
+      .collection(COLLECTIONS.SETTINGS)
+      .doc('preferences');
     batch.set(settingsRef, {
       ...localSettings,
       updatedAt: firestore.FieldValue.serverTimestamp(),
@@ -148,8 +165,8 @@ export const subscribeToExpenses = (callback: (expenses: any[]) => void) => {
     return userRef
       .collection(COLLECTIONS.EXPENSES)
       .orderBy('date', 'desc')
-      .onSnapshot(snapshot => {
-        const expenses = snapshot.docs.map(doc => ({
+      .onSnapshot((snapshot) => {
+        const expenses = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));

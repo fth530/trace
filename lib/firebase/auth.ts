@@ -15,10 +15,10 @@ export const signInWithGoogle = async () => {
     // Google Sign-In akışını başlat
     await GoogleSignin.hasPlayServices();
     const signInResult = await GoogleSignin.signIn();
-    
+
     // idToken'ı al
     const idToken = signInResult.data?.idToken;
-    
+
     if (!idToken) {
       throw new Error('No ID token found');
     }
@@ -28,7 +28,7 @@ export const signInWithGoogle = async () => {
 
     // Firebase'e giriş yap
     const userCredential = await auth().signInWithCredential(googleCredential);
-    
+
     return {
       success: true,
       user: userCredential.user,

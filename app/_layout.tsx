@@ -73,10 +73,7 @@ function RootLayout() {
           },
         }}
       >
-        <Stack.Screen
-          name="auth/login"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen
           name="onboarding/index"
           options={{ headerShown: false }}

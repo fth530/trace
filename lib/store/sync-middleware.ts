@@ -29,11 +29,11 @@ export const syncAddExpense = async (expense: any) => {
 };
 
 // Harcama silindiğinde cloud'dan sil
-export const syncDeleteExpense = async (expenseId: string) => {
+export const syncDeleteExpense = async (expenseId: string | number) => {
   if (!isSyncEnabled()) return;
 
   try {
-    await deleteExpenseFromCloud(expenseId);
+    await deleteExpenseFromCloud(String(expenseId));
     logger.log('✅ Expense deleted from cloud');
   } catch (error) {
     logger.error('❌ Sync delete expense failed:', error);

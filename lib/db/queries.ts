@@ -5,11 +5,13 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import type { Expense, DaySummary, Settings } from '../store/types';
 
 // Home Screen Queries
-export const getExpenseDates = async (db: SQLiteDatabase): Promise<string[]> => {
+export const getExpenseDates = async (
+  db: SQLiteDatabase,
+): Promise<string[]> => {
   const result = await db.getAllAsync<{ date: string }>(
-    'SELECT DISTINCT date FROM expenses ORDER BY date DESC LIMIT 365'
+    'SELECT DISTINCT date FROM expenses ORDER BY date DESC LIMIT 365',
   );
-  return result.map(r => r.date);
+  return result.map((r) => r.date);
 };
 
 export const getTodayExpenses = async (

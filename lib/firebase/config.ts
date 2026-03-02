@@ -13,4 +13,5 @@ export const firebaseConfig = {
 
 // Google Sign-In için Web Client ID
 // Firebase Console > Authentication > Sign-in method > Google > Web SDK configuration
-export const GOOGLE_WEB_CLIENT_ID = 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com';
+export const GOOGLE_WEB_CLIENT_ID =
+  'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com';

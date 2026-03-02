@@ -200,7 +200,7 @@ export default function SettingsScreen() {
                           router.replace('/auth/login');
                         },
                       },
-                    ]
+                    ],
                   );
                 }}
                 className="bg-slate-800/60 rounded-xl p-4 items-center active:bg-slate-700/60"

@@ -33,7 +33,9 @@ export const DailyTotal: React.FC<DailyTotalProps> = ({
           className="flex-row items-center bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/30 mb-4"
         >
           <Ionicons name="flame" size={16} color="#fbbf24" />
-          <Text className="text-orange-400 font-bold ml-1.5 tracking-wide">{streak} Günlük Seri!</Text>
+          <Text className="text-orange-400 font-bold ml-1.5 tracking-wide">
+            {streak} Günlük Seri!
+          </Text>
         </Animated.View>
       )}
 

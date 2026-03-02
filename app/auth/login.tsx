@@ -1,21 +1,27 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../lib/hooks/useAuth';
 import { migrateLocalDataToCloud } from '../../lib/firebase/sync';
-import { useExpenseStore } from '../../lib/store';
+import { useStore } from '../../lib/store';
 
 export default function LoginScreen() {
   const { signIn, loading } = useAuth();
-  const { expenses, dailyLimit, currency } = useExpenseStore();
+  const { todayExpenses, settings } = useStore();
 
   const handleGoogleSignIn = async () => {
     const result = await signIn();
-    
+
     if (result.success) {
       // İlk giriş: local verileri cloud'a taşı
-      const hasLocalData = expenses.length > 0;
-      
+      const hasLocalData = todayExpenses.length > 0;
+
       if (hasLocalData) {
         Alert.alert(
           'Veri Senkronizasyonu',
@@ -30,17 +36,17 @@ export default function LoginScreen() {
               text: 'Evet',
               onPress: async () => {
                 const migrationResult = await migrateLocalDataToCloud(
-                  expenses,
-                  { dailyLimit, currency }
+                  todayExpenses,
+                  settings,
                 );
-                
+
                 if (migrationResult.success) {
                   Alert.alert('Başarılı', 'Verileriniz buluta yüklendi!');
                 }
                 router.replace('/(tabs)');
               },
             },
-          ]
+          ],
         );
       } else {
         router.replace('/(tabs)');
