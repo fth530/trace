@@ -20,12 +20,21 @@ const getUserRef = () => {
 export const addExpenseToCloud = async (expense: any) => {
   try {
     const userRef = getUserRef();
-    const docRef = await userRef.collection(COLLECTIONS.EXPENSES).add({
-      ...expense,
-      localId: expense.id, // Local ID'yi sakla
+
+    // Sanitize data - only allow specific fields
+    const sanitizedExpense = {
+      amount: Number(expense.amount),
+      category: expense.category,
+      description: String(expense.description),
+      date: expense.date,
+      localId: expense.id,
       createdAt: firestore.FieldValue.serverTimestamp(),
       updatedAt: firestore.FieldValue.serverTimestamp(),
-    });
+    };
+
+    const docRef = await userRef
+      .collection(COLLECTIONS.EXPENSES)
+      .add(sanitizedExpense);
     return { success: true, cloudId: docRef.id };
   } catch (error: any) {
     logger.error('Add Expense Error:', error);
@@ -58,13 +67,24 @@ export const getExpensesFromCloud = async () => {
 export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
   try {
     const userRef = getUserRef();
+
+    // Sanitize updates - only allow specific fields
+    const sanitizedUpdates: any = {
+      updatedAt: firestore.FieldValue.serverTimestamp(),
+    };
+
+    if (updates.amount !== undefined)
+      sanitizedUpdates.amount = Number(updates.amount);
+    if (updates.category !== undefined)
+      sanitizedUpdates.category = updates.category;
+    if (updates.description !== undefined)
+      sanitizedUpdates.description = String(updates.description);
+    if (updates.date !== undefined) sanitizedUpdates.date = updates.date;
+
     await userRef
       .collection(COLLECTIONS.EXPENSES)
       .doc(expenseId)
-      .update({
-        ...updates,
-        updatedAt: firestore.FieldValue.serverTimestamp(),
-      });
+      .update(sanitizedUpdates);
     return { success: true };
   } catch (error: any) {
     logger.error('Update Expense Error:', error);
@@ -131,28 +151,42 @@ export const migrateLocalDataToCloud = async (
 ) => {
   try {
     const userRef = getUserRef();
-    const batch = firestore().batch();
+    const BATCH_SIZE = 500; // Firebase batch limit
 
-    // Harcamaları ekle
-    localExpenses.forEach((expense) => {
-      const expenseRef = userRef.collection(COLLECTIONS.EXPENSES).doc();
-      batch.set(expenseRef, {
-        ...expense,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+    // Split into batches
+    for (let i = 0; i < localExpenses.length; i += BATCH_SIZE) {
+      const batch = firestore().batch();
+      const batchExpenses = localExpenses.slice(i, i + BATCH_SIZE);
+
+      batchExpenses.forEach((expense) => {
+        const expenseRef = userRef.collection(COLLECTIONS.EXPENSES).doc();
+        // Sanitize data
+        batch.set(expenseRef, {
+          amount: Number(expense.amount),
+          category: expense.category,
+          description: String(expense.description),
+          date: expense.date,
+          localId: expense.id,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          updatedAt: firestore.FieldValue.serverTimestamp(),
+        });
       });
-    });
 
-    // Ayarları ekle
+      await batch.commit();
+      logger.log(`✅ Migrated batch ${i / BATCH_SIZE + 1}`);
+    }
+
+    // Ayarları ekle (separate batch)
+    const settingsBatch = firestore().batch();
     const settingsRef = userRef
       .collection(COLLECTIONS.SETTINGS)
       .doc('preferences');
-    batch.set(settingsRef, {
+    settingsBatch.set(settingsRef, {
       ...localSettings,
       updatedAt: firestore.FieldValue.serverTimestamp(),
     });
+    await settingsBatch.commit();
 
-    await batch.commit();
     return { success: true };
   } catch (error: any) {
     logger.error('Migration Error:', error);

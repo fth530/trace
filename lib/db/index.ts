@@ -12,13 +12,27 @@ export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
     return dbInstance;
   }
 
-  // Prevent concurrent initialization
+  // Prevent concurrent initialization with Promise-based lock
   if (isInitializing) {
-    // Wait for ongoing initialization
-    while (isInitializing) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-    if (dbInstance) return dbInstance;
+    // Wait for ongoing initialization using a proper Promise
+    return new Promise((resolve, reject) => {
+      const checkInterval = setInterval(() => {
+        if (!isInitializing) {
+          clearInterval(checkInterval);
+          if (dbInstance) {
+            resolve(dbInstance);
+          } else {
+            reject(new Error('Database initialization failed'));
+          }
+        }
+      }, 50);
+
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        reject(new Error('Database initialization timeout'));
+      }, 10000);
+    });
   }
 
   isInitializing = true;
