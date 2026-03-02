@@ -14,6 +14,8 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '@/lib/store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { i18n } from '@/lib/translations/i18n';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { router } from 'expo-router';
 import {
   gradients,
   gradientLocations,
@@ -25,6 +27,7 @@ import {
 export default function SettingsScreen() {
   const store = useStore();
   const { settings, updateSetting, clearAllData } = store;
+  const { user, signOut } = useAuth();
 
   const [dailyLimit, setDailyLimit] = useState(settings.daily_limit.toString());
   const [monthlyLimit, setMonthlyLimit] = useState(
@@ -170,6 +173,59 @@ export default function SettingsScreen() {
             {i18n.t('settings.limit_hint')}
           </Text>
         </View>
+
+        {/* Account Section */}
+        {user && (
+          <View className="mb-8">
+            <Text className="text-white text-xl font-bold mb-4 tracking-wide ml-1">
+              Hesap
+            </Text>
+            <View className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5">
+              <View className="mb-4">
+                <Text className="text-slate-400 text-sm mb-1">Email</Text>
+                <Text className="text-white text-base">{user.email}</Text>
+              </View>
+              <Pressable
+                onPress={async () => {
+                  Alert.alert(
+                    'Çıkış Yap',
+                    'Çıkış yapmak istediğinize emin misiniz?',
+                    [
+                      { text: 'İptal', style: 'cancel' },
+                      {
+                        text: 'Çıkış Yap',
+                        style: 'destructive',
+                        onPress: async () => {
+                          await signOut();
+                          router.replace('/auth/login');
+                        },
+                      },
+                    ]
+                  );
+                }}
+                className="bg-slate-800/60 rounded-xl p-4 items-center active:bg-slate-700/60"
+              >
+                <Text className="text-white font-semibold">Çıkış Yap</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {!user && (
+          <View className="mb-8">
+            <Pressable
+              onPress={() => router.push('/auth/login')}
+              className="bg-blue-600/20 border border-blue-500/30 rounded-2xl p-5 items-center active:bg-blue-600/30"
+            >
+              <Text className="text-blue-400 font-bold text-base">
+                🔐 Giriş Yap
+              </Text>
+              <Text className="text-slate-400 text-sm mt-1">
+                Verilerinizi bulutta saklayın
+              </Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* Danger Zone */}
         <View className="mb-12 mt-4">

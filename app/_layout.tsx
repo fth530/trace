@@ -9,6 +9,7 @@ import * as Sentry from '@sentry/react-native';
 import { useStore } from '@/lib/store';
 import { logger } from '@/lib/utils/logger';
 import { neonColors } from '@/lib/constants/design-tokens';
+import { configureGoogleSignIn } from '@/lib/firebase/auth';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -37,8 +38,9 @@ function RootLayout() {
   const isLoading = useStore((state) => state.isLoading);
   const initStore = useStore((state) => state.init);
 
-  // Initialize store on mount
+  // Initialize Firebase and store on mount
   useEffect(() => {
+    configureGoogleSignIn();
     initStore().catch((error) => {
       logger.error('Failed to initialize store:', error);
     });
@@ -71,6 +73,10 @@ function RootLayout() {
           },
         }}
       >
+        <Stack.Screen
+          name="auth/login"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="onboarding/index"
           options={{ headerShown: false }}
