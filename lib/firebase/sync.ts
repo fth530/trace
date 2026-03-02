@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { getCurrentUser } from './auth';
+import { logger } from '../utils/logger';
 
 // Firestore koleksiyonları
 const COLLECTIONS = {
@@ -27,7 +28,7 @@ export const addExpenseToCloud = async (expense: any) => {
     });
     return { success: true, cloudId: docRef.id };
   } catch (error: any) {
-    console.error('Add Expense Error:', error);
+    logger.error('Add Expense Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -48,7 +49,7 @@ export const getExpensesFromCloud = async () => {
 
     return { success: true, expenses };
   } catch (error: any) {
-    console.error('Get Expenses Error:', error);
+    logger.error('Get Expenses Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -66,7 +67,7 @@ export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
       });
     return { success: true };
   } catch (error: any) {
-    console.error('Update Expense Error:', error);
+    logger.error('Update Expense Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -78,7 +79,7 @@ export const deleteExpenseFromCloud = async (expenseId: string) => {
     await userRef.collection(COLLECTIONS.EXPENSES).doc(expenseId).delete();
     return { success: true };
   } catch (error: any) {
-    console.error('Delete Expense Error:', error);
+    logger.error('Delete Expense Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -99,7 +100,7 @@ export const saveSettingsToCloud = async (settings: any) => {
       );
     return { success: true };
   } catch (error: any) {
-    console.error('Save Settings Error:', error);
+    logger.error('Save Settings Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -118,7 +119,7 @@ export const getSettingsFromCloud = async () => {
     }
     return { success: true, settings: null };
   } catch (error: any) {
-    console.error('Get Settings Error:', error);
+    logger.error('Get Settings Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -154,7 +155,7 @@ export const migrateLocalDataToCloud = async (
     await batch.commit();
     return { success: true };
   } catch (error: any) {
-    console.error('Migration Error:', error);
+    logger.error('Migration Error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -174,7 +175,7 @@ export const subscribeToExpenses = (callback: (expenses: any[]) => void) => {
         callback(expenses);
       });
   } catch (error) {
-    console.error('Subscribe Error:', error);
+    logger.error('Subscribe Error:', error);
     return () => {};
   }
 };

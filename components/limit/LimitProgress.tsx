@@ -28,7 +28,12 @@ export const LimitProgress: React.FC<LimitProgressProps> = ({
       duration: 600,
       useNativeDriver: false,
     }).start();
-  }, [status.percentage]);
+
+    // Cleanup: Stop animation on unmount
+    return () => {
+      widthAnim.stopAnimation();
+    };
+  }, [status.percentage, widthAnim]);
 
   if (limit === 0) {
     return (

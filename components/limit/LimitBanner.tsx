@@ -51,7 +51,7 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
         break;
     }
 
-    Animated.parallel([
+    const animation = Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 300,
@@ -62,13 +62,21 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
         duration: 300,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+
+    animation.start();
 
     const timer = setTimeout(() => {
       handleDismiss();
     }, 3000);
 
-    return () => clearTimeout(timer);
+    // Cleanup: Stop animations and clear timer
+    return () => {
+      clearTimeout(timer);
+      animation.stop();
+      slideAnim.stopAnimation();
+      opacityAnim.stopAnimation();
+    };
   }, []);
 
   const handleDismiss = () => {

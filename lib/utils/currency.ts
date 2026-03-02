@@ -2,6 +2,11 @@
 // Based on ROADMAP §6.1 Edge Cases (Amount > 999,999 → "1.2M₺")
 
 export const formatCurrency = (amount: number): string => {
+  // Handle negative numbers
+  if (amount < 0) {
+    return `-${formatCurrency(Math.abs(amount))}`;
+  }
+
   // Handle edge case: amount > 999,999
   if (amount >= 1_000_000) {
     const millions = amount / 1_000_000;
@@ -35,7 +40,8 @@ export const parseCurrency = (value: string): number => {
 
   const parsed = parseFloat(normalized);
 
-  return isNaN(parsed) ? 0 : parsed;
+  // Return 0 for invalid or negative numbers
+  return isNaN(parsed) || parsed < 0 ? 0 : parsed;
 };
 
 // Validate decimal places (max 2)

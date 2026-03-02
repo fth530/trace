@@ -25,7 +25,7 @@ export default function DayDetailScreen() {
     if (date) {
       loadData();
     }
-  }, [date, deleteExpense]); // Reflect deletions immediately
+  }, [date]); // Remove deleteExpense from dependencies to prevent infinite loop
 
   const loadData = async () => {
     if (!date) return;

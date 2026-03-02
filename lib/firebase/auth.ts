@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from './config';
+import { logger } from '../utils/logger';
 
 // Google Sign-In yapılandırması
 export const configureGoogleSignIn = () => {
@@ -34,7 +35,7 @@ export const signInWithGoogle = async () => {
       user: userCredential.user,
     };
   } catch (error: any) {
-    console.error('Google Sign-In Error:', error);
+    logger.error('Google Sign-In Error:', error);
     return {
       success: false,
       error: error.message,
@@ -49,7 +50,7 @@ export const signOut = async () => {
     await auth().signOut();
     return { success: true };
   } catch (error: any) {
-    console.error('Sign Out Error:', error);
+    logger.error('Sign Out Error:', error);
     return {
       success: false,
       error: error.message,
