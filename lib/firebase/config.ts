@@ -1,17 +1,16 @@
 // Firebase Configuration
-// Firebase Console'dan alacağınız bilgileri buraya ekleyin
+// Use environment variables for security
+// Create a .env file in the root directory (DO NOT commit to Git!)
 
 export const firebaseConfig = {
-  // Web'den Firebase Console > Project Settings > Your apps'den alın
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_PROJECT_ID.appspot.com',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || '',
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || '',
 };
 
 // Google Sign-In için Web Client ID
-// Firebase Console > Authentication > Sign-in method > Google > Web SDK configuration
 export const GOOGLE_WEB_CLIENT_ID =
-  'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com';
+  process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '';

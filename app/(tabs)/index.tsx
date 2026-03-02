@@ -64,7 +64,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     init();
-  }, [init]);
+  }, []); // Empty dependency - init is stable from Zustand
 
   useEffect(() => {
     checkLimits();

@@ -13,12 +13,12 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged((authUser) => {
       setUser(authUser);
-      if (initializing) setInitializing(false);
+      setInitializing(false);
       setLoading(false);
     });
 
     return unsubscribe;
-  }, [initializing]);
+  }, []); // Empty dependency - subscribe once on mount
 
   const handleSignIn = async () => {
     setLoading(true);
