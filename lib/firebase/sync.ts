@@ -19,12 +19,13 @@ const getUserRef = () => {
 export const addExpenseToCloud = async (expense: any) => {
   try {
     const userRef = getUserRef();
-    await userRef.collection(COLLECTIONS.EXPENSES).add({
+    const docRef = await userRef.collection(COLLECTIONS.EXPENSES).add({
       ...expense,
+      localId: expense.id, // Local ID'yi sakla
       createdAt: firestore.FieldValue.serverTimestamp(),
       updatedAt: firestore.FieldValue.serverTimestamp(),
     });
-    return { success: true };
+    return { success: true, cloudId: docRef.id };
   } catch (error: any) {
     console.error('Add Expense Error:', error);
     return { success: false, error: error.message };

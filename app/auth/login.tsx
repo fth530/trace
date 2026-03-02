@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../lib/hooks/useAuth';
-import { migrateLocalDataToCloud } from '../../lib/firebase/sync';
+import { migrateAllLocalData } from '../../lib/firebase/migration';
 import { useStore } from '../../lib/store';
 
 export default function LoginScreen() {
@@ -35,13 +35,15 @@ export default function LoginScreen() {
             {
               text: 'Evet',
               onPress: async () => {
-                const migrationResult = await migrateLocalDataToCloud(
-                  todayExpenses,
-                  settings,
-                );
+                const migrationResult = await migrateAllLocalData();
 
                 if (migrationResult.success) {
-                  Alert.alert('Başarılı', 'Verileriniz buluta yüklendi!');
+                  Alert.alert('Başarılı', 'Tüm verileriniz buluta yüklendi!');
+                } else {
+                  Alert.alert(
+                    'Uyarı',
+                    'Bazı veriler yüklenemedi. Lütfen tekrar deneyin.',
+                  );
                 }
                 router.replace('/(tabs)');
               },

@@ -175,6 +175,14 @@ export default function HomeScreen() {
         expenses={todayExpenses}
         onDelete={handleDelete}
         emptyMessage={i18n.t('home.empty_encouraging')}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={neonColors.cyan}
+            colors={[neonColors.cyan, neonColors.pink]}
+          />
+        }
         ListHeaderComponent={
           <View>
             <DailyTotal
