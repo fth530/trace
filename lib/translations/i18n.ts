@@ -99,11 +99,22 @@ const tr = {
   },
   common: {
     error: 'Hata',
+    success: 'Başarılı',
+    yes: 'Evet',
+    no: 'Hayır',
     close: 'Kapat',
     back: 'Geri',
     back_hint: 'Önceki ekrana dön',
     delete_label: 'Harcamayı sil',
     add_label: 'Harcama ekle',
+  },
+  auth: {
+    login_error: 'Giriş yapılamadı',
+    sync_title: 'Veri Senkronizasyonu',
+    sync_message: 'Cihazınızdaki veriler buluta yüklensin mi?',
+    migration_success_title: 'Başarılı',
+    migration_success_message: 'Tüm verileriniz buluta yüklendi!',
+    migration_error: 'Bazı veriler yüklenemedi. Lütfen tekrar deneyin.',
   },
 };
 
@@ -206,11 +217,22 @@ const en = {
   },
   common: {
     error: 'Error',
+    success: 'Success',
+    yes: 'Yes',
+    no: 'No',
     close: 'Close',
     back: 'Back',
-    back_hint: 'Go to previous screen',
+    back_hint: 'Go back to previous screen',
     delete_label: 'Delete expense',
     add_label: 'Add expense',
+  },
+  auth: {
+    login_error: 'Login failed',
+    sync_title: 'Data Synchronization',
+    sync_message: 'Upload your local data to cloud?',
+    migration_success_title: 'Success',
+    migration_success_message: 'All your data has been uploaded!',
+    migration_error: 'Some data could not be uploaded. Please try again.',
   },
 };
 

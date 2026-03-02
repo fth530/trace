@@ -10,6 +10,7 @@ import { useStore } from '@/lib/store';
 import { logger } from '@/lib/utils/logger';
 import { neonColors } from '@/lib/constants/design-tokens';
 import { configureGoogleSignIn, onAuthStateChanged } from '@/lib/firebase/auth';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -78,35 +79,37 @@ function RootLayout() {
   }, [isLoading, authChecked, isAuthenticated]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: neonColors.zinc950,
-          },
-          headerTintColor: '#ffffff',
-          headerShadowVisible: false,
-          contentStyle: {
-            backgroundColor: neonColors.zinc950,
-          },
-        }}
-      >
-        <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="onboarding/index"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal/add-expense"
-          options={{
-            presentation: 'modal',
-            title: '',
-            headerShown: false,
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: neonColors.zinc950,
+            },
+            headerTintColor: '#ffffff',
+            headerShadowVisible: false,
+            contentStyle: {
+              backgroundColor: neonColors.zinc950,
+            },
           }}
-        />
-      </Stack>
-    </GestureHandlerRootView>
+        >
+          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="onboarding/index"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal/add-expense"
+            options={{
+              presentation: 'modal',
+              title: '',
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
 

@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import { useAuth } from '../../lib/hooks/useAuth';
 import { migrateAllLocalData } from '../../lib/firebase/migration';
 import { useStore } from '../../lib/store';
+import { i18n } from '../../lib/translations/i18n';
 
 export default function LoginScreen() {
   const { signIn, loading } = useAuth();
@@ -23,38 +24,40 @@ export default function LoginScreen() {
       const hasLocalData = todayExpenses.length > 0;
 
       if (hasLocalData) {
-        Alert.alert(
-          'Veri Senkronizasyonu',
-          'Cihazınızdaki veriler buluta yüklensin mi?',
-          [
-            {
-              text: 'Hayır',
-              style: 'cancel',
-              onPress: () => router.replace('/(tabs)'),
-            },
-            {
-              text: 'Evet',
-              onPress: async () => {
-                const migrationResult = await migrateAllLocalData();
+        Alert.alert(i18n.t('auth.sync_title'), i18n.t('auth.sync_message'), [
+          {
+            text: i18n.t('common.no'),
+            style: 'cancel',
+            onPress: () => router.replace('/(tabs)'),
+          },
+          {
+            text: i18n.t('common.yes'),
+            onPress: async () => {
+              const migrationResult = await migrateAllLocalData();
 
-                if (migrationResult.success) {
-                  Alert.alert('Başarılı', 'Tüm verileriniz buluta yüklendi!');
-                } else {
-                  Alert.alert(
-                    'Uyarı',
-                    'Bazı veriler yüklenemedi. Lütfen tekrar deneyin.',
-                  );
-                }
-                router.replace('/(tabs)');
-              },
+              if (migrationResult.success) {
+                Alert.alert(
+                  i18n.t('auth.migration_success_title'),
+                  i18n.t('auth.migration_success_message'),
+                );
+              } else {
+                Alert.alert(
+                  i18n.t('common.error'),
+                  i18n.t('auth.migration_error'),
+                );
+              }
+              router.replace('/(tabs)');
             },
-          ],
-        );
+          },
+        ]);
       } else {
         router.replace('/(tabs)');
       }
     } else {
-      Alert.alert('Hata', result.error || 'Giriş yapılamadı');
+      Alert.alert(
+        i18n.t('common.error'),
+        result.error || i18n.t('auth.login_error'),
+      );
     }
   };
 

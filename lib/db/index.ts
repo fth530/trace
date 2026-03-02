@@ -3,6 +3,7 @@
 
 import * as SQLite from 'expo-sqlite';
 import { logger } from '../utils/logger';
+import { runMigrations } from './migrations';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 let isInitializing = false;
@@ -92,6 +93,10 @@ export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
 
     dbInstance = db;
     isInitializing = false;
+
+    // Run migrations
+    await runMigrations(db);
+
     logger.log('✅ Database initialized successfully');
 
     return db;
