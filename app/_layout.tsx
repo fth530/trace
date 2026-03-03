@@ -65,18 +65,11 @@ function RootLayout() {
       const hasSeenOnboarding =
         useStore.getState().settings.has_seen_onboarding;
 
-      // Routing priority: onboarding > login > tabs
-      if (!hasSeenOnboarding) {
-        router.replace('/onboarding');
-      } else if (!isAuthenticated) {
-        // Kullanıcı onboarding'i gördü ama giriş yapmadı
-        // Login ekranını gösterme, direkt tabs'a git (opsiyonel kullanım)
-        router.replace('/(tabs)');
-      } else {
-        router.replace('/(tabs)');
-      }
+      // Single navigation call to prevent race conditions
+      const targetRoute = !hasSeenOnboarding ? '/onboarding' : '/(tabs)';
+      router.replace(targetRoute);
     }
-  }, [isLoading, authChecked, isAuthenticated]);
+  }, [isLoading, authChecked]); // Removed isAuthenticated to prevent unnecessary re-navigation
 
   return (
     <ErrorBoundary>

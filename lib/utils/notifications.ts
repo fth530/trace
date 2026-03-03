@@ -3,6 +3,9 @@ import { Platform } from 'react-native';
 import { i18n } from '@/lib/translations/i18n';
 import { logger } from './logger';
 
+// Cache permission status to avoid repeated checks
+let permissionStatus: 'granted' | 'denied' | 'undetermined' = 'undetermined';
+
 // Set notification handler to show alerts when app is in foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,7 +16,11 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function requestNotificationPermissions() {
+export async function requestNotificationPermissions(): Promise<boolean> {
+  // Return cached status if already determined
+  if (permissionStatus === 'granted') return true;
+  if (permissionStatus === 'denied') return false;
+
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -31,7 +38,9 @@ export async function requestNotificationPermissions() {
     finalStatus = status;
   }
 
-  return finalStatus === 'granted';
+  // Cache the result
+  permissionStatus = finalStatus === 'granted' ? 'granted' : 'denied';
+  return permissionStatus === 'granted';
 }
 
 /**
@@ -43,7 +52,7 @@ export async function updateNotificationSchedule(hasExpenseToday: boolean) {
   try {
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
-      logger.log('⚠️ Notification permission not granted');
+      logger.log('⚠️ Notifications disabled by user');
       return;
     }
 
@@ -55,20 +64,14 @@ export async function updateNotificationSchedule(hasExpenseToday: boolean) {
 
     // Determine the starting day for scheduling
     // If they already spent today, or it's past 20:00, start scheduling from tomorrow
-    let daysToAddForFirstNotification = 0;
-
-    if (hasExpenseToday || currentHour >= 20) {
-      daysToAddForFirstNotification = 1;
-    }
+    const shouldStartTomorrow = hasExpenseToday || currentHour >= 20;
+    const startDay = shouldStartTomorrow ? 1 : 0;
 
     // Schedule notifications for the next 7 days
     for (let i = 0; i < 7; i++) {
       const triggerDate = new Date();
-      triggerDate.setDate(now.getDate() + daysToAddForFirstNotification + i);
-      triggerDate.setHours(20);
-      triggerDate.setMinutes(0);
-      triggerDate.setSeconds(0);
-      triggerDate.setMilliseconds(0);
+      triggerDate.setDate(now.getDate() + startDay + i);
+      triggerDate.setHours(20, 0, 0, 0); // Set all time components at once
 
       await Notifications.scheduleNotificationAsync({
         content: {

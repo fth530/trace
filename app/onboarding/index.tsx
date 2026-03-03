@@ -89,6 +89,9 @@ export default function OnboardingScreen() {
             router.replace('/(tabs)');
           }}
           className="absolute top-16 right-8 z-10 p-2"
+          accessibilityRole="button"
+          accessibilityLabel="Skip onboarding"
+          accessibilityHint="Skip to main app"
         >
           <Text className="text-zinc-500 font-medium">
             {i18n.t('onboarding.skip')}
