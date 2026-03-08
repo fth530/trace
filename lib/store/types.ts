@@ -33,18 +33,19 @@ export interface Settings {
 
 export interface AppStore {
   // State
+  currentDate: string;
   todayExpenses: Expense[];
   todayTotal: number;
   monthTotal: number;
   history: DaySummary[];
   weekTotal: number;
-  currentStreak: number;
   settings: Settings;
   isLoading: boolean;
   error: string | null;
 
   // Actions
   init: () => Promise<void>;
+  checkRollover: () => Promise<boolean>;
   addExpense: (
     expense: Omit<Expense, 'id' | 'created_at' | 'date'>,
   ) => Promise<void>;

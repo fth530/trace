@@ -6,7 +6,6 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { logger } from '@/lib/utils/logger';
-import { neonColors } from '@/lib/constants/design-tokens';
 
 interface Props {
   children: ReactNode;
@@ -62,13 +61,13 @@ export class ErrorBoundary extends Component<Props, State> {
             <View
               className="w-24 h-24 rounded-full bg-red-500/20 items-center justify-center mb-6"
               style={{
-                shadowColor: neonColors.rose,
+                shadowColor: '#F43F5E',
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.5,
                 shadowRadius: 20,
               }}
             >
-              <Ionicons name="warning" size={48} color={neonColors.rose} />
+              <Ionicons name="warning" size={48} color="#F43F5E" />
             </View>
 
             <Text className="text-white text-2xl font-bold mb-2 text-center">

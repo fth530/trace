@@ -1,0 +1,15 @@
+﻿  console.log
+    Ô£à Expense added: 1
+
+      at Object.apply [as log] (lib/utils/logger.ts:9:18)
+
+  console.log
+    Ô£à Expense deleted: 1
+
+      at Object.apply [as log] (lib/utils/logger.ts:9:18)
+
+  console.log
+    Ô£à Expense deleted: 1
+
+      at Object.apply [as log] (lib/utils/logger.ts:9:18)
+

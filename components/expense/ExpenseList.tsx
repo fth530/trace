@@ -1,5 +1,5 @@
-// Animated Expense List
-// Based on ROADMAP §4 Component Inventory & Antigravity Final Protocol
+// S-Class Animated Expense List
+// Based on Antigravity UI Architecture
 
 import React from 'react';
 import { RefreshControlProps } from 'react-native';
@@ -28,7 +28,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
     <Animated.FlatList
       data={expenses}
       keyExtractor={(item) => item.id.toString()}
-      itemLayoutAnimation={LinearTransition.springify().damping(14)}
+      itemLayoutAnimation={LinearTransition.springify().damping(16).stiffness(120)}
       ListHeaderComponent={ListHeaderComponent}
       refreshControl={refreshControl}
       ListEmptyComponent={
@@ -47,8 +47,8 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
         />
       )}
       contentContainerStyle={{
-        paddingHorizontal: 16,
-        paddingBottom: 120, // Leave space for FAB
+        paddingHorizontal: 20,
+        paddingBottom: 140, // More breathing room for FAB
       }}
       showsVerticalScrollIndicator={false}
     />

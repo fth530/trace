@@ -1,5 +1,5 @@
-// Add Expense Modal
-// Based on ROADMAP §6.2 Add Expense Modal Specification & Antigravity Final Protocol
+// S-Class Add Expense Modal
+// Based on Antigravity Protocol
 
 import React, { useState } from 'react';
 import {
@@ -25,6 +25,7 @@ import { validateDecimal, parseCurrency } from '@/lib/utils/currency';
 import { logger } from '@/lib/utils/logger';
 import { LinearGradient } from 'expo-linear-gradient';
 import { i18n } from '@/lib/translations/i18n';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import {
   gradients,
   neonColors,
@@ -50,7 +51,7 @@ export default function AddExpenseModal() {
   };
 
   const handleCategorySelect = (selectedCategory: Category) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setCategory(selectedCategory);
   };
 
@@ -93,6 +94,7 @@ export default function AddExpenseModal() {
     }
 
     if (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(i18n.t('modal.error_title'), error);
       return;
     }
@@ -102,6 +104,7 @@ export default function AddExpenseModal() {
 
   const submitExpense = async () => {
     setIsSubmitting(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     try {
       const parsedAmount = parseCurrency(amount);
@@ -128,8 +131,8 @@ export default function AddExpenseModal() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-zinc-950"
     >
-      {/* Background Deep Purple/Blue Glow */}
-      <View className="absolute top-0 w-full h-full opacity-30 pointer-events-none">
+      {/* Background S-Class Gradient */}
+      <View className="absolute top-0 w-full h-full opacity-60 pointer-events-none">
         <LinearGradient
           colors={gradients.modal}
           start={{ x: 0, y: 0 }}
@@ -138,19 +141,22 @@ export default function AddExpenseModal() {
         />
       </View>
 
-      <View className="flex-row items-center justify-between px-6 pt-12 pb-4">
-        <Text className="text-white text-2xl font-bold tracking-tight">
+      <Animated.View
+        entering={FadeInDown.duration(600).springify().damping(16).stiffness(100)}
+        className="flex-row items-center justify-between px-6 pt-12 pb-4"
+      >
+        <Text className="text-white text-3xl font-black tracking-tighter">
           {i18n.t('modal.add_title')}
         </Text>
         <Pressable
           onPress={handleClose}
-          className="p-2 rounded-full active:bg-white/10"
+          className="p-2.5 rounded-full bg-white/5 border border-white/10 active:scale-90 active:bg-white/10 transition-all backdrop-blur-md"
           accessibilityRole="button"
           accessibilityLabel={i18n.t('common.close')}
         >
-          <Ionicons name="close" size={28} color="white" />
+          <Ionicons name="close" size={24} color={neonColors.white} />
         </Pressable>
-      </View>
+      </Animated.View>
 
       <ScrollView
         contentContainerStyle={{
@@ -162,104 +168,116 @@ export default function AddExpenseModal() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Amount Input */}
-        <View className="mb-6">
-          <Text className="text-slate-400 font-medium text-sm mb-2 ml-1">
-            {i18n.t('modal.amount_label')}
-          </Text>
-          <TextInput
-            value={amount}
-            onChangeText={handleAmountChange}
-            placeholder={i18n.t('modal.amount_placeholder')}
-            placeholderTextColor={placeholderColor}
-            keyboardType="decimal-pad"
-            autoFocus={true}
-            className="w-full text-white text-4xl font-black p-4 bg-slate-900/40 border border-white/10 rounded-2xl backdrop-blur-lg"
-          />
-        </View>
+        <Animated.View entering={FadeInUp.delay(100).springify().damping(14)}>
+          {/* Amount Input */}
+          <View className="mb-7">
+            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-3 ml-1">
+              {i18n.t('modal.amount_label')}
+            </Text>
+            <TextInput
+              value={amount}
+              onChangeText={handleAmountChange}
+              placeholder={i18n.t('modal.amount_placeholder')}
+              placeholderTextColor={placeholderColor}
+              keyboardType="decimal-pad"
+              autoFocus={true}
+              className="w-full text-white text-5xl font-black p-5 bg-black/60 border border-white/5 rounded-3xl backdrop-blur-xl"
+            />
+          </View>
+        </Animated.View>
 
-        {/* Category Chips */}
-        <View className="mb-6">
-          <Text className="text-slate-400 font-medium text-sm mb-3 ml-1">
-            {i18n.t('modal.category_label')}
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {CATEGORIES.map((cat) => {
-              const isSelected = category === cat;
-              const catColor = categoryConfig[cat].color;
-              return (
-                <Pressable
-                  key={cat}
-                  onPress={() => handleCategorySelect(cat)}
-                  className={`px-4 py-2.5 rounded-xl border active:scale-95 transition-all`}
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: catColor,
-                          backgroundColor: `${catColor}20`,
-                        }
-                      : {
-                          borderColor: 'rgba(255,255,255,0.05)',
-                          backgroundColor: 'rgba(255,255,255,0.05)',
-                        }
-                  }
-                  accessibilityRole="button"
-                  accessibilityLabel={`Kategori: ${cat}`}
-                  accessibilityState={{ selected: isSelected }}
-                >
-                  <Text
-                    className={`text-sm font-medium tracking-wide`}
+        <Animated.View entering={FadeInUp.delay(200).springify().damping(14)}>
+          {/* Category Chips */}
+          <View className="mb-7">
+            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-4 ml-1">
+              {i18n.t('modal.category_label')}
+            </Text>
+            <View className="flex-row flex-wrap gap-3">
+              {CATEGORIES.map((cat) => {
+                const isSelected = category === cat;
+                const catColor = categoryConfig[cat].color;
+                return (
+                  <Pressable
+                    key={cat}
+                    onPress={() => handleCategorySelect(cat)}
+                    className={`px-5 py-3 rounded-2xl border active:scale-90 transition-all overflow-hidden`}
                     style={
                       isSelected
-                        ? { color: catColor }
-                        : { color: neonColors.slateLight }
+                        ? {
+                          borderColor: catColor,
+                          backgroundColor: `${catColor}30`,
+                        }
+                        : {
+                          borderColor: 'rgba(255,255,255,0.05)',
+                          backgroundColor: 'rgba(0,0,0,0.6)',
+                        }
                     }
+                    accessibilityRole="button"
+                    accessibilityLabel={`Kategori: ${cat}`}
+                    accessibilityState={{ selected: isSelected }}
                   >
-                    {cat}
-                  </Text>
-                </Pressable>
-              );
-            })}
+                    {isSelected && (
+                      <View
+                        className="absolute inset-0 opacity-20"
+                        style={{ backgroundColor: catColor }}
+                      />
+                    )}
+                    <Text
+                      className={`text-sm font-semibold tracking-wide`}
+                      style={
+                        isSelected
+                          ? { color: '#FAFAFA' }
+                          : { color: neonColors.slateDark }
+                      }
+                    >
+                      {cat}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        </Animated.View>
 
-        {/* Description Input */}
-        <View className="mb-8">
-          <Text className="text-slate-400 font-medium text-sm mb-2 ml-1">
-            {i18n.t('modal.desc_label')}
-          </Text>
-          <TextInput
-            value={description}
-            onChangeText={setDescription}
-            placeholder={i18n.t('modal.desc_placeholder')}
-            placeholderTextColor={placeholderColor}
-            maxLength={100}
-            className="w-full text-white text-lg font-medium p-4 bg-slate-900/40 border border-white/10 rounded-2xl backdrop-blur-lg"
-          />
-        </View>
+        <Animated.View entering={FadeInUp.delay(300).springify().damping(14)}>
+          {/* Description Input */}
+          <View className="mb-8">
+            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-3 ml-1">
+              {i18n.t('modal.desc_label')}
+            </Text>
+            <TextInput
+              value={description}
+              onChangeText={setDescription}
+              placeholder={i18n.t('modal.desc_placeholder')}
+              placeholderTextColor={placeholderColor}
+              maxLength={100}
+              className="w-full text-white text-lg font-medium p-5 bg-black/60 border border-white/5 rounded-3xl backdrop-blur-xl"
+            />
+          </View>
+        </Animated.View>
 
         <View className="flex-1" />
 
-        {/* Save Button */}
-        <Pressable
-          onPress={handleSave}
-          disabled={isSubmitting}
-          className="w-full mt-4 overflow-hidden rounded-2xl active:scale-95 transition-all outline-none"
-          style={neonShadow(neonColors.pink, 'md')}
-        >
-          <LinearGradient
-            colors={gradients.fab}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            className="p-5 items-center justify-center opacity-90"
+        <Animated.View entering={FadeInUp.delay(400).springify().damping(14)}>
+          {/* Save Button */}
+          <Pressable
+            onPress={handleSave}
+            disabled={isSubmitting}
+            className="w-full mt-4 overflow-hidden rounded-full active:scale-95 transition-all outline-none"
+            style={neonShadow(neonColors.mint, 'md')} // Updated to mint from S-Class
           >
-            <Text className="text-white text-lg font-bold tracking-widest uppercase">
-              {isSubmitting
-                ? i18n.t('modal.saving_button')
-                : i18n.t('modal.save_button')}
-            </Text>
-          </LinearGradient>
-        </Pressable>
+            <View
+              className="p-5 items-center justify-center opacity-90"
+              style={{ backgroundColor: neonColors.mint }} // Using Mint direct accent
+            >
+              <Text className="text-black text-lg font-black tracking-widest uppercase">
+                {isSubmitting
+                  ? i18n.t('modal.saving_button')
+                  : i18n.t('modal.save_button')}
+              </Text>
+            </View>
+          </Pressable>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

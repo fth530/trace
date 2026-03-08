@@ -1,5 +1,5 @@
-// Category Badge Component
-// Based on ROADMAP §4 Component Inventory & Antigravity Protocol
+// S-Class Category Badge Component
+// Based on Antigravity UI Architecture
 
 import React from 'react';
 import { View, Text } from 'react-native';
@@ -20,20 +20,22 @@ export const Badge: React.FC<BadgeProps> = ({ category, size = 'md' }) => {
 
   return (
     <View
-      className={`flex-row items-center rounded-lg border border-white/10 ${
-        isSmall ? 'py-0.5 px-1.5' : 'py-1 px-2.5'
-      }`}
-      style={{ backgroundColor: `${categoryColor}20` }}
+      className={`flex-row items-center rounded-full border border-white/5 bg-black/60 backdrop-blur-md overflow-hidden ${isSmall ? 'py-1 px-2' : 'py-1.5 px-3'
+        }`}
     >
+      <View
+        className="absolute inset-0 opacity-20"
+        style={{ backgroundColor: categoryColor }}
+      />
       <Ionicons
         name={config.icon}
-        size={isSmall ? 12 : 16}
+        size={isSmall ? 10 : 14}
         color={categoryColor}
-        style={{ marginRight: 4 }}
+        style={{ marginRight: 6 }}
       />
       <Text
-        className={`font-bold ${isSmall ? 'text-[10px]' : 'text-xs'}`}
-        style={{ color: categoryColor }}
+        className={`font-semibold tracking-wide ${isSmall ? 'text-[10px]' : 'text-xs'}`}
+        style={{ color: '#FAFAFA' }}
       >
         {config.label}
       </Text>

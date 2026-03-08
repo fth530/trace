@@ -1,5 +1,5 @@
 // Date Utilities
-// Based on ROADMAP §2 Database Design (ISO 8601 format)
+// Based on ROADMAP §2 Database Design (ISO 8601 format) & S-Class Logic Protocol
 
 import { format, startOfMonth, endOfMonth, subDays } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -42,6 +42,16 @@ export const getTodayISO = (): string => {
   return formatDateISO(new Date());
 };
 
+// Get a past date in ISO format for Timezone-safe SQLite queries
+export const getPastDateISO = (daysAgo: number): string => {
+  return formatDateISO(subDays(new Date(), daysAgo));
+};
+
+// Get the start of the current month in ISO format
+export const getStartOfMonthISO = (): string => {
+  return formatDateISO(startOfMonth(new Date()));
+};
+
 // Get month range (start and end dates in ISO format)
 export const getMonthRange = (
   date: Date = new Date(),
@@ -62,26 +72,31 @@ export const parseISODate = (isoString: string): Date => {
   return new Date(isoString);
 };
 
-// Calculate current streak from an array of date strings (descending)
+// Calculate current streak: O(1) Set Lookup Optimisation
 export const calculateStreak = (dates: string[]): number => {
   if (!dates || dates.length === 0) return 0;
+
+  // S-Class Logic: Convert array to Set for O(1) lookups instead of O(N) Array.includes.
+  // Crucial for performance when users have years of logged data.
+  const dateSet = new Set(dates);
 
   const today = new Date();
   const todayISO = formatDateISO(today);
   const yesterdayISO = formatDateISO(subDays(today, 1));
 
-  if (!dates.includes(todayISO) && !dates.includes(yesterdayISO)) {
+  // If there's no entry for today or yesterday, streak is definitely broken
+  if (!dateSet.has(todayISO) && !dateSet.has(yesterdayISO)) {
     return 0;
   }
 
   let streak = 0;
-  let targetDate = dates.includes(todayISO) ? today : subDays(today, 1);
+  let targetDate = dateSet.has(todayISO) ? today : subDays(today, 1);
 
   while (true) {
     const targetISO = formatDateISO(targetDate);
-    if (dates.includes(targetISO)) {
+    if (dateSet.has(targetISO)) {
       streak++;
-      targetDate = subDays(targetDate, 1);
+      targetDate = subDays(targetDate, 1); // Move backward
     } else {
       break;
     }

@@ -8,10 +8,10 @@ module.exports = {
       colors: {
         neon: {
           sky: '#38bdf8',
-          amber: '#fbbf24',
-          fuchsia: '#e879f9',
-          pink: '#f4258c',
           cyan: '#0ea5e9',
+          mint: '#00FFAA',
+          yellow: '#FFD60A',
+          crimson: '#FF2A55',
         },
         zinc: {
           950: '#09090b',

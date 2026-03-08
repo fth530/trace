@@ -18,21 +18,21 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <Animated.View
-      entering={FadeInDown.duration(600).springify().damping(12)}
-      className="flex-1 items-center justify-center py-24"
+      entering={FadeInDown.duration(800).springify().damping(12).stiffness(100)}
+      className="flex-1 items-center justify-center py-20"
     >
       <View
-        className="w-24 h-24 rounded-full items-center justify-center mb-6 border border-white/5 bg-slate-900/50 backdrop-blur-md"
-        style={neonShadow(neonColors.cyan, 'sm')}
+        className="w-24 h-24 rounded-full items-center justify-center mb-8 border border-white/5 bg-black/80 backdrop-blur-xl overflow-hidden"
+        style={neonShadow(neonColors.sky, 'md')}
       >
-        <Ionicons name={icon} size={48} color={neonColors.sky} />
+        <Ionicons name={icon} size={42} color={neonColors.cyan} />
       </View>
 
-      <Text className="text-white text-xl font-bold tracking-widest mb-2 text-center">
+      <Text className="text-white text-xl font-bold tracking-widest mb-3 text-center px-4">
         {message}
       </Text>
 
-      <Text className="text-slate-500 font-medium text-sm text-center px-10">
+      <Text className="text-slate-400 font-medium text-sm text-center px-12 leading-6">
         {subMessage}
       </Text>
     </Animated.View>

@@ -1,7 +1,8 @@
 // Root Layout
-// Based on ROADMAP §3 Navigation Tree
+// Based on ROADMAP §3 & S-Class Production Protocol
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { AppState } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
@@ -24,22 +25,39 @@ configureReanimatedLogger({
 });
 
 // Prevent splash screen from auto-hiding until data loads
-// Prevent splash screen from auto-hiding until data loads
 SplashScreen.preventAutoHideAsync();
 
 // Initialize Sentry Crash Reporting
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
-  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-  // We recommend adjusting this value in production.
-  tracesSampleRate: 1.0,
+  // S-Class Security: Only sample 20% in production to prevent bandwidth overload
+  tracesSampleRate: 0.2,
 });
 
 function RootLayout() {
   const isLoading = useStore((state) => state.isLoading);
   const initStore = useStore((state) => state.init);
+  const checkRollover = useStore((state) => state.checkRollover);
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const appState = useRef(AppState.currentState);
+
+  // S-Class Logic: Midnight Rollover Listener (Background to Foreground)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        checkRollover().catch(e => logger.error('Rollover check failed:', e));
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [checkRollover]);
 
   // Initialize Firebase and store on mount
   useEffect(() => {
@@ -57,19 +75,26 @@ function RootLayout() {
     return unsubscribe;
   }, []);
 
-  // Hide splash screen and handle routing when loading is complete
+  // Hide splash screen and handle Routing Guard when loading is complete
   useEffect(() => {
     if (!isLoading && authChecked) {
       SplashScreen.hideAsync();
 
-      const hasSeenOnboarding =
-        useStore.getState().settings.has_seen_onboarding;
+      const hasSeenOnboarding = useStore.getState().settings.has_seen_onboarding;
 
-      // Single navigation call to prevent race conditions
-      const targetRoute = !hasSeenOnboarding ? '/onboarding' : '/(tabs)';
-      router.replace(targetRoute);
+      // S-Class Auth Guard Logic
+      if (!hasSeenOnboarding) {
+        // Enforce onboarding first
+        router.replace('/onboarding');
+      } else if (!isAuthenticated) {
+        // Enforce login wall if onboarding seen but no user state (No Anon or Normal Auth)
+        router.replace('/auth/login');
+      } else {
+        // Full access
+        router.replace('/(tabs)');
+      }
     }
-  }, [isLoading, authChecked]); // Removed isAuthenticated to prevent unnecessary re-navigation
+  }, [isLoading, authChecked, isAuthenticated]); // Re-evaluate path when auth changes to securely route user back instantly
 
   return (
     <ErrorBoundary>

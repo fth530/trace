@@ -1,5 +1,5 @@
-// Tab Navigator Layout
-// Based on ROADMAP §3 Navigation Tree & Antigravity Final Protocol
+// S-Class Tab Navigator Layout
+// Based on Antigravity Protocol
 
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,50 +11,50 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: neonColors.sky,
-        tabBarInactiveTintColor: '#64748b', // Slate-500
+        tabBarActiveTintColor: neonColors.mint,
+        tabBarInactiveTintColor: neonColors.slateDark,
         tabBarStyle: {
           position: 'absolute',
-          borderTopWidth: 0,
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255,255,255,0.05)',
           elevation: 0,
-          height: Platform.OS === 'ios' ? 90 : 80,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 20,
-          paddingTop: 12,
-          backgroundColor:
-            Platform.OS === 'ios' ? 'transparent' : neonColors.zinc950,
+          height: Platform.OS === 'ios' ? 95 : 85,
+          paddingBottom: Platform.OS === 'ios' ? 35 : 20,
+          paddingTop: 15,
+          backgroundColor: 'transparent',
         },
         tabBarBackground: () =>
           Platform.OS === 'ios' ? (
             <BlurView
               tint="dark"
-              intensity={80}
+              intensity={90}
               style={StyleSheet.absoluteFill}
             />
           ) : (
             <View
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: 'rgba(9, 9, 11, 0.95)' },
+                { backgroundColor: 'rgba(0, 0, 0, 0.85)' },
               ]}
             />
           ),
         headerStyle: {
-          backgroundColor: neonColors.zinc950,
+          backgroundColor: 'black',
           borderBottomWidth: 0,
         },
         headerShadowVisible: false,
         headerTintColor: '#ffffff',
         headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 18,
-          letterSpacing: 0.5,
+          fontWeight: '900',
+          fontSize: 20,
+          letterSpacing: -0.5,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false, // Hidden for custom Home UI
+          headerShown: false,
           title: 'Bugün',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
@@ -64,8 +64,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="history"
         options={{
+          headerShown: false,
           title: 'Geçmiş',
-          headerTitle: 'Geçmiş Harcamalar',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
@@ -74,8 +74,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="analytics"
         options={{
+          headerShown: false,
           title: 'Analiz',
-          headerTitle: 'Aylık İstatistik',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="pie-chart" size={size} color={color} />
           ),
@@ -84,6 +84,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
+          headerShown: false,
           title: 'Ayarlar',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />

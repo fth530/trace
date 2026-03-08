@@ -1,7 +1,7 @@
-// Home Screen (Bugün)
-// Based on ROADMAP §6.1 Home Screen Specification & Antigravity Final Protocol
+// S-Class Home Screen
+// Based on Antigravity Protocol
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Pressable,
@@ -21,6 +21,7 @@ import { ExpenseList } from '@/components/expense/ExpenseList';
 import { LimitProgress } from '@/components/limit/LimitProgress';
 import { LimitBanner } from '@/components/limit/LimitBanner';
 import { getLimitStatus } from '@/lib/utils/limits';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { logger } from '@/lib/utils/logger';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -45,7 +46,6 @@ export default function HomeScreen() {
     todayExpenses,
     todayTotal,
     monthTotal,
-    currentStreak,
     settings,
     isLoading,
     init,
@@ -121,7 +121,7 @@ export default function HomeScreen() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     try {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       await deleteExpense(id);
@@ -131,25 +131,25 @@ export default function HomeScreen() {
       Alert.alert(i18n.t('common.error'), i18n.t('home.delete_error'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-  };
+  }, [deleteExpense]);
 
   const handleAddExpense = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     router.push('/modal/add-expense');
   };
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-zinc-950">
-        <ActivityIndicator size="large" color={neonColors.cyan} />
+      <View className="flex-1 items-center justify-center bg-black">
+        <ActivityIndicator size="large" color={neonColors.mint} />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-zinc-950">
-      {/* Universal Antigravity Background Glow */}
-      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
+    <View className="flex-1 bg-black">
+      {/* S-Class Antigravity Background Glow */}
+      <View className="absolute top-0 w-full h-full opacity-40 pointer-events-none">
         <LinearGradient
           colors={gradients.main}
           locations={gradientLocations.main}
@@ -170,66 +170,73 @@ export default function HomeScreen() {
         />
       )}
 
-      {/* Main List - Replaces ScrollView for better performance */}
-      <ExpenseList
-        expenses={todayExpenses}
-        onDelete={handleDelete}
-        emptyMessage={i18n.t('home.empty_encouraging')}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={neonColors.cyan}
-            colors={[neonColors.cyan, neonColors.pink]}
-          />
-        }
-        ListHeaderComponent={
-          <View>
-            <DailyTotal
-              amount={todayTotal}
-              limit={settings.daily_limit}
-              isToday={true}
-              streak={currentStreak}
-            />
-
-            <View className="mb-6 px-4">
-              <LimitProgress
-                current={todayTotal}
-                limit={settings.daily_limit}
-                type="daily"
-              />
-              <LimitProgress
-                current={monthTotal}
-                limit={settings.monthly_limit}
-                type="monthly"
-              />
-            </View>
-          </View>
-        }
-      />
-
-      <Pressable
-        onPress={handleAddExpense}
-        className="absolute bottom-24 right-6 w-16 h-16 rounded-full items-center justify-center border border-white/20 shadow-2xl active:scale-95 transition-all outline-none"
-        style={neonShadow(neonColors.pink, 'lg')}
-        accessibilityRole="button"
-        accessibilityLabel={i18n.t('common.add_label')}
+      {/* Main List */}
+      <Animated.View
+        style={{ flex: 1 }}
+        entering={FadeInDown.duration(800).springify().damping(16).stiffness(120)}
       >
-        {/* FAB Glass Gradient */}
-        <LinearGradient
-          colors={gradients.fab}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            borderRadius: 32,
-            opacity: 0.9,
-          }}
+        <ExpenseList
+          expenses={todayExpenses}
+          onDelete={handleDelete}
+          emptyMessage={i18n.t('home.empty_encouraging')}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={neonColors.cyan}
+              colors={[neonColors.cyan, neonColors.mint]}
+            />
+          }
+          ListHeaderComponent={
+            <View>
+              <DailyTotal
+                amount={todayTotal}
+                limit={settings.daily_limit}
+                isToday={true}
+              />
+
+              <View className="mb-6 px-4">
+                <LimitProgress
+                  current={todayTotal}
+                  limit={settings.daily_limit}
+                  type="daily"
+                />
+                <LimitProgress
+                  current={monthTotal}
+                  limit={settings.monthly_limit}
+                  type="monthly"
+                />
+              </View>
+            </View>
+          }
         />
-        <Ionicons name="add" size={36} color="white" />
-      </Pressable>
+      </Animated.View>
+
+      <Animated.View
+        entering={FadeInDown.delay(400).springify()}
+        style={{ position: 'absolute', bottom: 100, right: 24, zIndex: 10 }}
+      >
+        <Pressable
+          onPress={handleAddExpense}
+          className="w-16 h-16 rounded-full items-center justify-center border border-white/20 active:scale-95 transition-all outline-none"
+          style={neonShadow(neonColors.mint, 'lg')}
+          accessibilityRole="button"
+          accessibilityLabel={i18n.t('common.add_label')}
+        >
+          {/* FAB Solid Color */}
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              borderRadius: 32,
+              backgroundColor: neonColors.mint,
+              opacity: 0.9,
+            }}
+          />
+          <Ionicons name="add" size={36} color="black" />
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }

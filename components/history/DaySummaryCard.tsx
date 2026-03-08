@@ -1,3 +1,6 @@
+// S-Class Day Summary Card
+// Based on Antigravity UI Architecture
+
 import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -14,7 +17,7 @@ interface DaySummaryCardProps {
 
 export function DaySummaryCard({ date, total, count }: DaySummaryCardProps) {
   const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push(`/history/${date}`);
   };
 
@@ -27,7 +30,7 @@ export function DaySummaryCard({ date, total, count }: DaySummaryCardProps) {
       accessibilityLabel={`${formatDateRelative(date)} günü, ${count} harcama, toplam ${formatCurrency(total)}`}
       accessibilityHint="Günün detaylarını görmek için dokunun"
     >
-      <View className="bg-slate-900/60 backdrop-blur-xl p-5 flex-row justify-between items-center">
+      <View className="bg-black/80 backdrop-blur-xl p-5 flex-row justify-between items-center">
         <View className="flex-1">
           <Text className="text-white text-lg font-bold mb-1 tracking-wide">
             {formatDateRelative(date)}
@@ -36,7 +39,7 @@ export function DaySummaryCard({ date, total, count }: DaySummaryCardProps) {
             {count} {i18n.t('history.expense_count')}
           </Text>
         </View>
-        <Text className="text-sky-400 text-xl font-black drop-shadow-md">
+        <Text className="text-sky-400 text-2xl font-black drop-shadow-md">
           {formatCurrency(total)}
         </Text>
       </View>

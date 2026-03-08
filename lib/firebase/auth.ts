@@ -10,6 +10,22 @@ export const configureGoogleSignIn = () => {
   });
 };
 
+export const signInAnonymously = async () => {
+  try {
+    const userCredential = await auth().signInAnonymously();
+    return {
+      success: true,
+      user: userCredential.user,
+    };
+  } catch (error: any) {
+    logger.error('Anonymous Sign-In Error:', error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 // Google ile giriş yap
 export const signInWithGoogle = async () => {
   try {

@@ -1,5 +1,5 @@
 // SQL Queries
-// Based on ROADMAP §2 Database Design - Query Patterns
+// Based on ROADMAP §2 Database Design & S-Class Logic Protocol
 
 import type { SQLiteDatabase } from 'expo-sqlite';
 import type { Expense, DaySummary, Settings } from '../store/types';
@@ -30,7 +30,8 @@ export const getTodayTotal = async (
   date: string,
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    'SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date = ?',
+    // S-Class Logic: ROUND(COALESCE(SUM()), 2) prevents floating point issues (19.98999999999) 
+    'SELECT ROUND(COALESCE(SUM(amount), 0), 2) as total FROM expenses WHERE date = ?',
     [date],
   );
   return result?.total ?? 0;
@@ -42,7 +43,7 @@ export const getMonthTotal = async (
   endDate: string,
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    'SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= ? AND date <= ?',
+    'SELECT ROUND(COALESCE(SUM(amount), 0), 2) as total FROM expenses WHERE date >= ? AND date <= ?',
     [startDate, endDate],
   );
   return result?.total ?? 0;
@@ -58,7 +59,7 @@ export const getMonthExpensesByCategory = async (
     total: number;
     count: number;
   }>(
-    'SELECT category, COALESCE(SUM(amount), 0) as total, COUNT(*) as count FROM expenses WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total DESC',
+    'SELECT category, ROUND(COALESCE(SUM(amount), 0), 2) as total, COUNT(*) as count FROM expenses WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total DESC',
     [startDate, endDate],
   );
   return result;
@@ -85,31 +86,39 @@ export const addExpense = async (
 // History Screen Queries
 export const getHistorySummary = async (
   db: SQLiteDatabase,
-  daysAgo: number = 30,
+  startDateISO: string,
 ): Promise<DaySummary[]> => {
+  // S-Class Logic: Avoid `date('now', '-30 days')` from SQLite which uses UTC.
+  // Using parameters sent from JS fixes the midnight Timezone discrepancy.
   const result = await db.getAllAsync<DaySummary>(
-    `SELECT date, COUNT(*) as count, SUM(amount) as total
+    `SELECT date, COUNT(*) as count, ROUND(COALESCE(SUM(amount), 0), 2) as total
      FROM expenses 
-     WHERE date >= date('now', ?)
+     WHERE date >= ?
      GROUP BY date 
      ORDER BY date DESC`,
-    [`-${daysAgo} days`],
+    [startDateISO],
   );
   return result;
 };
 
-export const getWeekTotal = async (db: SQLiteDatabase): Promise<number> => {
+export const getWeekTotal = async (
+  db: SQLiteDatabase,
+  startDateISO: string
+): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', '-7 days')",
+    "SELECT ROUND(COALESCE(SUM(amount), 0), 2) as total FROM expenses WHERE date >= ?",
+    [startDateISO]
   );
   return result?.total ?? 0;
 };
 
 export const getCurrentMonthTotal = async (
   db: SQLiteDatabase,
+  startDateISO: string
 ): Promise<number> => {
   const result = await db.getFirstAsync<{ total: number | null }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= date('now', 'start of month')",
+    "SELECT ROUND(COALESCE(SUM(amount), 0), 2) as total FROM expenses WHERE date >= ?",
+    [startDateISO]
   );
   return result?.total ?? 0;
 };

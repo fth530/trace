@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   onAuthStateChanged,
   signInWithGoogle,
+  signInAnonymously,
   signOut,
 } from '../firebase/auth';
 
@@ -18,11 +19,18 @@ export const useAuth = () => {
     });
 
     return unsubscribe;
-  }, []); // Empty dependency - subscribe once on mount
+  }, []);
 
   const handleSignIn = async () => {
     setLoading(true);
     const result = await signInWithGoogle();
+    setLoading(false);
+    return result;
+  };
+
+  const handleAnonymousSignIn = async () => {
+    setLoading(true);
+    const result = await signInAnonymously();
     setLoading(false);
     return result;
   };
@@ -39,6 +47,7 @@ export const useAuth = () => {
     loading,
     initializing,
     signIn: handleSignIn,
+    signInAnonymously: handleAnonymousSignIn,
     signOut: handleSignOut,
     isAuthenticated: !!user,
   };

@@ -68,8 +68,8 @@ export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
   try {
     const userRef = getUserRef();
 
-    // Sanitize updates - only allow specific fields
-    const sanitizedUpdates: any = {
+    // Sanitize updates - only allow specific fields without 'any' bypass
+    const sanitizedUpdates: Record<string, unknown> = {
       updatedAt: firestore.FieldValue.serverTimestamp(),
     };
 
@@ -210,6 +210,6 @@ export const subscribeToExpenses = (callback: (expenses: any[]) => void) => {
       });
   } catch (error) {
     logger.error('Subscribe Error:', error);
-    return () => {};
+    return () => { };
   }
 };
