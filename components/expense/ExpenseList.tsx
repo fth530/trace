@@ -28,7 +28,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
     <Animated.FlatList
       data={expenses}
       keyExtractor={(item) => item.id.toString()}
-      itemLayoutAnimation={LinearTransition.springify().damping(16).stiffness(120)}
+      itemLayoutAnimation={LinearTransition}
       ListHeaderComponent={ListHeaderComponent}
       refreshControl={refreshControl}
       ListEmptyComponent={

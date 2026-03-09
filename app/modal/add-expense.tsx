@@ -1,6 +1,3 @@
-// S-Class Add Expense Modal
-// Based on Antigravity Protocol
-
 import React, { useState } from 'react';
 import {
   View,
@@ -23,15 +20,9 @@ import {
 } from '@/lib/constants/categories';
 import { validateDecimal, parseCurrency } from '@/lib/utils/currency';
 import { logger } from '@/lib/utils/logger';
-import { LinearGradient } from 'expo-linear-gradient';
 import { i18n } from '@/lib/translations/i18n';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import {
-  gradients,
-  neonColors,
-  placeholderColor,
-  neonShadow,
-} from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 
 export default function AddExpenseModal() {
   const { addExpense } = useStore();
@@ -51,7 +42,7 @@ export default function AddExpenseModal() {
   };
 
   const handleCategorySelect = (selectedCategory: Category) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setCategory(selectedCategory);
   };
 
@@ -104,7 +95,7 @@ export default function AddExpenseModal() {
 
   const submitExpense = async () => {
     setIsSubmitting(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
       const parsedAmount = parseCurrency(amount);
@@ -129,32 +120,24 @@ export default function AddExpenseModal() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-zinc-950"
+      className="flex-1"
+      style={{ backgroundColor: colors.bgPrimary }}
     >
-      {/* Background S-Class Gradient */}
-      <View className="absolute top-0 w-full h-full opacity-60 pointer-events-none">
-        <LinearGradient
-          colors={gradients.modal}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ flex: 1 }}
-        />
-      </View>
-
       <Animated.View
-        entering={FadeInDown.duration(600).springify().damping(16).stiffness(100)}
-        className="flex-row items-center justify-between px-6 pt-12 pb-4"
+        entering={FadeInDown.duration(300)}
+        className="flex-row items-center justify-between px-6 pt-14 pb-4"
       >
-        <Text className="text-white text-3xl font-black tracking-tighter">
+        <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
           {i18n.t('modal.add_title')}
         </Text>
         <Pressable
           onPress={handleClose}
-          className="p-2.5 rounded-full bg-white/5 border border-white/10 active:scale-90 active:bg-white/10 transition-all backdrop-blur-md"
+          className="p-2 rounded-full active:opacity-50"
+          style={{ backgroundColor: colors.bgTertiary }}
           accessibilityRole="button"
           accessibilityLabel={i18n.t('common.close')}
         >
-          <Ionicons name="close" size={24} color={neonColors.white} />
+          <Ionicons name="close" size={22} color={colors.textSecondary} />
         </Pressable>
       </Animated.View>
 
@@ -168,31 +151,33 @@ export default function AddExpenseModal() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Animated.View entering={FadeInUp.delay(100).springify().damping(14)}>
-          {/* Amount Input */}
-          <View className="mb-7">
-            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-3 ml-1">
+        <Animated.View entering={FadeInUp.delay(100)}>
+          <View className="mb-6">
+            <Text className="text-xs font-semibold tracking-wider uppercase mb-2 ml-1" style={{ color: colors.textSecondary }}>
               {i18n.t('modal.amount_label')}
             </Text>
             <TextInput
               value={amount}
               onChangeText={handleAmountChange}
               placeholder={i18n.t('modal.amount_placeholder')}
-              placeholderTextColor={placeholderColor}
+              placeholderTextColor={colors.gray600}
               keyboardType="decimal-pad"
               autoFocus={true}
-              className="w-full text-white text-5xl font-black p-5 bg-black/60 border border-white/5 rounded-3xl backdrop-blur-xl"
+              className="w-full text-4xl font-bold p-4 rounded-xl"
+              style={{
+                color: colors.textPrimary,
+                backgroundColor: colors.bgSecondary,
+              }}
             />
           </View>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(200).springify().damping(14)}>
-          {/* Category Chips */}
-          <View className="mb-7">
-            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-4 ml-1">
+        <Animated.View entering={FadeInUp.delay(180)}>
+          <View className="mb-6">
+            <Text className="text-xs font-semibold tracking-wider uppercase mb-3 ml-1" style={{ color: colors.textSecondary }}>
               {i18n.t('modal.category_label')}
             </Text>
-            <View className="flex-row flex-wrap gap-3">
+            <View className="flex-row flex-wrap gap-2.5">
               {CATEGORIES.map((cat) => {
                 const isSelected = category === cat;
                 const catColor = categoryConfig[cat].color;
@@ -200,35 +185,18 @@ export default function AddExpenseModal() {
                   <Pressable
                     key={cat}
                     onPress={() => handleCategorySelect(cat)}
-                    className={`px-5 py-3 rounded-2xl border active:scale-90 transition-all overflow-hidden`}
-                    style={
-                      isSelected
-                        ? {
-                          borderColor: catColor,
-                          backgroundColor: `${catColor}30`,
-                        }
-                        : {
-                          borderColor: 'rgba(255,255,255,0.05)',
-                          backgroundColor: 'rgba(0,0,0,0.6)',
-                        }
-                    }
+                    className="px-4 py-2.5 rounded-xl active:opacity-70"
+                    style={{
+                      backgroundColor: isSelected ? `${catColor}20` : colors.bgSecondary,
+                      borderWidth: 1.5,
+                      borderColor: isSelected ? catColor : 'transparent',
+                    }}
                     accessibilityRole="button"
-                    accessibilityLabel={`Kategori: ${cat}`}
                     accessibilityState={{ selected: isSelected }}
                   >
-                    {isSelected && (
-                      <View
-                        className="absolute inset-0 opacity-20"
-                        style={{ backgroundColor: catColor }}
-                      />
-                    )}
                     <Text
-                      className={`text-sm font-semibold tracking-wide`}
-                      style={
-                        isSelected
-                          ? { color: '#FAFAFA' }
-                          : { color: neonColors.slateDark }
-                      }
+                      className="text-sm font-semibold"
+                      style={{ color: isSelected ? catColor : colors.textSecondary }}
                     >
                       {cat}
                     </Text>
@@ -239,43 +207,43 @@ export default function AddExpenseModal() {
           </View>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(300).springify().damping(14)}>
-          {/* Description Input */}
+        <Animated.View entering={FadeInUp.delay(260)}>
           <View className="mb-8">
-            <Text className="text-slate-400 font-bold text-xs tracking-widest uppercase mb-3 ml-1">
+            <Text className="text-xs font-semibold tracking-wider uppercase mb-2 ml-1" style={{ color: colors.textSecondary }}>
               {i18n.t('modal.desc_label')}
             </Text>
             <TextInput
               value={description}
               onChangeText={setDescription}
               placeholder={i18n.t('modal.desc_placeholder')}
-              placeholderTextColor={placeholderColor}
+              placeholderTextColor={colors.gray600}
               maxLength={100}
-              className="w-full text-white text-lg font-medium p-5 bg-black/60 border border-white/5 rounded-3xl backdrop-blur-xl"
+              className="w-full text-base font-medium p-4 rounded-xl"
+              style={{
+                color: colors.textPrimary,
+                backgroundColor: colors.bgSecondary,
+              }}
             />
           </View>
         </Animated.View>
 
         <View className="flex-1" />
 
-        <Animated.View entering={FadeInUp.delay(400).springify().damping(14)}>
-          {/* Save Button */}
+        <Animated.View entering={FadeInUp.delay(340)}>
           <Pressable
             onPress={handleSave}
             disabled={isSubmitting}
-            className="w-full mt-4 overflow-hidden rounded-full active:scale-95 transition-all outline-none"
-            style={neonShadow(neonColors.mint, 'md')} // Updated to mint from S-Class
+            className="w-full mt-4 rounded-xl p-4 items-center active:opacity-80"
+            style={{
+              backgroundColor: colors.primary,
+              opacity: isSubmitting ? 0.6 : 1,
+            }}
           >
-            <View
-              className="p-5 items-center justify-center opacity-90"
-              style={{ backgroundColor: neonColors.mint }} // Using Mint direct accent
-            >
-              <Text className="text-black text-lg font-black tracking-widest uppercase">
-                {isSubmitting
-                  ? i18n.t('modal.saving_button')
-                  : i18n.t('modal.save_button')}
-              </Text>
-            </View>
+            <Text className="text-base font-bold" style={{ color: colors.white }}>
+              {isSubmitting
+                ? i18n.t('modal.saving_button')
+                : i18n.t('modal.save_button')}
+            </Text>
           </Pressable>
         </Animated.View>
       </ScrollView>

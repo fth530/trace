@@ -1,5 +1,4 @@
-// Design Tokens: Spacing, Gradients, Shadows
-// Based on Antigravity Protocol & S-Class Aesthetics
+// Design Tokens: Professional Finance App Design System
 
 export const spacing = {
   xs: 8,
@@ -13,57 +12,98 @@ export const spacing = {
 
 export const borderRadius = {
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  md: 12,
+  lg: 16,
+  xl: 24,
   full: 9999,
 } as const;
 
-// Neon color palette
-export const neonColors = {
-  mint: '#00FFAA', // Safe
-  yellow: '#FFD60A', // Warning
-  crimson: '#FF2A55', // Danger
-  sky: '#38bdf8',
-  cyan: '#0ea5e9',
-  slateDark: '#475569',
-  zinc950: '#09090b',
+// Professional color palette
+export const colors = {
+  // Primary
+  primary: '#007AFF',
+  primaryLight: '#4DA3FF',
+  primaryDark: '#0055CC',
+
+  // Semantic
+  success: '#34C759',
+  warning: '#FF9500',
+  danger: '#FF3B30',
+
+  // Neutral
   white: '#FFFFFF',
-  glass: 'rgba(0, 0, 0, 0.8)', // bg-black/80 equivalent
-  pink: '#F472B6',
-  violet: '#A78BFA',
-  rose: '#F43F5E',
-  slate: '#64748B',
-  fuchsia: '#D946EF',
+  gray50: '#F9FAFB',
+  gray100: '#F3F4F6',
+  gray200: '#E5E7EB',
+  gray300: '#D1D5DB',
+  gray400: '#9CA3AF',
+  gray500: '#6B7280',
+  gray600: '#4B5563',
+  gray700: '#374151',
+  gray800: '#1F2937',
+  gray900: '#111827',
+  black: '#000000',
+
+  // Background (dark mode)
+  bgPrimary: '#000000',
+  bgSecondary: '#1C1C1E',
+  bgTertiary: '#2C2C2E',
+  bgElevated: '#1C1C1E',
+
+  // Text
+  textPrimary: '#FFFFFF',
+  textSecondary: '#8E8E93',
+  textTertiary: '#636366',
+
+  // Border
+  separator: 'rgba(255,255,255,0.08)',
+  separatorLight: 'rgba(255,255,255,0.04)',
+} as const;
+
+// Backward compatibility aliases
+export const neonColors = {
+  mint: colors.success,
+  yellow: colors.warning,
+  crimson: colors.danger,
+  sky: colors.primary,
+  cyan: colors.primary,
+  slateDark: colors.gray600,
+  zinc950: colors.bgPrimary,
+  white: colors.white,
+  glass: colors.bgSecondary,
+  pink: '#FF6B8A',
+  violet: '#8B5CF6',
+  rose: colors.danger,
+  slate: colors.gray500,
+  fuchsia: '#A855F7',
 } as const;
 
 // Gradient presets
 export const gradients = {
   main: ['#000000', '#0a0a0a', '#111111'] as const,
-  modal: ['rgba(0,0,0,0.9)', 'rgba(0,0,0,1)'] as const,
-  safe: ['rgba(0,255,170,0.2)', 'rgba(0,255,170,0.05)'] as const,
-  danger: ['rgba(255,42,85,0.2)', 'rgba(255,42,85,0.05)'] as const,
+  modal: ['rgba(0,0,0,0.95)', 'rgba(0,0,0,1)'] as const,
+  safe: ['rgba(52,199,89,0.15)', 'rgba(52,199,89,0.05)'] as const,
+  danger: ['rgba(255,59,48,0.15)', 'rgba(255,59,48,0.05)'] as const,
 } as const;
 
 export const gradientLocations = {
   main: [0, 0.5, 1] as const,
 };
 
-// Shadow presets with neon glow
-export const neonShadow = (
-  color: string,
+// Professional subtle shadows
+export const shadow = (
   intensity: 'sm' | 'md' | 'lg' = 'md',
 ) => {
   const config = {
-    sm: { offset: 4, opacity: 0.2, radius: 10, elevation: 5 },
-    md: { offset: 8, opacity: 0.35, radius: 15, elevation: 8 },
-    lg: { offset: 8, opacity: 0.5, radius: 25, elevation: 12 },
+    sm: { offset: 2, opacity: 0.15, radius: 4, elevation: 2 },
+    md: { offset: 4, opacity: 0.2, radius: 8, elevation: 4 },
+    lg: { offset: 6, opacity: 0.25, radius: 12, elevation: 6 },
   };
 
   const { offset, opacity, radius, elevation } = config[intensity];
 
   return {
-    shadowColor: color,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: offset },
     shadowOpacity: opacity,
     shadowRadius: radius,
@@ -71,4 +111,10 @@ export const neonShadow = (
   };
 };
 
-export const placeholderColor = neonColors.slateDark;
+// Backward compatibility
+export const neonShadow = (
+  _color: string,
+  intensity: 'sm' | 'md' | 'lg' = 'md',
+) => shadow(intensity);
+
+export const placeholderColor = colors.gray600;

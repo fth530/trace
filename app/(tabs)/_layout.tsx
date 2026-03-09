@@ -1,53 +1,52 @@
-// S-Class Tab Navigator Layout
-// Based on Antigravity Protocol
-
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Platform, StyleSheet, View } from 'react-native';
-import { neonColors } from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: neonColors.mint,
-        tabBarInactiveTintColor: neonColors.slateDark,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           position: 'absolute',
-          borderTopWidth: 1,
-          borderTopColor: 'rgba(255,255,255,0.05)',
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: colors.separator,
           elevation: 0,
-          height: Platform.OS === 'ios' ? 95 : 85,
-          paddingBottom: Platform.OS === 'ios' ? 35 : 20,
-          paddingTop: 15,
+          height: Platform.OS === 'ios' ? 88 : 70,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 12,
+          paddingTop: 8,
           backgroundColor: 'transparent',
         },
         tabBarBackground: () =>
           Platform.OS === 'ios' ? (
             <BlurView
               tint="dark"
-              intensity={90}
+              intensity={80}
               style={StyleSheet.absoluteFill}
             />
           ) : (
             <View
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: 'rgba(0, 0, 0, 0.85)' },
+                { backgroundColor: 'rgba(0, 0, 0, 0.92)' },
               ]}
             />
           ),
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '600',
+        },
         headerStyle: {
-          backgroundColor: 'black',
-          borderBottomWidth: 0,
+          backgroundColor: colors.bgPrimary,
         },
         headerShadowVisible: false,
-        headerTintColor: '#ffffff',
+        headerTintColor: colors.textPrimary,
         headerTitleStyle: {
-          fontWeight: '900',
-          fontSize: 20,
-          letterSpacing: -0.5,
+          fontWeight: '700',
+          fontSize: 17,
         },
       }}
     >

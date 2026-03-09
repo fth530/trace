@@ -12,6 +12,7 @@ import {
   getStartOfMonthISO
 } from '../utils/date';
 import { logger } from '../utils/logger';
+import { updateWidgetData } from '../utils/widget';
 
 const getSafeDb = async () => {
   try {
@@ -20,6 +21,34 @@ const getSafeDb = async () => {
     logger.log('Database not mapped or initialized, reinitializing...');
     return await initDatabase();
   }
+};
+
+/**
+ * Push current store state to the iOS widget via shared UserDefaults.
+ * Fire-and-forget: failures are logged but never surface to the user.
+ */
+const syncWidget = (state: AppStore) => {
+  const { todayTotal, monthTotal, todayExpenses, settings, history } = state;
+  const dailyLimit = settings.daily_limit;
+
+  updateWidgetData({
+    todayTotal,
+    dailyLimit,
+    monthTotal,
+    remainingToday: Math.max(0, dailyLimit - todayTotal),
+    recentExpenses: todayExpenses.slice(0, 5).map((e) => ({
+      description: e.description,
+      amount: e.amount,
+      category: e.category ?? '',
+    })),
+    weeklyData: (history ?? []).slice(0, 7).map((d) => ({
+      date: d.date,
+      total: d.total,
+    })),
+    lastUpdated: new Date().toISOString(),
+  }).catch(() => {
+    // Already logged inside updateWidgetData
+  });
 };
 
 export const useStore = create<AppStore>((set, get) => ({
@@ -69,6 +98,9 @@ export const useStore = create<AppStore>((set, get) => ({
       });
 
       logger.log('✅ Store initialized');
+
+      // Sync widget with fresh state
+      syncWidget(get());
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Store initialization failed';
@@ -120,6 +152,9 @@ export const useStore = create<AppStore>((set, get) => ({
 
       logger.log('✅ Expense added:', id);
 
+      // Sync widget after optimistic update
+      syncWidget(get());
+
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Add expense failed';
@@ -155,6 +190,9 @@ export const useStore = create<AppStore>((set, get) => ({
       });
 
       logger.log('✅ Expense deleted:', id);
+
+      // Sync widget after deletion
+      syncWidget(get());
 
     } catch (error) {
       const errorMessage =
@@ -284,6 +322,9 @@ export const useStore = create<AppStore>((set, get) => ({
       );
 
       set({ todayTotal, monthTotal });
+
+      // Sync widget after recalculation
+      syncWidget(get());
     } catch (error) {
       logger.error('❌ Calculate totals failed:', error);
       throw error;

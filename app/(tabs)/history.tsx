@@ -1,24 +1,34 @@
-// S-Class History Screen
-// Based on Antigravity Protocol
-
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '@/lib/store';
 import { DaySummaryCard } from '@/components/history/DaySummaryCard';
 import { PeriodSummary } from '@/components/history/PeriodSummary';
-import { LinearGradient } from 'expo-linear-gradient';
+import { SpendingCalendar } from '@/components/history/SpendingCalendar';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { i18n } from '@/lib/translations/i18n';
-import {
-  gradients,
-  gradientLocations,
-  neonColors,
-} from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
+const getDummyHistory = () => {
+  const today = new Date();
+  return Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    return {
+      date: dateStr,
+      total: Math.round(80 + Math.random() * 600),
+      count: Math.round(1 + Math.random() * 5),
+    };
+  });
+};
+
 export default function HistoryScreen() {
-  const { history, weekTotal, monthTotal, loadHistory } = useStore();
+  const { history, weekTotal, monthTotal, settings, loadHistory } = useStore();
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     loadHistory();
@@ -31,41 +41,56 @@ export default function HistoryScreen() {
     setRefreshing(false);
   };
 
+  const isUsingDummy = history.length === 0;
+  const displayHistory = isUsingDummy ? getDummyHistory() : history;
+  const displayWeek = isUsingDummy ? 2340 : weekTotal;
+  const displayMonth = isUsingDummy ? 6100 : monthTotal;
+
   return (
     <View className="flex-1 bg-black">
-      {/* Universal Antigravity Background Glow */}
-      <View className="absolute top-0 w-full h-full opacity-40 pointer-events-none">
-        <LinearGradient
-          colors={gradients.main}
-          locations={gradientLocations.main}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ flex: 1 }}
-        />
-      </View>
-
       <Animated.View
         style={{ flex: 1 }}
-        entering={FadeInDown.duration(800).springify().damping(16).stiffness(120)}
+        entering={FadeInDown.duration(350)}
       >
         <FlatList
-          data={history}
+          data={displayHistory}
           keyExtractor={(item) => item.date}
           renderItem={({ item }) => (
             <DaySummaryCard
               date={item.date}
               total={item.total}
               count={item.count}
+              disabled={isUsingDummy}
             />
           )}
           contentContainerStyle={{
-            padding: 20,
-            paddingBottom: 260, // Extended space for Safe Area & S-Class PeriodSummary
+            paddingHorizontal: 20,
+            paddingBottom: 200,
+            paddingTop: insets.top + 16,
           }}
-          ListEmptyComponent={
-            <View className="items-center mt-32">
-              <Text className="text-slate-400 font-medium text-lg tracking-wide">
-                {i18n.t('history.empty')}
+          ListHeaderComponent={
+            <View className="mb-4">
+              <Text className="text-2xl font-bold mb-4" style={{ color: colors.textPrimary }}>
+                Geçmiş
+              </Text>
+
+              {/* Spending Calendar */}
+              <SpendingCalendar
+                data={displayHistory}
+                dailyLimit={settings.daily_limit}
+              />
+
+              {isUsingDummy && (
+                <View className="rounded-xl p-3 mb-4 flex-row items-center" style={{ backgroundColor: `${colors.primary}12` }}>
+                  <Ionicons name="information-circle-outline" size={18} color={colors.primary} style={{ marginRight: 8 }} />
+                  <Text className="text-xs font-medium flex-1" style={{ color: colors.primary }}>
+                    Henüz veri yok. Veriler örnek olarak gösterilmektedir.
+                  </Text>
+                </View>
+              )}
+
+              <Text className="text-base font-semibold mb-3 px-1" style={{ color: colors.textPrimary }}>
+                Günlük Özet
               </Text>
             </View>
           }
@@ -73,14 +98,14 @@ export default function HistoryScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={handleRefresh}
-              tintColor={neonColors.mint}
+              tintColor={colors.textSecondary}
             />
           }
           showsVerticalScrollIndicator={false}
         />
       </Animated.View>
 
-      <PeriodSummary weeklyTotal={weekTotal} monthlyTotal={monthTotal} />
+      <PeriodSummary weeklyTotal={displayWeek} monthlyTotal={displayMonth} />
     </View>
   );
 }

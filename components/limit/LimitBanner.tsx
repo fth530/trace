@@ -1,12 +1,9 @@
-// Limit Warning Banner Component
-// Based on ROADMAP §7 Limit & Warning System & Antigravity Protocol
-
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LimitType, getHapticIntensity } from '@/lib/utils/limits';
-import { neonColors } from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 import { i18n } from '@/lib/translations/i18n';
 
 interface LimitBannerProps {
@@ -70,7 +67,6 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
       handleDismiss();
     }, 3000);
 
-    // Cleanup: Stop animations and clear timer
     return () => {
       clearTimeout(timer);
       animation.stop();
@@ -98,10 +94,11 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
 
   return (
     <Animated.View
-      className="absolute top-0 left-4 right-4 rounded-xl border-l-[4px] overflow-hidden z-50 backdrop-blur-md"
+      className="absolute top-14 left-4 right-4 rounded-xl overflow-hidden z-50"
       style={[
         {
-          backgroundColor: color + '20',
+          backgroundColor: colors.bgElevated,
+          borderLeftWidth: 4,
           borderLeftColor: color,
           transform: [{ translateY: slideAnim }],
           opacity: opacityAnim,
@@ -110,24 +107,24 @@ export const LimitBanner: React.FC<LimitBannerProps> = ({
     >
       <Pressable
         onPress={handleDismiss}
-        className="flex-row items-center p-3"
+        className="flex-row items-center p-3.5"
         accessibilityRole="button"
-        accessibilityLabel="Uyarıyı kapat"
+        accessibilityLabel="Dismiss warning"
       >
         <View className="mr-3">
-          <Ionicons name="warning" size={24} color={color} />
+          <Ionicons name="warning" size={22} color={color} />
         </View>
 
         <View className="flex-1">
-          <Text className="text-sm font-bold mb-0.5" style={{ color }}>
+          <Text className="text-sm font-semibold mb-0.5" style={{ color }}>
             {message}
           </Text>
-          <Text className="text-xs text-slate-400">
+          <Text className="text-xs" style={{ color: colors.textTertiary }}>
             {i18n.t('limits.dismiss_hint')}
           </Text>
         </View>
 
-        <Ionicons name="close" size={20} color={neonColors.slate} />
+        <Ionicons name="close" size={18} color={colors.textSecondary} />
       </Pressable>
     </Animated.View>
   );

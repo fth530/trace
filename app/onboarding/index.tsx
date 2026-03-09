@@ -1,8 +1,5 @@
-// Onboarding Screen
-// Based on v1.1 App Store Polish
-
 import React, { useState } from 'react';
-import { View, Text, Pressable, Dimensions } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
   FadeInRight,
@@ -13,35 +10,26 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '@/lib/store';
 import { logger } from '@/lib/utils/logger';
-import { LinearGradient } from 'expo-linear-gradient';
 import { i18n } from '@/lib/translations/i18n';
-import {
-  neonColors,
-  gradients,
-  gradientLocations,
-  neonShadow,
-} from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 
-const { width } = Dimensions.get('window');
+const SLIDE_COLORS = [colors.primary, '#FF9500', '#AF52DE'];
 
 const getSlides = () => [
   {
     icon: 'wallet-outline',
     title: i18n.t('onboarding.slide1_title'),
     description: i18n.t('onboarding.slide1_desc'),
-    color: neonColors.cyan,
   },
   {
     icon: 'speedometer-outline',
     title: i18n.t('onboarding.slide2_title'),
     description: i18n.t('onboarding.slide2_desc'),
-    color: neonColors.pink,
   },
   {
-    icon: 'planet-outline',
+    icon: 'analytics-outline',
     title: i18n.t('onboarding.slide3_title'),
     description: i18n.t('onboarding.slide3_desc'),
-    color: neonColors.violet,
   },
 ];
 
@@ -50,6 +38,7 @@ export default function OnboardingScreen() {
   const updateSetting = useStore((state) => state.updateSetting);
 
   const SLIDES = getSlides();
+  const accentColor = SLIDE_COLORS[currentIndex];
 
   const handleNext = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -57,7 +46,6 @@ export default function OnboardingScreen() {
     if (currentIndex < SLIDES.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Last slide, finish onboarding
       try {
         await updateSetting('has_seen_onboarding', 1);
         router.replace('/(tabs)');
@@ -70,16 +58,7 @@ export default function OnboardingScreen() {
   const currentSlide = SLIDES[currentIndex];
 
   return (
-    <View className="flex-1 bg-zinc-950 items-center justify-between py-24">
-      {/* Background Glow */}
-      <View className="absolute top-0 w-full h-full opacity-30 pointer-events-none">
-        <LinearGradient
-          colors={gradients.main}
-          locations={gradientLocations.main}
-          style={{ flex: 1 }}
-        />
-      </View>
-
+    <View className="flex-1 items-center justify-between py-24" style={{ backgroundColor: colors.bgPrimary }}>
       {/* Skip Button */}
       {currentIndex < SLIDES.length - 1 && (
         <Pressable
@@ -91,40 +70,39 @@ export default function OnboardingScreen() {
           className="absolute top-16 right-8 z-10 p-2"
           accessibilityRole="button"
           accessibilityLabel="Skip onboarding"
-          accessibilityHint="Skip to main app"
         >
-          <Text className="text-zinc-500 font-medium">
+          <Text className="font-medium" style={{ color: colors.textTertiary }}>
             {i18n.t('onboarding.skip')}
           </Text>
         </Pressable>
       )}
 
       {/* Content Area */}
-      <View className="flex-1 w-full justify-center items-center px-8 relative">
+      <View className="flex-1 w-full justify-center items-center px-8">
         <Animated.View
           key={`icon-${currentIndex}`}
-          entering={FadeInUp.duration(600).springify().damping(12)}
-          exiting={FadeOutLeft.duration(300)}
-          className="w-32 h-32 rounded-full items-center justify-center mb-12 border border-white/10 bg-slate-900/50 backdrop-blur-md"
-          style={neonShadow(currentSlide.color, 'lg')}
+          entering={FadeInUp.duration(300)}
+          exiting={FadeOutLeft.duration(250)}
+          className="w-28 h-28 rounded-3xl items-center justify-center mb-12"
+          style={{ backgroundColor: `${accentColor}15` }}
         >
           <Ionicons
             name={currentSlide.icon as any}
-            size={64}
-            color={currentSlide.color}
+            size={56}
+            color={accentColor}
           />
         </Animated.View>
 
         <Animated.View
           key={`text-${currentIndex}`}
-          entering={FadeInRight.duration(500).delay(200)}
-          exiting={FadeOutLeft.duration(300)}
+          entering={FadeInRight.duration(400).delay(150)}
+          exiting={FadeOutLeft.duration(250)}
           className="items-center"
         >
-          <Text className="text-white text-3xl font-bold tracking-wider mb-6 text-center">
+          <Text className="text-2xl font-bold mb-4 text-center" style={{ color: colors.textPrimary }}>
             {currentSlide.title}
           </Text>
-          <Text className="text-zinc-400 font-medium text-base text-center leading-relaxed">
+          <Text className="text-base text-center leading-6 px-4" style={{ color: colors.textSecondary }}>
             {currentSlide.description}
           </Text>
         </Animated.View>
@@ -132,34 +110,25 @@ export default function OnboardingScreen() {
 
       {/* Progress Dots & CTA */}
       <View className="w-full px-8 items-center mt-auto">
-        <View className="flex-row gap-3 mb-10">
+        <View className="flex-row gap-2 mb-8">
           {SLIDES.map((_, index) => (
             <View
               key={index}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/20'
-              }`}
-              style={
-                index === currentIndex
-                  ? neonShadow(currentSlide.color, 'sm')
-                  : undefined
-              }
+              className="h-1.5 rounded-full"
+              style={{
+                width: index === currentIndex ? 24 : 8,
+                backgroundColor: index === currentIndex ? accentColor : colors.bgTertiary,
+              }}
             />
           ))}
         </View>
 
         <Pressable
           onPress={handleNext}
-          className="w-full h-14 rounded-2xl items-center justify-center overflow-hidden border border-white/20"
-          style={neonShadow(currentSlide.color, 'md')}
+          className="w-full h-14 rounded-xl items-center justify-center active:opacity-80"
+          style={{ backgroundColor: accentColor }}
         >
-          <LinearGradient
-            colors={[currentSlide.color, '#000000']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 3 }}
-            style={{ position: 'absolute', width: '100%', height: '100%' }}
-          />
-          <Text className="text-white font-bold text-lg tracking-widest relative z-10">
+          <Text className="font-bold text-base" style={{ color: colors.white }}>
             {currentIndex === SLIDES.length - 1
               ? i18n.t('onboarding.start')
               : i18n.t('onboarding.continue')}

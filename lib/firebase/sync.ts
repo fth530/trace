@@ -1,27 +1,36 @@
-import firestore from '@react-native-firebase/firestore';
 import { getCurrentUser } from './auth';
 import { logger } from '../utils/logger';
 
-// Firestore koleksiyonları
+let firestore: any = null;
+
+try {
+  firestore = require('@react-native-firebase/firestore').default;
+} catch {
+  logger.warn('Firestore native module not available (Expo Go mode)');
+}
+
 const COLLECTIONS = {
   USERS: 'users',
   EXPENSES: 'expenses',
   SETTINGS: 'settings',
 };
 
-// Kullanıcı referansını al
+const FIRESTORE_UNAVAILABLE = {
+  success: false,
+  error: 'Firestore is not available in Expo Go.',
+};
+
 const getUserRef = () => {
+  if (!firestore) throw new Error('Firestore not available');
   const user = getCurrentUser();
   if (!user) throw new Error('User not authenticated');
   return firestore().collection(COLLECTIONS.USERS).doc(user.uid);
 };
 
-// Harcama ekle
 export const addExpenseToCloud = async (expense: any) => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
-
-    // Sanitize data - only allow specific fields
     const sanitizedExpense = {
       amount: Number(expense.amount),
       category: expense.category,
@@ -31,7 +40,6 @@ export const addExpenseToCloud = async (expense: any) => {
       createdAt: firestore.FieldValue.serverTimestamp(),
       updatedAt: firestore.FieldValue.serverTimestamp(),
     };
-
     const docRef = await userRef
       .collection(COLLECTIONS.EXPENSES)
       .add(sanitizedExpense);
@@ -42,20 +50,18 @@ export const addExpenseToCloud = async (expense: any) => {
   }
 };
 
-// Harcamaları getir
 export const getExpensesFromCloud = async () => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
     const snapshot = await userRef
       .collection(COLLECTIONS.EXPENSES)
       .orderBy('date', 'desc')
       .get();
-
-    const expenses = snapshot.docs.map((doc) => ({
+    const expenses = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
     }));
-
     return { success: true, expenses };
   } catch (error: any) {
     logger.error('Get Expenses Error:', error);
@@ -63,16 +69,13 @@ export const getExpensesFromCloud = async () => {
   }
 };
 
-// Harcama güncelle
 export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
-
-    // Sanitize updates - only allow specific fields without 'any' bypass
     const sanitizedUpdates: Record<string, unknown> = {
       updatedAt: firestore.FieldValue.serverTimestamp(),
     };
-
     if (updates.amount !== undefined)
       sanitizedUpdates.amount = Number(updates.amount);
     if (updates.category !== undefined)
@@ -80,7 +83,6 @@ export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
     if (updates.description !== undefined)
       sanitizedUpdates.description = String(updates.description);
     if (updates.date !== undefined) sanitizedUpdates.date = updates.date;
-
     await userRef
       .collection(COLLECTIONS.EXPENSES)
       .doc(expenseId)
@@ -92,8 +94,8 @@ export const updateExpenseInCloud = async (expenseId: string, updates: any) => {
   }
 };
 
-// Harcama sil
 export const deleteExpenseFromCloud = async (expenseId: string) => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
     await userRef.collection(COLLECTIONS.EXPENSES).doc(expenseId).delete();
@@ -104,8 +106,8 @@ export const deleteExpenseFromCloud = async (expenseId: string) => {
   }
 };
 
-// Ayarları kaydet
 export const saveSettingsToCloud = async (settings: any) => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
     await userRef
@@ -125,15 +127,14 @@ export const saveSettingsToCloud = async (settings: any) => {
   }
 };
 
-// Ayarları getir
 export const getSettingsFromCloud = async () => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
     const doc = await userRef
       .collection(COLLECTIONS.SETTINGS)
       .doc('preferences')
       .get();
-
     if (doc.exists()) {
       return { success: true, settings: doc.data() };
     }
@@ -144,23 +145,21 @@ export const getSettingsFromCloud = async () => {
   }
 };
 
-// Local verileri cloud'a migrate et (ilk giriş)
 export const migrateLocalDataToCloud = async (
   localExpenses: any[],
   localSettings: any,
 ) => {
+  if (!firestore) return FIRESTORE_UNAVAILABLE;
   try {
     const userRef = getUserRef();
-    const BATCH_SIZE = 500; // Firebase batch limit
+    const BATCH_SIZE = 500;
 
-    // Split into batches
     for (let i = 0; i < localExpenses.length; i += BATCH_SIZE) {
       const batch = firestore().batch();
       const batchExpenses = localExpenses.slice(i, i + BATCH_SIZE);
 
-      batchExpenses.forEach((expense) => {
+      batchExpenses.forEach((expense: any) => {
         const expenseRef = userRef.collection(COLLECTIONS.EXPENSES).doc();
-        // Sanitize data
         batch.set(expenseRef, {
           amount: Number(expense.amount),
           category: expense.category,
@@ -173,10 +172,9 @@ export const migrateLocalDataToCloud = async (
       });
 
       await batch.commit();
-      logger.log(`✅ Migrated batch ${i / BATCH_SIZE + 1}`);
+      logger.log(`Migrated batch ${i / BATCH_SIZE + 1}`);
     }
 
-    // Ayarları ekle (separate batch)
     const settingsBatch = firestore().batch();
     const settingsRef = userRef
       .collection(COLLECTIONS.SETTINGS)
@@ -194,15 +192,15 @@ export const migrateLocalDataToCloud = async (
   }
 };
 
-// Real-time listener (opsiyonel - diğer cihazlardan değişiklikleri dinle)
 export const subscribeToExpenses = (callback: (expenses: any[]) => void) => {
+  if (!firestore) return () => {};
   try {
     const userRef = getUserRef();
     return userRef
       .collection(COLLECTIONS.EXPENSES)
       .orderBy('date', 'desc')
-      .onSnapshot((snapshot) => {
-        const expenses = snapshot.docs.map((doc) => ({
+      .onSnapshot((snapshot: any) => {
+        const expenses = snapshot.docs.map((doc: any) => ({
           id: doc.id,
           ...doc.data(),
         }));
@@ -210,6 +208,6 @@ export const subscribeToExpenses = (callback: (expenses: any[]) => void) => {
       });
   } catch (error) {
     logger.error('Subscribe Error:', error);
-    return () => { };
+    return () => {};
   }
 };

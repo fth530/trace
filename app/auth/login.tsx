@@ -1,6 +1,3 @@
-// S-Class Login Screen
-// Based on ROADMAP & Antigravity Protocol
-
 import React from 'react';
 import {
   View,
@@ -8,7 +5,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../lib/hooks/useAuth';
@@ -16,15 +12,9 @@ import { migrateAllLocalData } from '../../lib/firebase/migration';
 import { useStore } from '../../lib/store';
 import { i18n } from '../../lib/translations/i18n';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import {
-  gradients,
-  gradientLocations,
-  neonColors,
-  neonShadow,
-} from '../../lib/constants/design-tokens';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { colors } from '../../lib/constants/design-tokens';
 
 export default function LoginScreen() {
   const { signIn, signInAnonymously, loading } = useAuth();
@@ -34,8 +24,15 @@ export default function LoginScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const result = await signIn();
 
+    if (!result.success && result.error?.includes('not available')) {
+      Alert.alert(
+        'Firebase Yok',
+        'Expo Go ile Firebase kullanilamaz. Giris yapmadan devam edebilirsiniz.',
+      );
+      return;
+    }
+
     if (result.success) {
-      // First login: move local data to cloud
       const hasLocalData = todayExpenses.length > 0;
 
       if (hasLocalData) {
@@ -83,71 +80,48 @@ export default function LoginScreen() {
 
   const handleSkip = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    // S-Class Security: Engage Anonymous Auth to preserve architecture
-    const result = await signInAnonymously();
-    if (result.success) {
-      router.replace('/(tabs)');
-    } else {
-      Alert.alert(i18n.t('common.error'), i18n.t('auth.login_error'));
-    }
+    router.replace('/(tabs)');
   };
 
   return (
-    <View className="flex-1 bg-black items-center justify-center px-6">
-      {/* S-Class Antigravity Background Glow */}
-      <View className="absolute top-0 w-full h-full opacity-40 pointer-events-none">
-        <LinearGradient
-          colors={gradients.main}
-          locations={gradientLocations.main}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ flex: 1 }}
-        />
-      </View>
-
+    <View className="flex-1 items-center justify-center px-6" style={{ backgroundColor: colors.bgPrimary }}>
       <Animated.View
-        entering={FadeInDown.duration(1000).springify().damping(16).stiffness(100)}
+        entering={FadeInDown.duration(350)}
         className="items-center mb-16 w-full"
       >
         <View
-          className="w-24 h-24 rounded-full bg-black/60 border border-white/10 items-center justify-center mb-6 overflow-hidden"
-          style={neonShadow(neonColors.cyan, 'lg')}
+          className="w-20 h-20 rounded-2xl items-center justify-center mb-6"
+          style={{ backgroundColor: `${colors.primary}15` }}
         >
-          <Ionicons name="wallet" size={48} color={neonColors.cyan} />
+          <Ionicons name="wallet" size={40} color={colors.primary} />
         </View>
 
-        <Text className="text-5xl font-black text-white mb-2 tracking-tighter"
-          style={{
-            textShadowColor: neonColors.cyan,
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 15,
-          }}
-        >
+        <Text className="text-4xl font-black mb-2" style={{ color: colors.textPrimary }}>
           Trace
         </Text>
-        <Text className="text-slate-400 text-center text-lg font-medium tracking-wide">
-          Finansal kontrolünüzü{'\n'}S-Sınıfı seviyeye taşıyın.
+        <Text className="text-center text-base font-medium" style={{ color: colors.textSecondary }}>
+          Harcamalarinizi kolayca{'\n'}takip edin ve analiz edin.
         </Text>
       </Animated.View>
 
       <Animated.View
-        entering={FadeInUp.delay(300).duration(800).springify()}
-        className="w-full space-y-5"
+        entering={FadeInUp.delay(150).duration(300)}
+        className="w-full"
+        style={{ gap: 12 }}
       >
         <TouchableOpacity
           onPress={handleGoogleSignIn}
           disabled={loading}
-          className="bg-white rounded-2xl p-4 flex-row items-center justify-center active:scale-95 transition-all overflow-hidden"
-          style={neonShadow(neonColors.white, 'sm')}
+          className="rounded-xl p-4 flex-row items-center justify-center active:opacity-80"
+          style={{ backgroundColor: colors.white }}
         >
           {loading ? (
             <ActivityIndicator color="black" />
           ) : (
             <>
-              <Ionicons name="logo-google" size={24} color="black" style={{ marginRight: 12 }} />
-              <Text className="text-black font-black text-lg tracking-wide uppercase">
-                Google ile Giriş Yap
+              <Ionicons name="logo-google" size={22} color="black" style={{ marginRight: 10 }} />
+              <Text className="text-base font-bold" style={{ color: colors.black }}>
+                Google ile Giris Yap
               </Text>
             </>
           )}
@@ -156,20 +130,21 @@ export default function LoginScreen() {
         <TouchableOpacity
           onPress={handleSkip}
           disabled={loading}
-          className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex-row items-center justify-center active:scale-95 transition-all"
+          className="rounded-xl p-4 flex-row items-center justify-center active:opacity-70"
+          style={{ backgroundColor: colors.bgSecondary }}
         >
-          <Text className="text-slate-300 font-bold text-base tracking-wide uppercase">
-            Giriş Yapmadan Devam Et
+          <Text className="font-semibold text-base" style={{ color: colors.textSecondary }}>
+            Giris Yapmadan Devam Et
           </Text>
         </TouchableOpacity>
       </Animated.View>
 
       <Animated.View
-        entering={FadeInUp.delay(600).duration(800).springify()}
+        entering={FadeInUp.delay(250).duration(300)}
         className="absolute bottom-10"
       >
-        <Text className="text-slate-500 text-xs text-center tracking-widest leading-loose uppercase">
-          GİRİŞ YAPARAK VERİLERİNİZİ BULUTTA SAKLAYIN{'\n'}VE TÜM CİHAZLARINIZLA SENKRONİZE EDİN
+        <Text className="text-xs text-center leading-5" style={{ color: colors.textTertiary }}>
+          Giris yaparak verilerinizi bulutta saklayin{'\n'}ve tum cihazlarinizla senkronize edin
         </Text>
       </Animated.View>
     </View>
