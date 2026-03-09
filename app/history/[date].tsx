@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '@/lib/store';
@@ -8,24 +9,20 @@ import { ExpenseList } from '@/components/expense/ExpenseList';
 import { formatCurrency } from '@/lib/utils/currency';
 import { formatDateRelative } from '@/lib/utils/date';
 import type { Expense } from '@/lib/store/types';
-import { LinearGradient } from 'expo-linear-gradient';
-import {
-  gradients,
-  gradientLocations,
-  neonColors,
-} from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 import { i18n } from '@/lib/translations/i18n';
 
 export default function DayDetailScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const { loadDayExpenses, deleteExpense } = useStore();
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (date) {
       loadData();
     }
-  }, [date]); // Remove deleteExpense from dependencies to prevent infinite loop
+  }, [date]);
 
   const loadData = async () => {
     if (!date) return;
@@ -40,51 +37,53 @@ export default function DayDetailScreen() {
   };
 
   const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const dateStr = date ? (Array.isArray(date) ? date[0] : date) : '';
 
   return (
-    <View className="flex-1 bg-zinc-950">
-      {/* Universal Antigravity Background Glow */}
-      <View className="absolute top-0 w-full h-full opacity-20 pointer-events-none">
-        <LinearGradient
-          colors={gradients.main}
-          locations={gradientLocations.main}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ flex: 1 }}
-        />
-      </View>
-
+    <View className="flex-1" style={{ backgroundColor: colors.bgPrimary }}>
       <ExpenseList
         expenses={expenses}
         onDelete={async (id) => {
           await deleteExpense(id);
-          loadData(); // Reload data after deletion
+          loadData();
         }}
         emptyMessage={i18n.t('history.day_empty')}
         ListHeaderComponent={
-          <View className="pt-16 px-4 pb-6 border-b border-white/5 mb-4">
-            <View className="flex-row items-center mb-4">
+          <View style={{ paddingTop: insets.top + 8 }}>
+            {/* Navigation Bar */}
+            <View className="flex-row items-center px-2 mb-6">
               <Pressable
                 onPress={handleBack}
-                className="p-2 -ml-2 rounded-full active:bg-white/10"
+                className="flex-row items-center p-2 -ml-1 rounded-xl active:opacity-50"
                 accessibilityRole="button"
                 accessibilityLabel={i18n.t('common.back')}
-                accessibilityHint={i18n.t('common.back_hint')}
               >
-                <Ionicons
-                  name="chevron-back"
-                  size={28}
-                  color={neonColors.cyan}
-                />
+                <Ionicons name="chevron-back" size={22} color={colors.primary} />
+                <Text className="text-base font-medium ml-0.5" style={{ color: colors.primary }}>
+                  Geri
+                </Text>
               </Pressable>
-              <Text className="text-white text-3xl font-bold tracking-tight">
-                {date &&
-                  formatDateRelative(Array.isArray(date) ? date[0] : date)}
+            </View>
+
+            {/* Day Summary Card */}
+            <View className="mx-1 mb-6 rounded-2xl p-5" style={{ backgroundColor: colors.bgSecondary }}>
+              <Text className="text-sm font-medium mb-1" style={{ color: colors.textSecondary }}>
+                {dateStr && formatDateRelative(dateStr)}
+              </Text>
+              <Text className="text-3xl font-black" style={{ color: colors.textPrimary }}>
+                {formatCurrency(total)}
+              </Text>
+              <Text className="text-xs font-medium mt-2" style={{ color: colors.textTertiary }}>
+                {expenses.length} harcama
               </Text>
             </View>
-            <Text className="text-sky-400 text-5xl font-black drop-shadow-lg">
-              {formatCurrency(total)}
-            </Text>
+
+            {/* Section Title */}
+            {expenses.length > 0 && (
+              <Text className="text-base font-semibold mb-3 px-2" style={{ color: colors.textPrimary }}>
+                Harcamalar
+              </Text>
+            )}
           </View>
         }
       />

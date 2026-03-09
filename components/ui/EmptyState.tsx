@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { neonColors, neonShadow } from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 import { i18n } from '@/lib/translations/i18n';
 
 interface EmptyStateProps {
@@ -18,21 +18,21 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <Animated.View
-      entering={FadeInDown.duration(800).springify().damping(12).stiffness(100)}
+      entering={FadeInDown.duration(350)}
       className="flex-1 items-center justify-center py-20"
     >
       <View
-        className="w-24 h-24 rounded-full items-center justify-center mb-8 border border-white/5 bg-black/80 backdrop-blur-xl overflow-hidden"
-        style={neonShadow(neonColors.sky, 'md')}
+        className="w-20 h-20 rounded-2xl items-center justify-center mb-6"
+        style={{ backgroundColor: colors.bgSecondary }}
       >
-        <Ionicons name={icon} size={42} color={neonColors.cyan} />
+        <Ionicons name={icon} size={36} color={colors.textSecondary} />
       </View>
 
-      <Text className="text-white text-xl font-bold tracking-widest mb-3 text-center px-4">
+      <Text className="text-lg font-semibold mb-2 text-center px-4" style={{ color: colors.textPrimary }}>
         {message}
       </Text>
 
-      <Text className="text-slate-400 font-medium text-sm text-center px-12 leading-6">
+      <Text className="text-sm font-medium text-center px-12 leading-5" style={{ color: colors.textSecondary }}>
         {subMessage}
       </Text>
     </Animated.View>

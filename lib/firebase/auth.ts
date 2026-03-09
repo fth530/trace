@@ -1,85 +1,72 @@
-import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { GOOGLE_WEB_CLIENT_ID } from './config';
 import { logger } from '../utils/logger';
 
-// Google Sign-In yapılandırması
-export const configureGoogleSignIn = () => {
-  GoogleSignin.configure({
-    webClientId: GOOGLE_WEB_CLIENT_ID,
-  });
+let auth: any = null;
+let GoogleSignin: any = null;
+
+try {
+  auth = require('@react-native-firebase/auth').default;
+  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
+  const { GOOGLE_WEB_CLIENT_ID } = require('./config');
+  GoogleSignin.configure({ webClientId: GOOGLE_WEB_CLIENT_ID });
+} catch {
+  logger.warn('Firebase native modules not available (Expo Go mode)');
+}
+
+const FIREBASE_UNAVAILABLE = {
+  success: false,
+  error: 'Firebase is not available in Expo Go. Use a development build.',
 };
+
+export const configureGoogleSignIn = () => {};
 
 export const signInAnonymously = async () => {
+  if (!auth) return FIREBASE_UNAVAILABLE;
   try {
     const userCredential = await auth().signInAnonymously();
-    return {
-      success: true,
-      user: userCredential.user,
-    };
+    return { success: true, user: userCredential.user };
   } catch (error: any) {
     logger.error('Anonymous Sign-In Error:', error);
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: false, error: error.message };
   }
 };
 
-// Google ile giriş yap
 export const signInWithGoogle = async () => {
+  if (!auth || !GoogleSignin) return FIREBASE_UNAVAILABLE;
   try {
-    // Google Sign-In akışını başlat
     await GoogleSignin.hasPlayServices();
     const signInResult = await GoogleSignin.signIn();
-
-    // idToken'ı al
     const idToken = signInResult.data?.idToken;
-
-    if (!idToken) {
-      throw new Error('No ID token found');
-    }
-
-    // Firebase credential oluştur
+    if (!idToken) throw new Error('No ID token found');
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-    // Firebase'e giriş yap
     const userCredential = await auth().signInWithCredential(googleCredential);
-
-    return {
-      success: true,
-      user: userCredential.user,
-    };
+    return { success: true, user: userCredential.user };
   } catch (error: any) {
     logger.error('Google Sign-In Error:', error);
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: false, error: error.message };
   }
 };
 
-// Çıkış yap
 export const signOut = async () => {
+  if (!auth) return FIREBASE_UNAVAILABLE;
   try {
-    await GoogleSignin.signOut();
+    if (GoogleSignin) await GoogleSignin.signOut();
     await auth().signOut();
     return { success: true };
   } catch (error: any) {
     logger.error('Sign Out Error:', error);
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: false, error: error.message };
   }
 };
 
-// Mevcut kullanıcıyı al
 export const getCurrentUser = () => {
+  if (!auth) return null;
   return auth().currentUser;
 };
 
-// Auth state değişikliklerini dinle
 export const onAuthStateChanged = (callback: (user: any) => void) => {
+  if (!auth) {
+    callback(null);
+    return () => {};
+  }
   return auth().onAuthStateChanged(callback);
 };

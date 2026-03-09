@@ -1,5 +1,4 @@
 // Root Layout
-// Based on ROADMAP §3 & S-Class Production Protocol
 
 import { useEffect, useState, useRef } from 'react';
 import { AppState } from 'react-native';
@@ -9,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Sentry from '@sentry/react-native';
 import { useStore } from '@/lib/store';
 import { logger } from '@/lib/utils/logger';
-import { neonColors } from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 import { configureGoogleSignIn, onAuthStateChanged } from '@/lib/firebase/auth';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import {
@@ -30,7 +29,6 @@ SplashScreen.preventAutoHideAsync();
 // Initialize Sentry Crash Reporting
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
-  // S-Class Security: Only sample 20% in production to prevent bandwidth overload
   tracesSampleRate: 0.2,
 });
 
@@ -42,7 +40,7 @@ function RootLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const appState = useRef(AppState.currentState);
 
-  // S-Class Logic: Midnight Rollover Listener (Background to Foreground)
+  // Midnight rollover listener
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -82,15 +80,9 @@ function RootLayout() {
 
       const hasSeenOnboarding = useStore.getState().settings.has_seen_onboarding;
 
-      // S-Class Auth Guard Logic
       if (!hasSeenOnboarding) {
-        // Enforce onboarding first
         router.replace('/onboarding');
-      } else if (!isAuthenticated) {
-        // Enforce login wall if onboarding seen but no user state (No Anon or Normal Auth)
-        router.replace('/auth/login');
       } else {
-        // Full access
         router.replace('/(tabs)');
       }
     }
@@ -102,12 +94,12 @@ function RootLayout() {
         <Stack
           screenOptions={{
             headerStyle: {
-              backgroundColor: neonColors.zinc950,
+              backgroundColor: colors.bgPrimary,
             },
             headerTintColor: '#ffffff',
             headerShadowVisible: false,
             contentStyle: {
-              backgroundColor: neonColors.zinc950,
+              backgroundColor: colors.bgPrimary,
             },
           }}
         >
@@ -117,6 +109,10 @@ function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="history/[date]"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="modal/add-expense"
             options={{

@@ -1,5 +1,4 @@
 // Category Definitions
-// Based on ROADMAP §4 Component Inventory & Antigravity Colors
 
 import type { ComponentProps } from 'react';
 import type { Ionicons } from '@expo/vector-icons';
@@ -17,21 +16,21 @@ export const categoryConfig: Record<
   Yol: {
     label: 'Ulaşım',
     icon: 'car-outline',
-    color: '#38bdf8', // Neon Sky Blue
+    color: '#007AFF',
   },
   Yemek: {
     label: 'Yemek',
     icon: 'restaurant-outline',
-    color: '#fbbf24', // Neon Amber
+    color: '#FF9500',
   },
   Market: {
     label: 'Market',
     icon: 'cart-outline',
-    color: '#e879f9', // Neon Fuchsia
+    color: '#AF52DE',
   },
   Diğer: {
     label: 'Diğer',
     icon: 'ellipsis-horizontal-outline',
-    color: '#94a3b8', // Slate
+    color: '#8E8E93',
   },
 };

@@ -1,6 +1,3 @@
-// S-Class Single Expense List Item
-// Based on Antigravity UI Architecture
-
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +12,7 @@ import Animated, {
   CurvedTransition,
 } from 'react-native-reanimated';
 import { i18n } from '@/lib/translations/i18n';
-import { neonColors } from '@/lib/constants/design-tokens';
+import { colors } from '@/lib/constants/design-tokens';
 
 interface ExpenseItemProps {
   expense: Expense;
@@ -32,55 +29,55 @@ export const ExpenseItem: React.FC<ExpenseItemProps> = React.memo(({
 }) => {
   const handleDelete = () => {
     if (onDelete) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       onDelete(expense.id);
     }
   };
 
   return (
     <Animated.View
-      entering={FadeInRight.delay(index * 50)
-        .springify()
-        .damping(16)
-        .stiffness(120)}
-      exiting={FadeOutLeft.duration(300).springify()}
+      entering={FadeInRight.delay(index * 30)}
+      exiting={FadeOutLeft.duration(250)}
       layout={CurvedTransition.delay(50)}
-      className="mb-3 overflow-hidden rounded-3xl border border-white/5 bg-black/80 backdrop-blur-xl"
+      className="mb-2 rounded-2xl overflow-hidden"
+      style={{ backgroundColor: colors.bgSecondary }}
     >
-      <View className="flex-row items-center justify-between p-5">
-        <View className="flex-1 flex-row items-center gap-4">
+      <View className="flex-row items-center justify-between p-4">
+        <View className="flex-1 flex-row items-center gap-3">
           {expense.category && <Badge category={expense.category} size="md" />}
           <View className="flex-1">
             <Text
-              className="text-white text-[15px] font-semibold tracking-wide mb-1"
+              className="text-[15px] font-medium mb-0.5"
               numberOfLines={1}
+              style={{ color: colors.textPrimary }}
             >
               {expense.description}
             </Text>
             {showDate && (
-              <Text className="text-slate-400 text-xs font-medium tracking-wider">
+              <Text className="text-xs font-medium" style={{ color: colors.textSecondary }}>
                 {formatDateRelative(expense.date)}
               </Text>
             )}
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
-          <Text className="text-white text-lg font-bold tracking-tight">
+        <View className="flex-row items-center gap-3">
+          <Text className="text-base font-bold" style={{ color: colors.textPrimary }}>
             {formatCurrency(expense.amount)}
           </Text>
 
           {onDelete && (
             <Pressable
               onPress={handleDelete}
-              className="p-2.5 rounded-full bg-white/5 active:bg-red-500/20 active:scale-90 transition-all border border-white/5"
+              className="p-2 rounded-full active:opacity-50"
+              style={{ backgroundColor: `${colors.danger}12` }}
               accessibilityRole="button"
               accessibilityLabel={i18n.t('common.delete_label')}
             >
               <Ionicons
                 name="trash-outline"
-                size={18}
-                color={neonColors.crimson}
+                size={16}
+                color={colors.danger}
               />
             </Pressable>
           )}
