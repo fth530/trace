@@ -1,0 +1,45 @@
+﻿dcde38c Merge pull request #1 from fth530/batu
+fa89449 feat: profesyonel UI tasar─▒m─▒, yeni ├Âzellikler ve iOS widget deste─şi
+ .gitignore                                         |   4 +-
+ app.json                                           |   1 +
+ app/(tabs)/_layout.tsx                             |  37 +-
+ app/(tabs)/analytics.tsx                           | 440 +++++++++++----
+ app/(tabs)/history.tsx                             |  87 +--
+ app/(tabs)/index.tsx                               | 350 ++++++++----
+ app/(tabs)/settings.tsx                            | 311 ++++++-----
+ app/_layout.tsx                                    |  20 +-
+ app/auth/login.tsx                                 |  91 ++-
+ app/history/[date].tsx                             |  69 ++-
+ app/modal/add-expense.tsx                          | 134 ++---
+ app/onboarding/index.tsx                           |  85 +--
+ components/expense/DailyTotal.tsx                  |  39 +-
+ components/expense/ExpenseItem.tsx                 |  37 +-
+ components/expense/ExpenseList.tsx                 |   2 +-
+ components/history/DaySummaryCard.tsx              |  35 +-
+ components/history/PeriodSummary.tsx               |  31 +-
+ components/history/SpendingCalendar.tsx            | 182 ++++++
+ components/limit/LimitBanner.tsx                   |  23 +-
+ components/limit/LimitProgress.tsx                 |  53 +-
+ components/ui/Badge.tsx                            |  17 +-
+ components/ui/EmptyState.tsx                       |  14 +-
+ lib/constants/categories.ts                        |   9 +-
+ lib/constants/design-tokens.ts                     | 108 ++--
+ lib/firebase/auth.ts                               |  77 ++-
+ lib/firebase/sync.ts                               |  60 +-
+ lib/store/index.ts                                 |  41 ++
+ lib/utils/export.ts                                |  74 +++
+ lib/utils/widget.ts                                | 107 ++++
+ modules/widget-bridge/expo-module.config.json      |   6 +
+ modules/widget-bridge/index.ts                     |   1 +
+ modules/widget-bridge/src/WidgetBridgeModule.ts    |  17 +
+ package-lock.json                                  |  14 +-
+ package.json                                       |   7 +-
+ plugins/withWidget.js                              | 472 ++++++++++++++++
+ .../AccentColor.colorset/Contents.json             |  38 ++
+ targets/widget/Assets.xcassets/Contents.json       |   6 +
+ .../WidgetBackground.colorset/Contents.json        |  38 ++
+ targets/widget/Info.plist                          |  11 +
+ targets/widget/TraceWidget.entitlements            |  10 +
+ targets/widget/TraceWidget.swift                   | 615 +++++++++++++++++++++
+ targets/widget/TraceWidgetBundle.swift             |   9 +
+ 42 files changed, 2866 insertions(+), 916 deletions(-)
