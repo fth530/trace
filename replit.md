@@ -49,7 +49,10 @@ Copy `.env.example` to `.env` and fill in Firebase values:
 - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
 - `EXPO_PUBLIC_SENTRY_DSN` (optional)
 
-## Notes
-- Firebase native modules gracefully degrade when unavailable (Expo Go fallback)
-- App uses anonymous auth or Google Sign-In
-- Local SQLite data can sync to Firestore when authenticated
+## Web Compatibility Notes
+- **Database**: On web, `lib/db/index.web.ts` replaces `expo-sqlite` (requires WebAssembly) with a localStorage-based implementation
+- **Firebase**: On web, `lib/firebase/auth.web.ts` stubs out Firebase auth — app runs in local-only mode (no cloud sync) on web
+- **Metro config**: `unstable_enablePackageExports` with `['react-native', 'require', 'default']` conditions ensures packages like Zustand resolve to their CJS builds instead of ESM `.mjs` files (which use `import.meta` unsupported by Hermes)
+- Firebase native modules gracefully degrade when unavailable (Expo Go fallback on native)
+- App uses anonymous auth or Google Sign-In on native; local-only on web
+- Local SQLite data can sync to Firestore when authenticated (native only)
