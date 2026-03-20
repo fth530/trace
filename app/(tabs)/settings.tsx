@@ -20,6 +20,38 @@ import { colors } from '@/lib/constants/design-tokens';
 import { getDatabase } from '@/lib/db';
 import { exportExpensesCSV } from '@/lib/utils/export';
 
+const SectionLabel = ({ label }: { label: string }) => (
+  <Text style={{
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
+    marginBottom: 8,
+    marginLeft: 4,
+  }}>
+    {label}
+  </Text>
+);
+
+const SettingCard = ({ children, style }: { children: React.ReactNode; style?: any }) => (
+  <View style={{
+    borderRadius: 20,
+    marginBottom: 22,
+    backgroundColor: colors.bgSecondary,
+    borderWidth: 1,
+    borderColor: colors.separator,
+    overflow: 'hidden',
+    ...style,
+  }}>
+    {children}
+  </View>
+);
+
+const Divider = () => (
+  <View style={{ height: 1, backgroundColor: colors.separatorLight, marginHorizontal: 16 }} />
+);
+
 export default function SettingsScreen() {
   const store = useStore();
   const { settings, updateSetting, clearAllData } = store;
@@ -27,9 +59,7 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
 
   const [dailyLimit, setDailyLimit] = useState(settings.daily_limit.toString());
-  const [monthlyLimit, setMonthlyLimit] = useState(
-    settings.monthly_limit.toString(),
-  );
+  const [monthlyLimit, setMonthlyLimit] = useState(settings.monthly_limit.toString());
   const [activeInput, setActiveInput] = useState<'daily' | 'monthly' | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -39,7 +69,7 @@ export default function SettingsScreen() {
   useEffect(() => {
     setDailyLimit(settings.daily_limit.toString());
     setMonthlyLimit(settings.monthly_limit.toString());
-  }, [settings.daily_limit, settings.monthly_limit, settings.theme]);
+  }, [settings.daily_limit, settings.monthly_limit]);
 
   const handleDailyLimitChange = (value: string) => {
     setDailyLimit(value);
@@ -79,11 +109,8 @@ export default function SettingsScreen() {
             try {
               await clearAllData();
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert(
-                i18n.t('settings.reset_success_title'),
-                i18n.t('settings.reset_success_message'),
-              );
-            } catch (error) {
+              Alert.alert(i18n.t('settings.reset_success_title'), i18n.t('settings.reset_success_message'));
+            } catch {
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert(i18n.t('common.error'), i18n.t('settings.reset_error'));
             }
@@ -103,11 +130,9 @@ export default function SettingsScreen() {
     } catch (error: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       if (error?.message === 'NO_DATA') {
-        Alert.alert('Uyari', 'Disa aktarilacak harcama verisi bulunamadi.');
-      } else if (error?.message === 'SHARING_UNAVAILABLE') {
-        Alert.alert('Hata', 'Paylasim bu cihazda desteklenmiyor.');
+        Alert.alert('Uyarı', 'Dışa aktarılacak harcama verisi bulunamadı.');
       } else {
-        Alert.alert('Hata', 'Veriler disa aktarilirken bir sorun olustu.');
+        Alert.alert('Hata', 'Veriler dışa aktarılırken bir sorun oluştu.');
       }
     } finally {
       setIsExporting(false);
@@ -121,101 +146,113 @@ export default function SettingsScreen() {
     };
   }, []);
 
-  const SettingRow = ({ icon, iconColor, label, children }: { icon: string; iconColor: string; label: string; children: React.ReactNode }) => (
-    <View className="flex-row items-center py-3">
-      <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${iconColor}15` }}>
-        <Ionicons name={icon as any} size={16} color={iconColor} />
+  const LimitRow = ({
+    icon,
+    iconColor,
+    label,
+    value,
+    onChange,
+    inputKey,
+  }: {
+    icon: string;
+    iconColor: string;
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    inputKey: 'daily' | 'monthly';
+  }) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 }}>
+      <View style={{
+        width: 36,
+        height: 36,
+        borderRadius: 11,
+        backgroundColor: `${iconColor}15`,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+      }}>
+        <Ionicons name={icon as any} size={17} color={iconColor} />
       </View>
-      <Text className="flex-1 text-[15px] font-medium" style={{ color: colors.textPrimary }}>{label}</Text>
-      {children}
+      <Text style={{ flex: 1, fontSize: 15, fontWeight: '600', color: colors.textPrimary }}>{label}</Text>
+      <TextInput
+        style={{
+          textAlign: 'right',
+          fontSize: 17,
+          fontWeight: '800',
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          borderRadius: 12,
+          color: colors.textPrimary,
+          backgroundColor: colors.bgTertiary,
+          minWidth: 110,
+          borderWidth: 1.5,
+          borderColor: activeInput === inputKey ? colors.primary : 'transparent',
+        }}
+        keyboardType="numeric"
+        value={value}
+        onChangeText={onChange}
+        onFocus={() => { setActiveInput(inputKey); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); }}
+        onBlur={() => setActiveInput(null)}
+        placeholder="0"
+        placeholderTextColor={colors.textTertiary}
+      />
     </View>
   );
 
   return (
-    <View className="flex-1 bg-black">
+    <View style={{ flex: 1, backgroundColor: colors.bgPrimary }}>
       <Animated.ScrollView
         entering={FadeInDown.duration(350)}
-        className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120, paddingTop: insets.top + 16 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="text-2xl font-bold mb-6" style={{ color: colors.textPrimary }}>
-          {i18n.t('settings.title')}
-        </Text>
-
-        {/* Limits Section */}
-        <Text className="text-xs font-semibold tracking-wider uppercase mb-2 ml-1" style={{ color: colors.textSecondary }}>
-          Harcama Limitleri
-        </Text>
-        <View className="rounded-2xl mb-6 overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
-          <View className="px-4 py-3" style={{ borderBottomWidth: 1, borderBottomColor: colors.separatorLight }}>
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${colors.primary}15` }}>
-                <Ionicons name="today-outline" size={16} color={colors.primary} />
-              </View>
-              <Text className="flex-1 text-[15px] font-medium" style={{ color: colors.textPrimary }}>
-                {i18n.t('settings.daily_max')}
-              </Text>
-              <TextInput
-                className="text-right text-lg font-bold px-3 py-1.5 rounded-lg"
-                style={{
-                  color: colors.textPrimary,
-                  backgroundColor: colors.bgTertiary,
-                  minWidth: 100,
-                  borderWidth: 1,
-                  borderColor: activeInput === 'daily' ? colors.primary : 'transparent',
-                }}
-                keyboardType="numeric"
-                value={dailyLimit}
-                onChangeText={handleDailyLimitChange}
-                onFocus={() => { setActiveInput('daily'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); }}
-                onBlur={() => setActiveInput(null)}
-                placeholder="0"
-                placeholderTextColor={colors.gray600}
-              />
-            </View>
-          </View>
-          <View className="px-4 py-3">
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${colors.warning}15` }}>
-                <Ionicons name="calendar-outline" size={16} color={colors.warning} />
-              </View>
-              <Text className="flex-1 text-[15px] font-medium" style={{ color: colors.textPrimary }}>
-                {i18n.t('settings.monthly_max')}
-              </Text>
-              <TextInput
-                className="text-right text-lg font-bold px-3 py-1.5 rounded-lg"
-                style={{
-                  color: colors.textPrimary,
-                  backgroundColor: colors.bgTertiary,
-                  minWidth: 100,
-                  borderWidth: 1,
-                  borderColor: activeInput === 'monthly' ? colors.primary : 'transparent',
-                }}
-                keyboardType="numeric"
-                value={monthlyLimit}
-                onChangeText={handleMonthlyLimitChange}
-                onFocus={() => { setActiveInput('monthly'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); }}
-                onBlur={() => setActiveInput(null)}
-                placeholder="0"
-                placeholderTextColor={colors.gray600}
-              />
-            </View>
-          </View>
+        {/* Header */}
+        <View style={{ marginBottom: 28 }}>
+          <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textTertiary, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>
+            UYGULAMA
+          </Text>
+          <Text style={{ fontSize: 28, fontWeight: '800', color: colors.textPrimary }}>
+            {i18n.t('settings.title')}
+          </Text>
         </View>
 
-        {/* Account Section */}
-        <Text className="text-xs font-semibold tracking-wider uppercase mb-2 ml-1" style={{ color: colors.textSecondary }}>
-          Hesap
-        </Text>
-        <View className="rounded-2xl mb-6 overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
+        {/* Limits */}
+        <SectionLabel label="Harcama Limitleri" />
+        <SettingCard>
+          <LimitRow
+            icon="today-outline"
+            iconColor={colors.primary}
+            label={i18n.t('settings.daily_max')}
+            value={dailyLimit}
+            onChange={handleDailyLimitChange}
+            inputKey="daily"
+          />
+          <Divider />
+          <LimitRow
+            icon="calendar-outline"
+            iconColor={colors.warning}
+            label={i18n.t('settings.monthly_max')}
+            value={monthlyLimit}
+            onChange={handleMonthlyLimitChange}
+            inputKey="monthly"
+          />
+        </SettingCard>
+
+        {/* Account */}
+        <SectionLabel label="Hesap" />
+        <SettingCard>
           {user ? (
             <>
-              <View className="px-4 py-3" style={{ borderBottomWidth: 1, borderBottomColor: colors.separatorLight }}>
-                <SettingRow icon="mail-outline" iconColor={colors.primary} label="E-posta">
-                  <Text className="text-sm font-medium" style={{ color: colors.textSecondary }}>{user.email}</Text>
-                </SettingRow>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 }}>
+                <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: `${colors.primary}15`, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Ionicons name="person" size={17} color={colors.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: colors.textTertiary, marginBottom: 2 }}>E-POSTA</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.textPrimary }}>{user.email}</Text>
+                </View>
               </View>
+              <Divider />
               <Pressable
                 onPress={async () => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -224,89 +261,87 @@ export default function SettingsScreen() {
                     { text: 'Çıkış Yap', style: 'destructive', onPress: async () => { await signOut(); router.replace('/auth/login'); } },
                   ]);
                 }}
-                className="px-4 py-3.5 active:opacity-70"
+                style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 14, opacity: pressed ? 0.7 : 1 })}
               >
-                <View className="flex-row items-center justify-center">
-                  <Ionicons name="log-out-outline" size={18} color={colors.danger} style={{ marginRight: 8 }} />
-                  <Text className="font-semibold" style={{ color: colors.danger }}>Çıkış Yap</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: `${colors.danger}12`, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Ionicons name="log-out-outline" size={17} color={colors.danger} />
+                  </View>
+                  <Text style={{ fontSize: 15, fontWeight: '600', color: colors.danger }}>Çıkış Yap</Text>
                 </View>
               </Pressable>
             </>
           ) : (
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/auth/login'); }}
-              className="px-4 py-4 active:opacity-70"
+              style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 16, opacity: pressed ? 0.7 : 1 })}
             >
-              <View className="flex-row items-center">
-                <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${colors.primary}15` }}>
-                  <Ionicons name="person-outline" size={16} color={colors.primary} />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: `${colors.primary}15`, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Ionicons name="person-outline" size={17} color={colors.primary} />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-[15px] font-semibold" style={{ color: colors.primary }}>Giriş Yap</Text>
-                  <Text className="text-xs font-medium mt-0.5" style={{ color: colors.textSecondary }}>Verilerinizi bulutta saklayın</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.primary }}>Giriş Yap</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textTertiary, marginTop: 2 }}>Verilerinizi bulutta saklayın</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
               </View>
             </Pressable>
           )}
-        </View>
+        </SettingCard>
 
-        {/* Data Section */}
-        <Text className="text-xs font-semibold tracking-wider uppercase mb-2 ml-1" style={{ color: colors.textSecondary }}>
-          Veri Yönetimi
-        </Text>
-        <View className="rounded-2xl mb-6 overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
+        {/* Data */}
+        <SectionLabel label="Veri Yönetimi" />
+        <SettingCard>
           <Pressable
             onPress={handleExportCSV}
             disabled={isExporting}
-            className="px-4 py-3.5 active:opacity-70"
-            style={{ borderBottomWidth: 1, borderBottomColor: colors.separatorLight }}
+            style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 14, opacity: pressed ? 0.7 : 1 })}
           >
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${colors.primary}15` }}>
-                {isExporting ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <Ionicons name="download-outline" size={16} color={colors.primary} />
-                )}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: `${colors.success}15`, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                {isExporting
+                  ? <ActivityIndicator size="small" color={colors.success} />
+                  : <Ionicons name="download-outline" size={17} color={colors.success} />
+                }
               </View>
-              <View className="flex-1">
-                <Text className="text-[15px] font-medium" style={{ color: colors.textPrimary }}>
-                  Verileri Disa Aktar (CSV)
-                </Text>
-                <Text className="text-xs font-medium mt-0.5" style={{ color: colors.textTertiary }}>
-                  Tum harcamalari CSV dosyasi olarak paylas
-                </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.textPrimary }}>Verileri Dışa Aktar</Text>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textTertiary, marginTop: 2 }}>CSV dosyası olarak paylaş</Text>
               </View>
-              {isExporting && (
-                <ActivityIndicator size="small" color={colors.primary} />
-              )}
             </View>
           </Pressable>
+          <Divider />
           <Pressable
             onPress={handleClearData}
-            className="px-4 py-3.5 active:opacity-70"
+            style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 14, opacity: pressed ? 0.7 : 1 })}
           >
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: `${colors.danger}15` }}>
-                <Ionicons name="trash-outline" size={16} color={colors.danger} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: `${colors.danger}12`, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                <Ionicons name="trash-outline" size={17} color={colors.danger} />
               </View>
-              <View className="flex-1">
-                <Text className="text-[15px] font-medium" style={{ color: colors.danger }}>
-                  {i18n.t('settings.reset_button')}
-                </Text>
-                <Text className="text-xs font-medium mt-0.5" style={{ color: colors.textTertiary }}>
-                  Tum harcama ve ayar verilerini siler
-                </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.danger }}>{i18n.t('settings.reset_button')}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textTertiary, marginTop: 2 }}>Tüm harcama ve ayar verilerini siler</Text>
               </View>
             </View>
           </Pressable>
-        </View>
+        </SettingCard>
 
-        {/* App Info */}
-        <View className="items-center mt-4 mb-8">
-          <Text className="text-xs font-medium" style={{ color: colors.textTertiary }}>Trace v1.0.0</Text>
-          <Text className="text-xs font-medium mt-1" style={{ color: colors.textTertiary }}>Kişisel Harcama Takibi</Text>
+        {/* Footer */}
+        <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}>
+          <View style={{
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 12,
+            backgroundColor: colors.bgSecondary,
+            borderWidth: 1,
+            borderColor: colors.separator,
+            alignItems: 'center',
+          }}>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: colors.textTertiary }}>Trace</Text>
+            <Text style={{ fontSize: 11, fontWeight: '500', color: colors.textTertiary, marginTop: 2 }}>v1.0.0 · Kişisel Harcama Takibi</Text>
+          </View>
         </View>
       </Animated.ScrollView>
     </View>

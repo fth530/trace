@@ -4,6 +4,7 @@ import { getLimitStatus, LimitType } from '@/lib/utils/limits';
 import { formatCurrency } from '@/lib/utils/currency';
 import { i18n } from '@/lib/translations/i18n';
 import { colors } from '@/lib/constants/design-tokens';
+import { Ionicons } from '@expo/vector-icons';
 
 interface LimitProgressProps {
   current: number;
@@ -22,53 +23,68 @@ export const LimitProgress: React.FC<LimitProgressProps> = ({
   useEffect(() => {
     Animated.timing(widthAnim, {
       toValue: Math.min(status.percentage, 100),
-      duration: 600,
+      duration: 700,
       useNativeDriver: false,
     }).start();
 
-    return () => {
-      widthAnim.stopAnimation();
-    };
-  }, [status.percentage, widthAnim]);
+    return () => widthAnim.stopAnimation();
+  }, [status.percentage]);
 
-  if (limit === 0) {
-    return (
-      <View className="mb-3">
-        <Text className="text-center py-2" style={{ color: colors.textTertiary }}>
-          {i18n.t('limits.unlimited')}
-        </Text>
-      </View>
-    );
-  }
+  if (limit === 0) return null;
+
+  const icon = type === 'daily' ? 'today-outline' : 'calendar-outline';
+  const label = type === 'daily' ? 'Günlük' : 'Aylık';
+  const remaining = Math.max(limit - current, 0);
 
   return (
-    <View className="mb-4">
-      <View className="flex-row justify-between items-end mb-1.5">
-        <Text className="font-medium text-sm" style={{ color: colors.textPrimary }}>
-          {type === 'daily' ? i18n.t('limits.daily') : i18n.t('limits.monthly')}
+    <View style={{
+      marginBottom: 10,
+      padding: 14,
+      borderRadius: 16,
+      backgroundColor: colors.bgSecondary,
+      borderWidth: 1,
+      borderColor: colors.separator,
+    }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+        <View style={{
+          width: 30,
+          height: 30,
+          borderRadius: 9,
+          backgroundColor: `${status.color}15`,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 10,
+        }}>
+          <Ionicons name={icon as any} size={15} color={status.color} />
+        </View>
+        <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: colors.textSecondary }}>
+          {label} Limit
         </Text>
-        <Text className="font-semibold text-sm" style={{ color: colors.textSecondary }}>
+        <Text style={{ fontSize: 13, fontWeight: '700', color: status.color }}>
           {status.percentage.toFixed(0)}%
         </Text>
       </View>
 
-      <View className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgTertiary }}>
+      <View style={{ height: 5, borderRadius: 3, backgroundColor: colors.bgTertiary, overflow: 'hidden', marginBottom: 8 }}>
         <Animated.View
           style={{
             height: '100%',
-            borderRadius: 4,
+            borderRadius: 3,
+            backgroundColor: status.color,
             width: widthAnim.interpolate({
               inputRange: [0, 100],
               outputRange: ['0%', '100%'],
             }),
-            backgroundColor: status.color,
           }}
         />
       </View>
 
-      <View className="mt-1 flex-row justify-between items-center">
-        <Text className="text-xs" style={{ color: colors.textTertiary }}>
-          {formatCurrency(current)} / {formatCurrency(limit)}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 11, color: colors.textTertiary }}>
+          {formatCurrency(current)} harcandı
+        </Text>
+        <Text style={{ fontSize: 11, color: colors.textTertiary }}>
+          {formatCurrency(remaining)} kaldı
         </Text>
       </View>
     </View>

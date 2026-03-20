@@ -1,11 +1,30 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { Platform, StyleSheet, View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { colors } from '@/lib/constants/design-tokens';
 import { useNetwork } from '@/lib/hooks/useNetwork';
+
+function TabIcon({ name, color, size, focused }: { name: any; color: string; size: number; focused: boolean }) {
+  return (
+    <View style={{
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      {focused && (
+        <View style={{
+          position: 'absolute',
+          width: 40,
+          height: 40,
+          borderRadius: 12,
+          backgroundColor: `${colors.primary}15`,
+        }} />
+      )}
+      <Ionicons name={focused ? name.replace('-outline', '') : name} size={22} color={color} />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const isOnline = useNetwork();
@@ -16,35 +35,32 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.textSecondary,
+          tabBarInactiveTintColor: colors.textTertiary,
           tabBarStyle: {
             position: 'absolute',
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: colors.separator,
+            borderTopWidth: 0,
             elevation: 0,
-            height: Platform.OS === 'ios' ? 88 : 70,
-            paddingBottom: Platform.OS === 'ios' ? 30 : 12,
+            height: Platform.OS === 'ios' ? 88 : 72,
+            paddingBottom: Platform.OS === 'ios' ? 28 : 12,
             paddingTop: 8,
             backgroundColor: 'transparent',
           },
-          tabBarBackground: () =>
-            Platform.OS === 'ios' ? (
-              <BlurView
-                tint="dark"
-                intensity={80}
-                style={StyleSheet.absoluteFill}
-              />
-            ) : (
-              <View
-                style={[
-                  StyleSheet.absoluteFill,
-                  { backgroundColor: 'rgba(0, 0, 0, 0.92)' },
-                ]}
-              />
-            ),
+          tabBarBackground: () => (
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: colors.bgPrimary,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.separator,
+                },
+              ]}
+            />
+          ),
           tabBarLabelStyle: {
             fontSize: 10,
             fontWeight: '600',
+            marginTop: 2,
           },
           headerStyle: {
             backgroundColor: colors.bgPrimary,
@@ -62,8 +78,8 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: 'Bugün',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={size} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="home-outline" color={color} size={22} focused={focused} />
             ),
           }}
         />
@@ -72,8 +88,8 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: 'Geçmiş',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="calendar" size={size} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="calendar-outline" color={color} size={22} focused={focused} />
             ),
           }}
         />
@@ -82,8 +98,8 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: 'Analiz',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="pie-chart" size={size} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="bar-chart-outline" color={color} size={22} focused={focused} />
             ),
           }}
         />
@@ -92,8 +108,8 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             title: 'Ayarlar',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings" size={size} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="settings-outline" color={color} size={22} focused={focused} />
             ),
           }}
         />
@@ -105,25 +121,25 @@ export default function TabLayout() {
           exiting={FadeOutUp.duration(300)}
           style={{
             position: 'absolute',
-            top: (insets.top || 40) + 10,
+            top: (insets.top || 44) + 8,
             left: 20,
             right: 20,
             backgroundColor: colors.warning,
             padding: 12,
-            borderRadius: 12,
+            borderRadius: 14,
             flexDirection: 'row',
             alignItems: 'center',
-            shadowColor: '#000',
+            shadowColor: colors.warning,
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 5,
+            shadowOpacity: 0.4,
+            shadowRadius: 12,
+            elevation: 6,
             zIndex: 999,
           }}
         >
-          <Ionicons name="cloud-offline" size={20} color="#000" style={{ marginRight: 8 }} />
-          <Text style={{ fontWeight: '700', color: '#000', fontSize: 13, flex: 1 }}>
-            Çevrimdışı (Yerel Mod). İnternete bağlandığınızda verileriniz eklenecektir.
+          <Ionicons name="cloud-offline" size={18} color="#000" style={{ marginRight: 8 }} />
+          <Text style={{ fontWeight: '700', color: '#000', fontSize: 12, flex: 1 }}>
+            Çevrimdışı — Yerel mod aktif
           </Text>
         </Animated.View>
       )}

@@ -1,4 +1,4 @@
-// Design Tokens: Professional Finance App Design System
+// Design Tokens: Premium Finance App Design System
 
 export const spacing = {
   xs: 8,
@@ -18,46 +18,64 @@ export const borderRadius = {
   full: 9999,
 } as const;
 
-// Professional color palette
+// Premium color palette
 export const colors = {
-  // Primary
-  primary: '#007AFF',
-  primaryLight: '#4DA3FF',
-  primaryDark: '#0055CC',
+  // Primary - Rich Indigo
+  primary: '#6C63FF',
+  primaryLight: '#9B94FF',
+  primaryDark: '#4A42D6',
+  primaryGlow: 'rgba(108, 99, 255, 0.35)',
 
   // Semantic
-  success: '#34C759',
-  warning: '#FF9500',
-  danger: '#FF3B30',
+  success: '#00E096',
+  successDark: '#00B376',
+  warning: '#FFB347',
+  warningDark: '#E5930A',
+  danger: '#FF4D6A',
+  dangerDark: '#CC2A44',
 
-  // Neutral
+  // Neutrals
   white: '#FFFFFF',
-  gray50: '#F9FAFB',
-  gray100: '#F3F4F6',
-  gray200: '#E5E7EB',
-  gray300: '#D1D5DB',
-  gray400: '#9CA3AF',
-  gray500: '#6B7280',
-  gray600: '#4B5563',
-  gray700: '#374151',
-  gray800: '#1F2937',
-  gray900: '#111827',
+  gray50: '#F8F9FF',
+  gray100: '#ECECF4',
+  gray200: '#D8D8E8',
+  gray300: '#B4B4CC',
+  gray400: '#8888A8',
+  gray500: '#666688',
+  gray600: '#444466',
+  gray700: '#2E2E48',
+  gray800: '#1A1A2E',
+  gray900: '#0D0D18',
   black: '#000000',
 
-  // Background (dark mode)
-  bgPrimary: '#000000',
-  bgSecondary: '#1C1C1E',
-  bgTertiary: '#2C2C2E',
-  bgElevated: '#1C1C1E',
+  // Background — deep space theme
+  bgPrimary: '#0D0D12',
+  bgSecondary: '#16161F',
+  bgTertiary: '#1E1E2A',
+  bgElevated: '#22222E',
+  bgCard: '#1A1A26',
 
   // Text
-  textPrimary: '#FFFFFF',
-  textSecondary: '#8E8E93',
-  textTertiary: '#636366',
+  textPrimary: '#F0F0FF',
+  textSecondary: '#8888B0',
+  textTertiary: '#555575',
 
-  // Border
-  separator: 'rgba(255,255,255,0.08)',
-  separatorLight: 'rgba(255,255,255,0.04)',
+  // Border / separator
+  separator: 'rgba(150, 150, 255, 0.08)',
+  separatorLight: 'rgba(150, 150, 255, 0.04)',
+  borderGlow: 'rgba(108, 99, 255, 0.25)',
+} as const;
+
+// Gradient presets
+export const gradients = {
+  primary: ['#6C63FF', '#9B6BFF'] as const,
+  primaryCard: ['#1A1640', '#120F2E'] as const,
+  success: ['#00E096', '#00C878'] as const,
+  danger: ['#FF4D6A', '#FF2D50'] as const,
+  dark: ['#16161F', '#0D0D12'] as const,
+  card: ['#1E1E2A', '#16161F'] as const,
+  hero: ['#1A1640', '#0D0D12'] as const,
+  indigo: ['rgba(108, 99, 255, 0.15)', 'rgba(108, 99, 255, 0.02)'] as const,
 } as const;
 
 // Backward compatibility aliases
@@ -66,7 +84,7 @@ export const neonColors = {
   yellow: colors.warning,
   crimson: colors.danger,
   sky: colors.primary,
-  cyan: colors.primary,
+  cyan: colors.primaryLight,
   slateDark: colors.gray600,
   zinc950: colors.bgPrimary,
   white: colors.white,
@@ -78,26 +96,34 @@ export const neonColors = {
   fuchsia: '#A855F7',
 } as const;
 
-// Gradient presets
-export const gradients = {
-  main: ['#000000', '#0a0a0a', '#111111'] as const,
-  modal: ['rgba(0,0,0,0.95)', 'rgba(0,0,0,1)'] as const,
-  safe: ['rgba(52,199,89,0.15)', 'rgba(52,199,89,0.05)'] as const,
-  danger: ['rgba(255,59,48,0.15)', 'rgba(255,59,48,0.05)'] as const,
-} as const;
-
-export const gradientLocations = {
-  main: [0, 0.5, 1] as const,
-};
-
-// Professional subtle shadows
+// Shadows
 export const shadow = (
   intensity: 'sm' | 'md' | 'lg' = 'md',
 ) => {
   const config = {
-    sm: { offset: 2, opacity: 0.15, radius: 4, elevation: 2 },
-    md: { offset: 4, opacity: 0.2, radius: 8, elevation: 4 },
-    lg: { offset: 6, opacity: 0.25, radius: 12, elevation: 6 },
+    sm: { offset: 2, opacity: 0.3, radius: 6, elevation: 3 },
+    md: { offset: 6, opacity: 0.4, radius: 16, elevation: 8 },
+    lg: { offset: 10, opacity: 0.5, radius: 24, elevation: 12 },
+  };
+
+  const { offset, opacity, radius, elevation } = config[intensity];
+
+  return {
+    shadowColor: '#6C63FF',
+    shadowOffset: { width: 0, height: offset },
+    shadowOpacity: opacity,
+    shadowRadius: radius,
+    elevation,
+  };
+};
+
+export const shadowNeutral = (
+  intensity: 'sm' | 'md' | 'lg' = 'md',
+) => {
+  const config = {
+    sm: { offset: 2, opacity: 0.2, radius: 4, elevation: 2 },
+    md: { offset: 4, opacity: 0.25, radius: 8, elevation: 4 },
+    lg: { offset: 8, opacity: 0.35, radius: 16, elevation: 8 },
   };
 
   const { offset, opacity, radius, elevation } = config[intensity];
